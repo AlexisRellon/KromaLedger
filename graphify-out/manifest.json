@@ -438,9 +438,9 @@
     "semantic_hash": ""
   },
   "tests/core/wallets.test.ts": {
-    "mtime": 1792548024.2538612,
-    "seen": 1792551828.5834746,
-    "ast_hash": "7ce6885c1a5142acbd9d6d4f32c6b0f3",
+    "mtime": 1792561172.7631738,
+    "seen": 1792561199.587618,
+    "ast_hash": "4184c1131d80c8fc78efb89adb265ee3",
     "semantic_hash": ""
   },
   "src/ui/screens/WalletsScreen.tsx": {
