@@ -24,22 +24,22 @@
     "semantic_hash": ""
   },
   "src/App.tsx": {
-    "mtime": 1792558362.0691996,
-    "seen": 1792558436.9178257,
-    "ast_hash": "eaa1b0db96feaecae4cd470ce3c79075",
+    "mtime": 1792564154.3138654,
+    "seen": 1792564236.1032717,
+    "ast_hash": "f3989e43eb39788a4460626caf49db45",
     "semantic_hash": ""
   },
   "src/adapters/backup/zipVault.ts": {
-    "mtime": 1792520592.5613282,
-    "seen": 1792551828.5833051,
-    "ast_hash": "c8bcf210cb4794bc9c3327b383b97324",
+    "mtime": 1792563686.0460498,
+    "seen": 1792563984.9224472,
+    "ast_hash": "2292e772b4b21c1986ccae1808cc4f4a",
     "semantic_hash": ""
   },
   "src/adapters/web-dexie/DexieFileStore.ts": {
-    "mtime": 1792504679.3115819,
-    "seen": 1792551828.5833082,
-    "ast_hash": "fde9199e76d04964d0ebbb463e9017d1",
-    "semantic_hash": "fde9199e76d04964d0ebbb463e9017d1"
+    "mtime": 1792563699.6747227,
+    "seen": 1792563984.9224498,
+    "ast_hash": "f76efba26018b48a17cd568d89857054",
+    "semantic_hash": ""
   },
   "src/adapters/web-dexie/DexieStorageRepo.ts": {
     "mtime": 1792558867.6907742,
@@ -48,10 +48,10 @@
     "semantic_hash": ""
   },
   "src/adapters/web-dexie/WebBootstrap.tsx": {
-    "mtime": 1792481852.6592069,
-    "seen": 1792551828.5833142,
-    "ast_hash": "f99bae82a9fdaaa998e3ec23cdf5bdae",
-    "semantic_hash": "f99bae82a9fdaaa998e3ec23cdf5bdae"
+    "mtime": 1792564118.3060088,
+    "seen": 1792564236.10328,
+    "ast_hash": "7ff4280635c0cd9de6f19039256f75a9",
+    "semantic_hash": ""
   },
   "src/adapters/web-dexie/db.ts": {
     "mtime": 1792520487.0031202,
@@ -114,9 +114,9 @@
     "semantic_hash": ""
   },
   "src/core/models/index.ts": {
-    "mtime": 1792547519.2852182,
-    "seen": 1792551828.5833414,
-    "ast_hash": "50827301017b06ecd3f0490263e7d670",
+    "mtime": 1792563631.1550586,
+    "seen": 1792563984.9224944,
+    "ast_hash": "c3c89924b97b8286f7b6fa0f289bb82c",
     "semantic_hash": ""
   },
   "src/core/ports/IFileStore.ts": {
@@ -180,9 +180,9 @@
     "semantic_hash": ""
   },
   "src/ui/components/QuickAddDrawer.tsx": {
-    "mtime": 1792560217.1462944,
-    "seen": 1792560267.006037,
-    "ast_hash": "c0b8fbfef3225f02e4ba28d2648b585f",
+    "mtime": 1792563769.9989932,
+    "seen": 1792563984.9225516,
+    "ast_hash": "26b9ea59a15cbb045475373b089d634f",
     "semantic_hash": ""
   },
   "src/ui/components/TopStatusHeader.tsx": {
@@ -198,9 +198,9 @@
     "semantic_hash": ""
   },
   "src/ui/screens/HomeDashboard.tsx": {
-    "mtime": 1792549401.5680418,
-    "seen": 1792551828.583408,
-    "ast_hash": "327c30e0bf69886edcc49ee4f8a67d76",
+    "mtime": 1792563743.85468,
+    "seen": 1792563984.9225693,
+    "ast_hash": "dedc78b052a1bd7e4c9016076d953681",
     "semantic_hash": ""
   },
   "src/ui/screens/PendingAndSubsHub.tsx": {
@@ -210,9 +210,9 @@
     "semantic_hash": ""
   },
   "src/ui/screens/VaultBackupModal.tsx": {
-    "mtime": 1792512462.2042332,
-    "seen": 1792551828.583417,
-    "ast_hash": "851232b095cfba3ce64ce32803c532b2",
+    "mtime": 1792563855.4186218,
+    "seen": 1792563984.9225767,
+    "ast_hash": "917dc4a7ccb1902762ebb435c3d8cf43",
     "semantic_hash": ""
   },
   "src/vite-env.d.ts": {
@@ -222,15 +222,15 @@
     "semantic_hash": "0352474ba2918efe13895edbc3780d94"
   },
   "tests/adapters/storage.test.ts": {
-    "mtime": 1792558737.1992033,
-    "seen": 1792558877.7315857,
-    "ast_hash": "aed72e9ead72f2649296b53f706a5ac7",
+    "mtime": 1792563950.9957912,
+    "seen": 1792563984.922586,
+    "ast_hash": "7ccf281e3adf50e4033604c54187c2c1",
     "semantic_hash": ""
   },
   "tests/adapters/vault.test.ts": {
-    "mtime": 1792520644.455678,
-    "seen": 1792551828.5834281,
-    "ast_hash": "5ac14664cf6a167ea7dfe3a2f185cef7",
+    "mtime": 1792563910.535551,
+    "seen": 1792563984.9225883,
+    "ast_hash": "1d51c9d07975d331303bda9a28a49550",
     "semantic_hash": ""
   },
   "tests/core/cashflowAnalytics.test.ts": {
@@ -282,9 +282,9 @@
     "semantic_hash": "3d2a273651dedb263f2bf0d8891e1fa8"
   },
   "tests/core/models.test.ts": {
-    "mtime": 1792547564.727011,
-    "seen": 1792551828.5834625,
-    "ast_hash": "4b2fbd20fb4427956b5411c37af998b1",
+    "mtime": 1792563894.2497892,
+    "seen": 1792563984.922616,
+    "ast_hash": "ae317c004e51dd4ac0979513fd56e666",
     "semantic_hash": ""
   },
   "tests/core/numpadEvaluator.test.ts": {
@@ -342,9 +342,9 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1792560989.0487423,
-    "seen": 1792561061.8968077,
-    "ast_hash": "6e07ea823d267000d707059da73f05c7",
+    "mtime": 1792564166.1256225,
+    "seen": 1792564236.1033907,
+    "ast_hash": "c7c15014f5abab2d715f281da19e7130",
     "semantic_hash": ""
   },
   "public/fonts/CabinetGrotesk-LICENSE.txt": {
@@ -372,10 +372,10 @@
     "semantic_hash": "bf963f87568fa73da15d689d2a269730"
   },
   ".codex/hooks.json": {
-    "mtime": 1792505728.3012686,
-    "seen": 1792551828.5832703,
-    "ast_hash": "be99ce5e638aa058bbf488fb4131a9fe",
-    "semantic_hash": "be99ce5e638aa058bbf488fb4131a9fe"
+    "mtime": 1792563867.3528092,
+    "seen": 1792563984.9224038,
+    "ast_hash": "5ebef3dd159986e465ab65e4014107ec",
+    "semantic_hash": ""
   },
   "AGENTS.md": {
     "mtime": 1792508977.8374503,
@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "src/ui/screens/SettingsScreen.tsx": {
-    "mtime": 1792551784.4180279,
-    "seen": 1792551828.5834146,
-    "ast_hash": "c5bab16c75d88e2fdf87d7003be6fd94",
+    "mtime": 1792563827.5234895,
+    "seen": 1792563984.9225743,
+    "ast_hash": "9683e249c910e5fb0e0e95e971c83e6c",
     "semantic_hash": ""
   },
   "DESIGN.md": {
@@ -420,9 +420,9 @@
     "semantic_hash": ""
   },
   "PRODUCT.md": {
-    "mtime": 1792510753.2952042,
-    "seen": 1792551828.5834894,
-    "ast_hash": "be6aa50469ffe704d8f8222738a49999",
+    "mtime": 1792563814.1862226,
+    "seen": 1792563984.9226432,
+    "ast_hash": "2cc1b62d8e5ba89042221f84a5984c20",
     "semantic_hash": ""
   },
   "src/ui/components/StackedWalletDeck.tsx": {
@@ -456,9 +456,9 @@
     "semantic_hash": ""
   },
   "src/ui/components/PhysicalWalletCard.tsx": {
-    "mtime": 1792560693.4734836,
-    "seen": 1792560731.0373404,
-    "ast_hash": "43a93bdbcd7d5cb2c9a111bf634f1f08",
+    "mtime": 1792564202.463388,
+    "seen": 1792564236.1033306,
+    "ast_hash": "58dfbe4ee77123d86746c71105fbaf7f",
     "semantic_hash": ""
   },
   "src/ui/components/ConfirmDeleteModal.tsx": {

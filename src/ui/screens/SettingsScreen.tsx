@@ -274,7 +274,7 @@ export function SettingsScreen({ onOpenBackup }: { onOpenBackup: () => void }) {
           <div>
             <h3 className="font-display text-lg font-semibold text-white">Local Vault & Backups</h3>
             <p className="text-xs text-neutral-400">
-              Your ledger operates with 100% on-device IndexedDB storage and client-side ZIP encryption.
+              Your ledger operates with 100% on-device IndexedDB storage. Exports are unencrypted ZIP archives.
             </p>
           </div>
           <button

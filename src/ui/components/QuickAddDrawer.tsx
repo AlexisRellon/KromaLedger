@@ -6,7 +6,7 @@ import { parseMinorInput } from "../../core/engine/moneyInput";
 import { evaluateNumpad } from "../../core/engine/numpadEvaluator";
 import { buildEntryDraft } from "../../state/entryDraft";
 import { LineItemBuilder, type LineDraft } from "../components/LineItemBuilder";
-import { formatWalletLabel, type AttachmentMeta, type Transaction } from "../../core/models";
+import { formatWalletLabel, ALLOWED_ATTACHMENT_MIME_TYPES, attachmentMimeTypeSchema, type AttachmentMeta, type Transaction } from "../../core/models";
 import { useUIStore, type QuickAddMode } from "../../state/useUIStore";
 import { useSaveAttachment, useSaveInvoice, useSaveSubscription, useSaveTransaction, useWallets } from "../../state/queries";
 import { saveEntryAndAttachment } from "../../state/entrySaveWorkflow";
@@ -274,12 +274,16 @@ export function QuickAddDrawer({
         },
         receipt && mode !== "SUBSCRIPTION"
           ? async () => {
+              const mimeResult = attachmentMimeTypeSchema.safeParse(receipt.type);
+              if (!mimeResult.success) {
+                throw new Error("Disallowed file type. Only PNG, JPEG, WEBP, GIF, and PDF are supported.");
+              }
               const data = new Uint8Array(await receipt.arrayBuffer());
               await saveAttachment.mutateAsync({
                 meta: {
                   id: id(),
                   filename: receipt.name,
-                  mimeType: receipt.type || "application/octet-stream",
+                  mimeType: mimeResult.data,
                   size: data.byteLength,
                   createdAt: new Date().toISOString(),
                   entityType: mode === "INVOICE" ? "INVOICE" : "TRANSACTION",
@@ -449,9 +453,22 @@ export function QuickAddDrawer({
               <span>{receipt ? receipt.name : "Attach receipt"}</span>
               <input
                 type="file"
-                accept="image/*,application/pdf"
+                accept={ALLOWED_ATTACHMENT_MIME_TYPES.join(",")}
                 className="hidden"
-                onChange={(e) => setReceipt(e.target.files?.[0] ?? null)}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) {
+                    setReceipt(null);
+                    return;
+                  }
+                  if (!attachmentMimeTypeSchema.safeParse(file.type).success) {
+                    setError("Only PNG, JPEG, WEBP, GIF, and PDF files are supported.");
+                    e.target.value = "";
+                    setReceipt(null);
+                    return;
+                  }
+                  setReceipt(file);
+                }}
               />
             </label>
           )}

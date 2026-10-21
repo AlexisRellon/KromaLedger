@@ -1,5 +1,4 @@
-import imageCompression from "browser-image-compression";
-import { attachmentMetaSchema } from "../../core/models";
+import { attachmentMetaSchema, attachmentMimeTypeSchema } from "../../core/models";
 import type { IFileStore } from "../../core/ports/IFileStore";
 import { KromaLedgerDB } from "./db";
 
@@ -10,6 +9,7 @@ export class DexieFileStore implements IFileStore {
 
   async save(id: string, data: Uint8Array, mimeType: string): Promise<void> {
     if (!safeId.test(id)) throw new RangeError("Attachment id contains unsafe path characters");
+    if (!attachmentMimeTypeSchema.safeParse(mimeType).success) throw new RangeError("Unsupported or disallowed attachment MIME type");
     const blob = new Blob([new Uint8Array(data).buffer], { type: mimeType });
     await this.db.attachmentFiles.put({ id, mimeType, size: blob.size, blob });
   }
@@ -19,6 +19,7 @@ export class DexieFileStore implements IFileStore {
     if (!safeId.test(meta.id) || data.byteLength !== meta.size) throw new RangeError("Attachment metadata does not match its bytes");
     let bytes = data;
     if (meta.mimeType.startsWith("image/") && meta.mimeType !== "image/webp") {
+      const { default: imageCompression } = await import("browser-image-compression");
       const file = new File([new Uint8Array(data).buffer], meta.filename, { type: meta.mimeType });
       const compressed = await imageCompression(file, { maxSizeMB: 0.5, maxWidthOrHeight: 1920, useWebWorker: false, fileType: "image/webp" });
       bytes = new Uint8Array(await compressed.arrayBuffer());

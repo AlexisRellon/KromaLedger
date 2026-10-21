@@ -17,6 +17,7 @@ export function VaultBackupModal({ onClose }: { onClose: () => void }) {
   const [message, setMessage] = useState("");
   const [usage, setUsage] = useState<{ usage: number | null; quota: number | null }>();
   const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [autoBackupBeforeRestore, setAutoBackupBeforeRestore] = useState(true);
 
   useEffect(() => {
     let active = true;
@@ -66,6 +67,20 @@ export function VaultBackupModal({ onClose }: { onClose: () => void }) {
     if (!pendingFile) return;
     setBusy(true);
     try {
+      if (autoBackupBeforeRestore) {
+        try {
+          const safety = await vault.export(today());
+          const blob = new Blob([new Uint8Array(safety.data).buffer], { type: "application/zip" });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `pre-restore-safety-backup-${today()}.zip`;
+          link.click();
+          URL.revokeObjectURL(url);
+        } catch {
+          // If safety backup export fails, proceed with restore attempt
+        }
+      }
       await vault.restore(new Uint8Array(await pendingFile.arrayBuffer()));
       setMessage("Backup restored. Reloading local data…");
       location.reload();
@@ -107,6 +122,10 @@ export function VaultBackupModal({ onClose }: { onClose: () => void }) {
           Your ledger lives strictly on this device. Export a standalone ZIP archive or restore an existing KromaLedger vault.
         </p>
 
+        <p className="mt-2.5 rounded-xl border border-white/5 bg-white/[0.02] p-2.5 text-xs leading-relaxed text-neutral-400">
+          <span className="font-semibold text-neutral-300">Privacy Notice:</span> Backups are unencrypted ZIP archives holding your raw ledger records and attachments. Store exported copies in a secure, private location.
+        </p>
+
         <div className="mt-4 rounded-xl border border-white/[0.06] bg-black/30 p-3">
           <p className="text-xs font-medium tracking-wider text-neutral-400">Local device storage</p>
           <p className="mt-1 font-mono text-xs text-neutral-200">
@@ -121,6 +140,15 @@ export function VaultBackupModal({ onClose }: { onClose: () => void }) {
             <p className="mt-1.5 text-xs leading-relaxed text-neutral-300">
               Restoring <span className="font-mono text-white">{pendingFile.name}</span> will permanently overwrite and replace all current transactions, subscriptions, and invoices on this device.
             </p>
+            <label className="mt-3 flex items-center gap-2 cursor-pointer text-xs text-neutral-300 select-none">
+              <input
+                type="checkbox"
+                checked={autoBackupBeforeRestore}
+                onChange={(e) => setAutoBackupBeforeRestore(e.target.checked)}
+                className="rounded border-white/20 bg-black/40 text-[#D9F938] focus:ring-0"
+              />
+              <span>Download safety backup before overwriting</span>
+            </label>
             <div className="mt-4 flex gap-2">
               <button
                 type="button"

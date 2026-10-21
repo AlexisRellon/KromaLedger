@@ -1,6 +1,5 @@
-import { useMemo, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { calculateCashflow } from "./core/engine/cashflowAnalytics";
-import { QuickAddDrawer } from "./ui/components/QuickAddDrawer";
 import { useUIStore } from "./state/useUIStore";
 import {
   useAllTransactions,
@@ -14,12 +13,23 @@ import {
 } from "./state/queries";
 import { TopStatusHeader } from "./ui/components/TopStatusHeader";
 import { FloatingNavPill } from "./ui/components/FloatingNavPill";
-import { PendingAndSubsHub } from "./ui/screens/PendingAndSubsHub";
 import { HomeDashboard } from "./ui/screens/HomeDashboard";
-import { WalletsScreen } from "./ui/screens/WalletsScreen";
-import { VaultBackupModal } from "./ui/screens/VaultBackupModal";
-import { SettingsScreen } from "./ui/screens/SettingsScreen";
-import { EditProfileModal } from "./ui/components/EditProfileModal";
+
+const WalletsScreen = lazy(() => import("./ui/screens/WalletsScreen").then((m) => ({ default: m.WalletsScreen })));
+const PendingAndSubsHub = lazy(() => import("./ui/screens/PendingAndSubsHub").then((m) => ({ default: m.PendingAndSubsHub })));
+const SettingsScreen = lazy(() => import("./ui/screens/SettingsScreen").then((m) => ({ default: m.SettingsScreen })));
+const VaultBackupModal = lazy(() => import("./ui/screens/VaultBackupModal").then((m) => ({ default: m.VaultBackupModal })));
+const EditProfileModal = lazy(() => import("./ui/components/EditProfileModal").then((m) => ({ default: m.EditProfileModal })));
+const QuickAddDrawer = lazy(() => import("./ui/components/QuickAddDrawer").then((m) => ({ default: m.QuickAddDrawer })));
+
+function TabSkeleton() {
+  return (
+    <div className="space-y-4 animate-pulse">
+      <div className="h-44 rounded-3xl border border-white/5 bg-white/[0.02]" />
+      <div className="h-64 rounded-3xl border border-white/5 bg-white/[0.02]" />
+    </div>
+  );
+}
 
 export function App() {
   const month = useUIStore((s) => s.selectedMonth);
@@ -92,50 +102,56 @@ export function App() {
             categories={categories.data ?? []}
             onQuickAdd={() => openQuickAdd("EXPENSE")}
           />
-        ) : tab === "WALLETS" ? (
-          <WalletsScreen onQuickAdd={() => openQuickAdd("EXPENSE")} />
-        ) : tab === "PENDING" ? (
-          <PendingAndSubsHub
-            subscriptions={subs.data ?? []}
-            invoices={invoices.data ?? []}
-            analytics={analytics}
-            onQuickAdd={() => openQuickAdd("SUBSCRIPTION")}
-          />
         ) : (
-          <SettingsScreen onOpenBackup={() => setBackupOpen(true)} />
+          <Suspense fallback={<TabSkeleton />}>
+            {tab === "WALLETS" ? (
+              <WalletsScreen onQuickAdd={() => openQuickAdd("EXPENSE")} />
+            ) : tab === "PENDING" ? (
+              <PendingAndSubsHub
+                subscriptions={subs.data ?? []}
+                invoices={invoices.data ?? []}
+                analytics={analytics}
+                onQuickAdd={() => openQuickAdd("SUBSCRIPTION")}
+              />
+            ) : (
+              <SettingsScreen onOpenBackup={() => setBackupOpen(true)} />
+            )}
+          </Suspense>
         )}
       </div>
 
       <FloatingNavPill />
 
-      {quickOpen && (
-        <QuickAddDrawer
-          onClose={closeQuickAdd}
-          categories={categories.data ?? []}
-        />
-      )}
-      {backupOpen && <VaultBackupModal onClose={() => setBackupOpen(false)} />}
-      {editProfileOpen && (
-        <EditProfileModal
-          profile={
-            profileQuery.data ?? {
-              id: "profile",
-              name: "Kroma Operator",
-              handle: "operator",
-              email: "operator@kroma.local",
-              initials: "KO",
-              themeColor: "#D9F938",
-              defaultCurrency: "PHP",
-              bio: "100% on-device local ledger",
+      <Suspense fallback={null}>
+        {quickOpen && (
+          <QuickAddDrawer
+            onClose={closeQuickAdd}
+            categories={categories.data ?? []}
+          />
+        )}
+        {backupOpen && <VaultBackupModal onClose={() => setBackupOpen(false)} />}
+        {editProfileOpen && (
+          <EditProfileModal
+            profile={
+              profileQuery.data ?? {
+                id: "profile",
+                name: "Kroma Operator",
+                handle: "operator",
+                email: "operator@kroma.local",
+                initials: "KO",
+                themeColor: "#D9F938",
+                defaultCurrency: "PHP",
+                bio: "100% on-device local ledger",
+              }
             }
-          }
-          onClose={closeEditProfile}
-          onSave={async (updated) => {
-            await saveProfileMutation.mutateAsync(updated);
-            closeEditProfile();
-          }}
-        />
-      )}
+            onClose={closeEditProfile}
+            onSave={async (updated) => {
+              await saveProfileMutation.mutateAsync(updated);
+              closeEditProfile();
+            }}
+          />
+        )}
+      </Suspense>
     </main>
   );
 }

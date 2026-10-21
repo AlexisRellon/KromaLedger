@@ -20,12 +20,20 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: #070806;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background-image:
     radial-gradient(ellipse 90% 48% at 50% -8%, rgba(58, 80, 22, 0.42), transparent 72%),
     radial-gradient(circle at 10% 22%, rgba(35, 52, 14, 0.22), transparent 48%),
     radial-gradient(circle at 90% 28%, rgba(42, 62, 16, 0.18), transparent 48%),
     linear-gradient(180deg, #0d1109 0%, #070806 34rem);
-  background-attachment: fixed;
 }
 
 button, input, select {

@@ -38,7 +38,25 @@ export type Invoice = z.infer<typeof invoiceSchema>;
 
 export const categorySchema = z.object({ id: idSchema, name: z.string().min(1), color: z.string().optional(), type: z.enum(["EXPENSE", "INCOME", "BOTH"]).default("BOTH") });
 export type Category = z.infer<typeof categorySchema>;
-export const attachmentMetaSchema = z.object({ id: idSchema, filename: z.string().min(1), mimeType: z.string().min(1), size: z.number().int().nonnegative(), createdAt: z.string().datetime(), entityType: z.enum(["TRANSACTION", "INVOICE"]), entityId: idSchema });
+export const ALLOWED_ATTACHMENT_MIME_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/gif",
+  "application/pdf",
+] as const;
+export const attachmentMimeTypeSchema = z.enum(ALLOWED_ATTACHMENT_MIME_TYPES);
+export type AttachmentMimeType = z.infer<typeof attachmentMimeTypeSchema>;
+
+export const attachmentMetaSchema = z.object({
+  id: idSchema,
+  filename: z.string().min(1),
+  mimeType: attachmentMimeTypeSchema,
+  size: z.number().int().nonnegative(),
+  createdAt: z.string().datetime(),
+  entityType: z.enum(["TRANSACTION", "INVOICE"]),
+  entityId: idSchema,
+});
 export type AttachmentMeta = z.infer<typeof attachmentMetaSchema>;
 export const appMetaSchema = z.object({ id: z.literal("app"), lastReconciledDate: dateOnlySchema.optional(), seedVersion: z.number().int().nonnegative().default(0), currency: currencySchema });
 export type AppMeta = z.infer<typeof appMetaSchema>;

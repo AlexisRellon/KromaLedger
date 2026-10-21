@@ -1,9 +1,11 @@
-import JSZip from "jszip";
 import { z } from "zod";
-import { appMetaSchema, attachmentMetaSchema, categorySchema, dateOnlySchema, invoiceItemSchema, invoiceSchema, subscriptionSchema, transactionSchema, userProfileSchema, walletSchema } from "../../core/models";
+import { appMetaSchema, attachmentMetaSchema, attachmentMimeTypeSchema, categorySchema, dateOnlySchema, invoiceItemSchema, invoiceSchema, subscriptionSchema, transactionSchema, userProfileSchema, walletSchema } from "../../core/models";
 import { KromaLedgerDB, type AttachmentFileRecord } from "../web-dexie/db";
 
-const fileMetaSchema = z.object({ id: z.string().regex(/^[A-Za-z0-9_-]+$/), mimeType: z.string().min(1), size: z.number().int().nonnegative() });
+export const MAX_VAULT_BYTES = 200 * 1024 * 1024; // 200 MB
+export const MAX_ATTACHMENT_COUNT = 1000;
+
+const fileMetaSchema = z.object({ id: z.string().regex(/^[A-Za-z0-9_-]+$/), mimeType: attachmentMimeTypeSchema, size: z.number().int().nonnegative() });
 const dumpSchema = z.object({
   formatVersion: z.literal(1), exportedAt: dateOnlySchema, transactions: z.array(transactionSchema), subscriptions: z.array(subscriptionSchema),
   invoices: z.array(invoiceSchema), invoiceItems: z.array(invoiceItemSchema), categories: z.array(categorySchema),
@@ -43,6 +45,7 @@ export async function exportVault(db: KromaLedgerDB, today: string): Promise<{ f
     if (meta.entityType === "TRANSACTION" && !dump.transactions.some((row) => row.id === meta.entityId)) throw new RangeError("Attachment references a missing transaction");
     if (meta.entityType === "INVOICE" && !dump.invoices.some((row) => row.id === meta.entityId)) throw new RangeError("Attachment references a missing invoice");
   }
+  const { default: JSZip } = await import("jszip");
   const zip = new JSZip();
   zip.file("db-dump.json", JSON.stringify(dump));
   await Promise.all(files.map(async (file) => zip.file(`attachments/${file.id}`, await file.blob.arrayBuffer())));
@@ -50,10 +53,15 @@ export async function exportVault(db: KromaLedgerDB, today: string): Promise<{ f
 }
 
 export async function restoreVault(db: KromaLedgerDB, data: Uint8Array): Promise<void> {
+  if (data.byteLength > MAX_VAULT_BYTES) throw new RangeError("Backup archive exceeds maximum 200MB limit");
+  const { default: JSZip } = await import("jszip");
   const zip = await JSZip.loadAsync(data, { checkCRC32: true });
   const dumpFile = zip.file("db-dump.json");
   if (!dumpFile) throw new RangeError("Backup is missing db-dump.json");
   const dump = dumpSchema.parse(JSON.parse(await dumpFile.async("string")));
+  if (dump.attachmentFiles.length > MAX_ATTACHMENT_COUNT) throw new RangeError(`Backup contains too many attachments (max ${MAX_ATTACHMENT_COUNT})`);
+  const totalAttachmentBytes = dump.attachmentFiles.reduce((acc, f) => acc + f.size, 0);
+  if (totalAttachmentBytes > MAX_VAULT_BYTES) throw new RangeError("Backup attachment payload exceeds maximum 200MB limit");
   const names = Object.values(zip.files).filter((file) => !file.dir).map((file) => file.name).sort();
   const expected = ["db-dump.json", ...dump.attachmentFiles.map((file) => `attachments/${file.id}`)].sort();
   if (names.length !== expected.length || names.some((name, index) => name !== expected[index])) throw new RangeError("Backup contains missing or unexpected files");
@@ -78,7 +86,8 @@ export async function restoreVault(db: KromaLedgerDB, data: Uint8Array): Promise
     if (!content) throw new RangeError("Backup attachment bytes are missing");
     const bytes = await content.async("uint8array");
     if (bytes.byteLength !== meta.size || (attachmentIds.has(meta.id) && !dump.attachments.some((row) => row.id === meta.id && row.mimeType === meta.mimeType && row.size === meta.size))) throw new RangeError("Backup attachment byte count or metadata is invalid");
-    return { ...meta, blob: new Blob([new Uint8Array(bytes).buffer], { type: meta.mimeType }) };
+    const isImage = meta.mimeType.startsWith("image/");
+    return { ...meta, blob: new Blob([new Uint8Array(bytes).buffer], { type: isImage ? meta.mimeType : "application/octet-stream" }) };
   }));
   if (dump.attachments.some((meta) => !dump.attachmentFiles.some((file) => file.id === meta.id))) throw new RangeError("Backup attachment file is missing");
   await db.transaction("rw", [db.transactions, db.subscriptions, db.invoices, db.invoiceItems, db.categories, db.attachments, db.attachmentFiles, db.appMeta, db.wallets, db.profiles], async () => {

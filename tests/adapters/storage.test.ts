@@ -272,7 +272,7 @@ describe("Dexie local vault", () => {
 
   it("keeps attachment bytes separate and commits metadata with the file", async () => {
     await repo.initialize("2026-10-20");
-    const metadata = { id: "receipt", filename: "receipt.webp", mimeType: "image/webp", size: 3, createdAt: "2026-10-20T10:00:00.000Z", entityType: "TRANSACTION" as const, entityId: "tx" };
+    const metadata = { id: "receipt", filename: "receipt.webp", mimeType: "image/webp" as const, size: 3, createdAt: "2026-10-20T10:00:00.000Z", entityType: "TRANSACTION" as const, entityId: "tx" };
     const bytes = new Uint8Array([1, 2, 3]);
     await repo.saveTransaction(tx());
     await files.saveAttachment(metadata, bytes);
@@ -280,6 +280,8 @@ describe("Dexie local vault", () => {
     expect(await files.load("receipt")).toEqual(bytes);
     await files.save("raw", bytes, "application/pdf");
     expect(await files.load("raw")).toEqual(bytes);
+    await expect(files.save("unsafe", bytes, "text/html")).rejects.toThrow("Unsupported or disallowed attachment MIME type");
+    await expect(files.save("unsafe-svg", bytes, "image/svg+xml")).rejects.toThrow("Unsupported or disallowed attachment MIME type");
     await files.delete("raw");
     expect(await files.load("raw")).toBeUndefined();
     await files.delete("receipt");

@@ -304,7 +304,10 @@ function ActivityRow({
     if (!attachment) return;
     const bytes = await files.load(attachment.id);
     if (!bytes) return;
-    const blob = new Blob([new Uint8Array(bytes).buffer], { type: attachment.mimeType });
+    const isImage = attachment.mimeType.startsWith("image/");
+    const blob = new Blob([new Uint8Array(bytes).buffer], {
+      type: isImage ? attachment.mimeType : "application/octet-stream",
+    });
     const url = URL.createObjectURL(blob);
     onPreview(attachment, url);
   };
@@ -524,12 +527,10 @@ function AttachmentPreviewModal({
               <p className="text-sm text-neutral-300">Document preview ({attachment.meta.mimeType})</p>
               <a
                 href={attachment.url}
-                target="_blank"
-                rel="noreferrer"
                 download={attachment.meta.filename}
                 className="mt-3 inline-block rounded-xl bg-[#D9F938] px-4 py-2 text-xs font-semibold text-[#070806]"
               >
-                Open / Download Document
+                Download Document
               </a>
             </div>
           )}

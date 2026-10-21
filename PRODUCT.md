@@ -37,7 +37,7 @@ Mobile-first Progressive Web App (PWA) with installable offline capabilities, fl
 - Bundled self-hosted variable woff2 fonts (`public/fonts/`).
 
 ## Product Principles
-1. **Local-First Absolute**: Data never leaves the device unless explicitly exported by the user as an encrypted/validated ZIP vault.
+1. **Local-First Absolute**: Data never leaves the device unless explicitly exported by the user as a validated ZIP vault archive.
 2. **Tactile 3-Second Input**: Adding daily entries requires zero cognitive friction—numpad drawer with inline math evaluation handles amounts in seconds.
 3. **Deterministic Math**: Every minor unit calculation, invoice tax line, discount, and cash flow reconciliation is strictly deterministic.
 4. **Headless Core**: UI logic and presentation remain decoupled from storage adapters and business algorithms.

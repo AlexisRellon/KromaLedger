@@ -115,7 +115,7 @@ export function PhysicalWalletCard({
         <div className="flex items-start justify-between gap-2">
           {/* Issuing Institution Header */}
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md border border-white/15 bg-white/10 backdrop-blur-md">
+            <div className="flex h-6 w-6 items-center justify-center rounded-md border border-white/15 bg-white/10">
               <svg className="h-3.5 w-3.5" style={{ color: palette.hex }} viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
               </svg>
@@ -219,8 +219,8 @@ export function PhysicalWalletCard({
               {/* Metallic Emblem (Replacing generic AI-palette Mastercard) */}
               <div className="flex shrink-0 flex-col items-end">
                 <div className="relative flex items-center">
-                  <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full border border-white/30 bg-white/[0.08] backdrop-blur-sm" />
-                  <div className="-ml-2.5 sm:-ml-3 h-5 w-5 sm:h-6 sm:w-6 rounded-full border border-white/30 bg-white/[0.15] backdrop-blur-sm" />
+                  <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full border border-white/30 bg-white/[0.08]" />
+                  <div className="-ml-2.5 sm:-ml-3 h-5 w-5 sm:h-6 sm:w-6 rounded-full border border-white/30 bg-white/[0.15]" />
                 </div>
                 <span className="mt-0.5 font-display text-xs font-bold tracking-wide text-white/90 uppercase">
                   {network.label}

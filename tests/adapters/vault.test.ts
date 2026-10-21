@@ -69,5 +69,20 @@ describe("vault ZIP", () => {
     invalidDumpZip.file("db-dump.json", JSON.stringify(dump));
     await expect(restoreVault(db, await invalidDumpZip.generateAsync({ type: "uint8array" }))).rejects.toThrow();
     expect(await repo.listTransactions()).toEqual(before);
+
+    // Rejects malicious attachment with text/html or SVG MIME type
+    const htmlZip = await JSZip.loadAsync(archive.data);
+    const htmlDump = JSON.parse(await htmlZip.file("db-dump.json")!.async("string")) as {
+      attachments: Array<{ mimeType: string }>;
+      attachmentFiles: Array<{ mimeType: string }>;
+    };
+    htmlDump.attachments[0]!.mimeType = "text/html";
+    htmlDump.attachmentFiles[0]!.mimeType = "text/html";
+    htmlZip.file("db-dump.json", JSON.stringify(htmlDump));
+    await expect(restoreVault(db, await htmlZip.generateAsync({ type: "uint8array" }))).rejects.toThrow();
+
+    // Rejects archives exceeding the 200MB limit
+    const fakeOversized = new Uint8Array(200 * 1024 * 1024 + 1);
+    await expect(restoreVault(db, fakeOversized)).rejects.toThrow("Backup archive exceeds maximum 200MB limit");
   });
 });

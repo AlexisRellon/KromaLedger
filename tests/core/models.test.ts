@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatCurrency, formatWalletLabel, transactionSchema } from "../../src/core/models";
+import { attachmentMetaSchema, formatCurrency, formatWalletLabel, transactionSchema } from "../../src/core/models";
 
 describe("core models", () => {
   it("validates transactions in integer minor units", () => {
@@ -13,5 +13,23 @@ describe("core models", () => {
     expect(formatWalletLabel({ name: "GCash", institution: "GCash" })).toBe("GCash");
     expect(formatWalletLabel({ name: "Physical Cash" })).toBe("Physical Cash");
     expect(formatWalletLabel({ name: "Vault", institution: "  " })).toBe("Vault");
+  });
+
+  it("allows only safe attachment MIME types and rejects HTML/SVG/arbitrary types", () => {
+    const validMeta = {
+      id: "att-1",
+      filename: "receipt.png",
+      mimeType: "image/png",
+      size: 1024,
+      createdAt: "2026-10-20T10:00:00.000Z",
+      entityType: "TRANSACTION" as const,
+      entityId: "tx-1",
+    };
+    for (const mimeType of ["image/png", "image/jpeg", "image/webp", "image/gif", "application/pdf"]) {
+      expect(attachmentMetaSchema.safeParse({ ...validMeta, mimeType }).success).toBe(true);
+    }
+    for (const mimeType of ["image/svg+xml", "text/html", "text/javascript", "application/x-sh", "application/octet-stream", ""]) {
+      expect(attachmentMetaSchema.safeParse({ ...validMeta, mimeType }).success).toBe(false);
+    }
   });
 });
