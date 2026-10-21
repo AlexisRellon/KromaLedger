@@ -1,0 +1,38 @@
+import type { AppMeta, AttachmentMeta, Category, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../models";
+import type { ReconcileResult } from "../engine/reconciler";
+
+export interface IStorageRepo {
+  getTransaction(id: string): Promise<Transaction | undefined>;
+  listTransactions(fromDate?: string, throughDate?: string): Promise<Transaction[]>;
+  saveTransaction(value: Transaction): Promise<void>;
+  reconcile(currentDate: string): Promise<ReconcileResult>;
+  deleteTransaction(id: string): Promise<void>;
+  getSubscription(id: string): Promise<Subscription | undefined>;
+  listSubscriptions(): Promise<Subscription[]>;
+  saveSubscription(value: Subscription): Promise<void>;
+  confirmSubscriptionPayment(payment: Transaction): Promise<Subscription>;
+  deleteSubscription(id: string): Promise<void>;
+  getInvoice(id: string): Promise<Invoice | undefined>;
+  listInvoices(): Promise<Invoice[]>;
+  saveInvoice(value: Invoice): Promise<void>;
+  saveInvoiceWithItems(value: Invoice, items: InvoiceItem[]): Promise<void>;
+  recordInvoicePayment(invoiceId: string, payment: Transaction): Promise<Invoice>;
+  deleteInvoice(id: string): Promise<void>;
+  listInvoiceItems(invoiceId: string): Promise<InvoiceItem[]>;
+  saveInvoiceItem(value: InvoiceItem): Promise<void>;
+  deleteInvoiceItem(id: string): Promise<void>;
+  listCategories(): Promise<Category[]>;
+  saveCategory(value: Category): Promise<void>;
+  deleteCategory(id: string): Promise<void>;
+  listAttachments(entityType?: AttachmentMeta["entityType"], entityId?: string): Promise<AttachmentMeta[]>;
+  getAppMeta(): Promise<AppMeta>;
+  saveAppMeta(value: AppMeta): Promise<void>;
+  getProfile(): Promise<UserProfile>;
+  saveProfile(value: UserProfile): Promise<void>;
+  listWallets(): Promise<Wallet[]>;
+  getWallet(id: string): Promise<Wallet | undefined>;
+  saveWallet(value: Wallet): Promise<void>;
+  deleteWallet(id: string): Promise<void>;
+  clearAllData(): Promise<void>;
+  resetToDemo(today?: string): Promise<void>;
+}
