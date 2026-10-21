@@ -75,7 +75,6 @@ export function getWalletPalette(color?: string, fallbackIndex = 0): WalletPalet
         border: "",
         glow: `rgba(${r}, ${g}, ${b}, 0.16)`,
         style: {
-          background: opaqueGradient,
           backgroundImage: opaqueGradient,
           backgroundColor: "#0d0f12",
           borderColor: `rgba(${r}, ${g}, ${b}, 0.35)`,

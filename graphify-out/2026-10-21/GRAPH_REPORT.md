@@ -1,7 +1,7 @@
 # Graph Report - KromaLedger  (2026-10-21)
 
 ## Corpus Check
-- 82 files · ~45,579 words
+- 82 files · ~45,678 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 6 file(s) not represented in the graph (top: .woff2 3, (none) 2, .css 1)
 

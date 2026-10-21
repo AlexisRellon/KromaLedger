@@ -342,9 +342,9 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1792525382.1404984,
-    "seen": 1792551828.5835052,
-    "ast_hash": "7822d3c70df6d570ec167e1f7e6e06fb",
+    "mtime": 1792560989.0487423,
+    "seen": 1792561061.8968077,
+    "ast_hash": "6e07ea823d267000d707059da73f05c7",
     "semantic_hash": ""
   },
   "public/fonts/CabinetGrotesk-LICENSE.txt": {
@@ -432,9 +432,9 @@
     "semantic_hash": ""
   },
   "src/ui/components/WalletFormModal.tsx": {
-    "mtime": 1792560677.8712194,
-    "seen": 1792560731.0373545,
-    "ast_hash": "0b7b99661ea7c833bf9289ed3ef1529b",
+    "mtime": 1792561015.042953,
+    "seen": 1792561061.8966932,
+    "ast_hash": "650b98fa2d1b8ac94a875b968ba3fae0",
     "semantic_hash": ""
   },
   "tests/core/wallets.test.ts": {

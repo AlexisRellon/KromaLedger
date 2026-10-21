@@ -432,9 +432,9 @@
     "semantic_hash": ""
   },
   "src/ui/components/WalletFormModal.tsx": {
-    "mtime": 1792558410.4999206,
-    "seen": 1792558436.9179533,
-    "ast_hash": "2de661c8196092ce1fb7bbcdf8802c09",
+    "mtime": 1792560677.8712194,
+    "seen": 1792560731.0373545,
+    "ast_hash": "0b7b99661ea7c833bf9289ed3ef1529b",
     "semantic_hash": ""
   },
   "tests/core/wallets.test.ts": {
@@ -456,9 +456,9 @@
     "semantic_hash": ""
   },
   "src/ui/components/PhysicalWalletCard.tsx": {
-    "mtime": 1792558134.1445272,
-    "seen": 1792558157.9462016,
-    "ast_hash": "19c9f45e98c0d8c73fdcf910f28e1bcf",
+    "mtime": 1792560693.4734836,
+    "seen": 1792560731.0373404,
+    "ast_hash": "43a93bdbcd7d5cb2c9a111bf634f1f08",
     "semantic_hash": ""
   },
   "src/ui/components/ConfirmDeleteModal.tsx": {

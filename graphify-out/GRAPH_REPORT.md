@@ -1,7 +1,7 @@
 # Graph Report - KromaLedger  (2026-10-21)
 
 ## Corpus Check
-- 82 files · ~45,678 words
+- 82 files · ~45,668 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 6 file(s) not represented in the graph (top: .woff2 3, (none) 2, .css 1)
 
@@ -9,6 +9,11 @@
 - 571 nodes · 1490 edges · 28 communities (20 shown, 8 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 29 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
+
+## Graph Freshness
+- Built from commit: `7dd69c38`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - ledgerCommands.test.ts
