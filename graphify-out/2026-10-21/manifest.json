@@ -24,9 +24,9 @@
     "semantic_hash": ""
   },
   "src/App.tsx": {
-    "mtime": 1792563309.2398567,
-    "seen": 1792563984.922444,
-    "ast_hash": "eaa1b0db96feaecae4cd470ce3c79075",
+    "mtime": 1792564154.3138654,
+    "seen": 1792564236.1032717,
+    "ast_hash": "f3989e43eb39788a4460626caf49db45",
     "semantic_hash": ""
   },
   "src/adapters/backup/zipVault.ts": {
@@ -48,10 +48,10 @@
     "semantic_hash": ""
   },
   "src/adapters/web-dexie/WebBootstrap.tsx": {
-    "mtime": 1792563309.356675,
-    "seen": 1792563984.9224563,
-    "ast_hash": "f99bae82a9fdaaa998e3ec23cdf5bdae",
-    "semantic_hash": "f99bae82a9fdaaa998e3ec23cdf5bdae"
+    "mtime": 1792564118.3060088,
+    "seen": 1792564236.10328,
+    "ast_hash": "7ff4280635c0cd9de6f19039256f75a9",
+    "semantic_hash": ""
   },
   "src/adapters/web-dexie/db.ts": {
     "mtime": 1792520487.0031202,
@@ -342,9 +342,9 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1792563309.4587274,
-    "seen": 1792563984.9226584,
-    "ast_hash": "6e07ea823d267000d707059da73f05c7",
+    "mtime": 1792564166.1256225,
+    "seen": 1792564236.1033907,
+    "ast_hash": "c7c15014f5abab2d715f281da19e7130",
     "semantic_hash": ""
   },
   "public/fonts/CabinetGrotesk-LICENSE.txt": {
@@ -456,9 +456,9 @@
     "semantic_hash": ""
   },
   "src/ui/components/PhysicalWalletCard.tsx": {
-    "mtime": 1792563309.8385322,
-    "seen": 1792563984.9225488,
-    "ast_hash": "43a93bdbcd7d5cb2c9a111bf634f1f08",
+    "mtime": 1792564202.463388,
+    "seen": 1792564236.1033306,
+    "ast_hash": "58dfbe4ee77123d86746c71105fbaf7f",
     "semantic_hash": ""
   },
   "src/ui/components/ConfirmDeleteModal.tsx": {

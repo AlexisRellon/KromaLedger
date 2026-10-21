@@ -426,9 +426,9 @@
     "semantic_hash": ""
   },
   "src/ui/components/StackedWalletDeck.tsx": {
-    "mtime": 1792526269.3354778,
-    "seen": 1792551828.5833921,
-    "ast_hash": "53d205e61b733387f7ca1f55ec1bf8a6",
+    "mtime": 1792565535.0986137,
+    "seen": 1792565589.9940677,
+    "ast_hash": "dad02bd1b2da365e76d77d349f58f5c7",
     "semantic_hash": ""
   },
   "src/ui/components/WalletFormModal.tsx": {
@@ -456,9 +456,9 @@
     "semantic_hash": ""
   },
   "src/ui/components/PhysicalWalletCard.tsx": {
-    "mtime": 1792564202.463388,
-    "seen": 1792564236.1033306,
-    "ast_hash": "58dfbe4ee77123d86746c71105fbaf7f",
+    "mtime": 1792565469.83238,
+    "seen": 1792565589.9940603,
+    "ast_hash": "70716ec0342216d3707dbf033401b8c8",
     "semantic_hash": ""
   },
   "src/ui/components/ConfirmDeleteModal.tsx": {

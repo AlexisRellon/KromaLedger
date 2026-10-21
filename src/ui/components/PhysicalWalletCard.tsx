@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import type { Wallet, WalletType } from "../../core/models";
 import { formatCurrency } from "../../core/models";
 import { getWalletPalette } from "./WalletFormModal";
@@ -57,7 +57,7 @@ export interface PhysicalWalletCardProps {
   index?: number;
 }
 
-export function PhysicalWalletCard({
+export const PhysicalWalletCard = memo(function PhysicalWalletCard({
   wallet,
   className = "",
   style,
@@ -93,7 +93,7 @@ export function PhysicalWalletCard({
       }}
       className={`group relative aspect-[85.6/53.98] w-full select-none overflow-hidden rounded-[18px] sm:rounded-[22px] border bg-[#0d0f12] ${
         palette.border || ""
-      } ${palette.gradient ? `bg-gradient-to-br ${palette.gradient}` : ""} p-4 sm:p-5 text-white transition-all duration-300 ${
+      } ${palette.gradient ? `bg-gradient-to-br ${palette.gradient}` : ""} p-4 sm:p-5 text-white transition-colors duration-200 ${
         interactive ? "cursor-pointer hover:brightness-105 active:scale-[0.99]" : ""
       } ${className}`}
     >
@@ -232,4 +232,4 @@ export function PhysicalWalletCard({
       </div>
     </div>
   );
-}
+});

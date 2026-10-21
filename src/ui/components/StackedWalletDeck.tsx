@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import type { Wallet } from "../../core/models";
 import { formatCurrency } from "../../core/models";
 import { WalletFormModal } from "./WalletFormModal";
@@ -13,13 +13,29 @@ export function StackedWalletDeck({
   defaultCurrency?: string;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [dragY, setDragY] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
   const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [editingWallet, setEditingWallet] = useState<Wallet | null>(null);
 
   const startYRef = useRef(0);
+  const currentDeltaYRef = useRef(0);
+  const isDraggingRef = useRef(false);
+  const hasMovedRef = useRef(false);
+  const startTimeRef = useRef(0);
+  const rafIdRef = useRef<number | null>(null);
+
+  const topCardRef = useRef<HTMLDivElement | null>(null);
+  const secondCardRef = useRef<HTMLDivElement | null>(null);
+
   const saveWalletMutation = useSaveWallet();
+
+  // Cancel any pending animation frame on unmount
+  useEffect(() => {
+    return () => {
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+    };
+  }, []);
 
   const totalBalanceMinor = useMemo(
     () => wallets.reduce((sum, w) => sum + w.balanceMinor, 0),
@@ -32,36 +48,113 @@ export function StackedWalletDeck({
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (wallets.length <= 1) return;
+    if (e.button !== 0) return;
+
     startYRef.current = e.clientY;
-    setIsDragging(true);
-    e.currentTarget.setPointerCapture(e.pointerId);
+    currentDeltaYRef.current = 0;
+    isDraggingRef.current = true;
+    hasMovedRef.current = false;
+    startTimeRef.current = performance.now();
+
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // ignore
+    }
+
+    // Disable CSS transitions during active drag for instant 1:1 hardware tracking
+    if (topCardRef.current) {
+      topCardRef.current.style.transition = "none";
+    }
+    if (secondCardRef.current) {
+      secondCardRef.current.style.transition = "none";
+    }
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDragging) return;
+    if (!isDraggingRef.current) return;
     const deltaY = e.clientY - startYRef.current;
-    // Apply slight dampening for a tactile feel
-    setDragY(deltaY);
+    currentDeltaYRef.current = deltaY;
+
+    if (Math.abs(deltaY) > 5) {
+      hasMovedRef.current = true;
+    }
+
+    // Throttle style updates directly to display refresh rate without React re-renders
+    if (!rafIdRef.current) {
+      rafIdRef.current = requestAnimationFrame(() => {
+        rafIdRef.current = null;
+        if (!isDraggingRef.current) return;
+
+        const delta = currentDeltaYRef.current;
+        if (topCardRef.current) {
+          const scale = 1 - Math.min(Math.abs(delta) * 0.0008, 0.08);
+          const rotate = delta * 0.035;
+          topCardRef.current.style.transform = `translate3d(0, ${delta}px, 0) scale(${scale}) rotate(${rotate}deg)`;
+        }
+
+        if (secondCardRef.current) {
+          const dragInfluence = delta < 0 ? Math.min(Math.abs(delta) * 0.25, 14) : 0;
+          const translateY = 18 - dragInfluence;
+          const scale = 0.94 + (dragInfluence / 14) * 0.06;
+          secondCardRef.current.style.transform = `translate3d(0, ${translateY}px, 0) scale(${scale}) rotate(0deg)`;
+        }
+      });
+    }
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
-    if (!isDragging) return;
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+
     try {
       e.currentTarget.releasePointerCapture(e.pointerId);
     } catch {
       // ignore
     }
-    setIsDragging(false);
 
-    const threshold = 45;
-    if (dragY < -threshold) {
-      // Dragged UP -> cycle forward
-      setActiveIndex((prev) => (prev + 1) % wallets.length);
-    } else if (dragY > threshold) {
-      // Dragged DOWN -> cycle backward
-      setActiveIndex((prev) => (prev - 1 + wallets.length) % wallets.length);
+    if (rafIdRef.current) {
+      cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
     }
-    setDragY(0);
+
+    const finalDeltaY = currentDeltaYRef.current;
+    const elapsed = performance.now() - startTimeRef.current;
+    const velocity = Math.abs(finalDeltaY) / (elapsed || 1);
+    const threshold = 40;
+    const isFlick = velocity > 0.45 && Math.abs(finalDeltaY) > 18;
+
+    if (finalDeltaY < -threshold || (finalDeltaY < -18 && isFlick)) {
+      // Dragged UP -> cycle forward
+      if (topCardRef.current) {
+        topCardRef.current.style.transition = "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease";
+      }
+      if (secondCardRef.current) {
+        secondCardRef.current.style.transition = "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease";
+      }
+      setActiveIndex((prev) => (prev + 1) % wallets.length);
+    } else if (finalDeltaY > threshold || (finalDeltaY > 18 && isFlick)) {
+      // Dragged DOWN -> cycle backward
+      if (topCardRef.current) {
+        topCardRef.current.style.transition = "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease";
+      }
+      if (secondCardRef.current) {
+        secondCardRef.current.style.transition = "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease";
+      }
+      setActiveIndex((prev) => (prev - 1 + wallets.length) % wallets.length);
+    } else {
+      // Below threshold -> spring smoothly back to neutral
+      if (topCardRef.current) {
+        topCardRef.current.style.transition = "transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)";
+        topCardRef.current.style.transform = "translate3d(0, 0px, 0) scale(1) rotate(0deg)";
+      }
+      if (secondCardRef.current) {
+        secondCardRef.current.style.transition = "transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)";
+        secondCardRef.current.style.transform = "translate3d(0, 18px, 0) scale(0.94) rotate(0deg)";
+      }
+    }
+
+    currentDeltaYRef.current = 0;
   };
 
   const handleCycleNext = () => {
@@ -155,7 +248,7 @@ export function StackedWalletDeck({
         <div className="relative pt-1 select-none">
           {/* Card stack viewport container with standard physical card aspect ratio (ISO/IEC 7810 ID-1: 85.6mm x 53.98mm) */}
           <div
-            className="relative mx-auto w-full max-w-[420px] aspect-[85.6/53.98] touch-pan-x cursor-grab active:cursor-grabbing"
+            className="relative mx-auto w-full max-w-[420px] aspect-[85.6/53.98] touch-none cursor-grab active:cursor-grabbing"
             style={{
               marginBottom: wallets.length > 2 ? "38px" : wallets.length > 1 ? "22px" : "8px",
             }}
@@ -183,47 +276,50 @@ export function StackedWalletDeck({
               const isSecond = offset === 1;
               const isThird = offset === 2;
 
-              // Physical stack transformations
+              // Physical stack resting transformations
               let translateY = 0;
               let scale = 1;
               let zIndex = 30;
               let opacity = 1;
-              let filter = "brightness(1)";
+              let overlayOpacity = 0;
 
               if (isTop) {
-                translateY = dragY;
-                scale = 1 - Math.min(Math.abs(dragY) * 0.0008, 0.08);
+                translateY = 0;
+                scale = 1;
                 zIndex = 30;
                 opacity = 1;
+                overlayOpacity = 0;
               } else if (isSecond) {
-                const dragInfluence = isDragging && dragY < 0 ? Math.min(Math.abs(dragY) * 0.25, 14) : 0;
-                translateY = 18 - dragInfluence;
-                scale = 0.94 + (dragInfluence / 14) * 0.06;
+                translateY = 18;
+                scale = 0.94;
                 zIndex = 20;
-                opacity = 0.9;
-                filter = "brightness(0.78)";
+                opacity = 0.92;
+                overlayOpacity = 0.22;
               } else if (isThird) {
                 translateY = 36;
                 scale = 0.88;
                 zIndex = 10;
-                opacity = 0.68;
-                filter = "brightness(0.55)";
+                opacity = 0.72;
+                overlayOpacity = 0.45;
               }
-
-              const rotate = isTop && isDragging ? `${dragY * 0.035}deg` : "0deg";
 
               return (
                 <div
                   key={wallet.id}
+                  ref={(el) => {
+                    if (isTop) topCardRef.current = el;
+                    else if (isSecond) secondCardRef.current = el;
+                  }}
                   className="absolute inset-0"
                   style={{
-                    transform: `translate3d(0, ${translateY}px, 0) scale(${scale}) rotate(${rotate})`,
+                    transform: `translate3d(0, ${translateY}px, 0) scale(${scale}) rotate(0deg)`,
                     zIndex,
                     opacity,
-                    filter,
-                    transition: isDragging
-                      ? "none"
-                      : "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease, filter 0.45s ease",
+                    transition:
+                      "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease",
+                    willChange: "transform",
+                    backfaceVisibility: "hidden",
+                    WebkitBackfaceVisibility: "hidden",
                   }}
                 >
                   <PhysicalWalletCard
@@ -232,16 +328,22 @@ export function StackedWalletDeck({
                     interactive={!isTop}
                     isStacked={!isTop}
                     onClick={() => {
-                      if (!isTop && !isDragging) {
+                      if (!isTop && !hasMovedRef.current) {
                         setActiveIndex(idx);
                       }
                     }}
                     className={isTop ? "cursor-grab active:cursor-grabbing" : "cursor-pointer"}
                     style={{
                       boxShadow: isTop
-                        ? "0 26px 50px -12px rgba(0,0,0,0.9), inset 0 1px 1px 0 rgba(255,255,255,0.22)"
-                        : "0 12px 28px -10px rgba(0,0,0,0.7), inset 0 1px 1px 0 rgba(255,255,255,0.12)",
+                        ? "0 20px 38px -10px rgba(0,0,0,0.85), inset 0 1px 1px 0 rgba(255,255,255,0.22)"
+                        : "0 10px 20px -8px rgba(0,0,0,0.65), inset 0 1px 1px 0 rgba(255,255,255,0.12)",
                     }}
+                  />
+                  {/* Hardware-accelerated dimming overlay for stacked cards (replaces costly CSS filter: brightness) */}
+                  <div
+                    className="pointer-events-none absolute inset-0 z-30 rounded-[18px] sm:rounded-[22px] bg-black transition-opacity duration-300"
+                    style={{ opacity: overlayOpacity }}
+                    aria-hidden="true"
                   />
                 </div>
               );
