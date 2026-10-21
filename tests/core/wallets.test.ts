@@ -38,7 +38,7 @@ describe("Wallets and Stacked Deck palettes", () => {
     const custom = getWalletPalette("#3B82F6");
     expect(custom.name).toBe("Custom Color");
     expect(custom.hex).toBe("#3B82F6");
-    expect(custom.style?.background).toContain("linear-gradient");
+    expect(custom.style?.backgroundImage).toContain("linear-gradient");
     expect(custom.style?.borderColor).toContain("rgba(59, 130, 246, 0.35)");
   });
 
