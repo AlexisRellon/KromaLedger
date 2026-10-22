@@ -87,13 +87,14 @@ export async function restoreVault(db: KromaLedgerDB, data: Uint8Array): Promise
     const bytes = await content.async("uint8array");
     if (bytes.byteLength !== meta.size || (attachmentIds.has(meta.id) && !dump.attachments.some((row) => row.id === meta.id && row.mimeType === meta.mimeType && row.size === meta.size))) throw new RangeError("Backup attachment byte count or metadata is invalid");
     const isImage = meta.mimeType.startsWith("image/");
-    return { ...meta, blob: new Blob([new Uint8Array(bytes).buffer], { type: isImage ? meta.mimeType : "application/octet-stream" }) };
+    const buffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+    return { ...meta, blob: new Blob([buffer as ArrayBuffer], { type: isImage ? meta.mimeType : "application/octet-stream" }) };
   }));
   if (dump.attachments.some((meta) => !dump.attachmentFiles.some((file) => file.id === meta.id))) throw new RangeError("Backup attachment file is missing");
-  await db.transaction("rw", [db.transactions, db.subscriptions, db.invoices, db.invoiceItems, db.categories, db.attachments, db.attachmentFiles, db.appMeta, db.wallets, db.profiles], async () => {
+  await db.transaction("rw", [db.transactions, db.subscriptions, db.invoices, db.invoiceItems, db.categories, db.attachments, db.attachmentFiles, db.appMeta, db.wallets, db.profiles, db.notifications], async () => {
     await Promise.all([
       db.transactions.clear(), db.subscriptions.clear(), db.invoices.clear(), db.invoiceItems.clear(),
-      db.categories.clear(), db.attachments.clear(), db.attachmentFiles.clear(), db.wallets.clear(), db.profiles.clear(), db.appMeta.clear(),
+      db.categories.clear(), db.attachments.clear(), db.attachmentFiles.clear(), db.wallets.clear(), db.profiles.clear(), db.appMeta.clear(), db.notifications.clear(),
     ]);
     await db.transactions.bulkPut(dump.transactions);
     await db.subscriptions.bulkPut(dump.subscriptions);

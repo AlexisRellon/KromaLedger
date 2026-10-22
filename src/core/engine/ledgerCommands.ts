@@ -1,7 +1,7 @@
-import { invoiceItemSchema, invoiceSchema, subscriptionSchema, transactionSchema, type Invoice, type InvoiceItem, type Subscription, type Transaction } from "../models";
+import { invoiceItemSchema, invoiceSchema, subscriptionSchema, transactionSchema, type Invoice, type InvoiceItem, type Subscription, type Transaction, type Wallet } from "../models";
 import { reconcile } from "./reconciler";
 
-export type LedgerTable = "invoices" | "invoiceItems" | "transactions" | "subscriptions" | "appMeta" | "categories" | "attachments";
+export type LedgerTable = "invoices" | "invoiceItems" | "transactions" | "subscriptions" | "appMeta" | "categories" | "attachments" | "wallets";
 export interface LedgerCommandUnit {
   getInvoice(id: string): Promise<Invoice | undefined>;
   getSubscription(id: string): Promise<Subscription | undefined>;
@@ -9,6 +9,7 @@ export interface LedgerCommandUnit {
   putInvoice(value: Invoice): Promise<void>;
   replaceInvoiceItems(invoiceId: string, values: InvoiceItem[]): Promise<void>;
   addTransaction(value: Transaction): Promise<void>;
+  getWallet?(id: string): Promise<Wallet | undefined>;
 }
 export function detachSubscriptionHistory(rows: Transaction[], subscriptionId: string): Transaction[] {
   if (!subscriptionId) throw new RangeError("Subscription id is required");
@@ -25,9 +26,15 @@ export function detachWalletReferences(
 ): { transactions: Transaction[]; subscriptions: Subscription[] } {
   if (!walletId) throw new RangeError("Wallet id is required");
   return {
-    transactions: transactions.map((row) => row.walletId === walletId
-      ? transactionSchema.parse({ ...row, walletId: undefined })
-      : row),
+    transactions: transactions.map((row) =>
+      row.walletId === walletId || row.toWalletId === walletId
+        ? transactionSchema.parse({
+            ...row,
+            walletId: row.walletId === walletId ? undefined : row.walletId,
+            toWalletId: row.toWalletId === walletId ? undefined : row.toWalletId,
+          })
+        : row
+    ),
     subscriptions: subscriptions.map((row) => row.walletId === walletId
       ? subscriptionSchema.parse({ ...row, walletId: undefined })
       : row),
@@ -52,6 +59,16 @@ export async function confirmSubscriptionCycle(gateway: LedgerCommandGateway, in
         payment.amountMinor !== -subscription.amountMinor ||
         payment.currency !== subscription.currency) {
       throw new RangeError("Payment does not match a pending subscription cycle");
+    }
+    const effectiveWalletId = payment.walletId || subscription.walletId;
+    if (unit.getWallet) {
+      if (!effectiveWalletId) {
+        throw new RangeError("Subscription payment requires a linked wallet");
+      }
+      const wallet = await unit.getWallet(effectiveWalletId);
+      if (!wallet || wallet.balanceMinor < subscription.amountMinor) {
+        throw new RangeError("Insufficient balance in the selected wallet");
+      }
     }
     const result = reconcile({ subscriptions: [{ ...subscription, autoLog: true }], invoices: [], currentDate: payment.date });
     const nextCycle = result.subscriptions[0];

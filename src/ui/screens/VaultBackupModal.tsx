@@ -93,7 +93,7 @@ export function VaultBackupModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 grid place-items-center bg-black/75 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget && !busy) onClose();
       }}
@@ -102,15 +102,16 @@ export function VaultBackupModal({ onClose }: { onClose: () => void }) {
         role="dialog"
         aria-modal="true"
         aria-label="Local vault backup"
-        className="w-full max-w-md rounded-3xl border border-white/10 bg-[#11120f] p-6 shadow-2xl"
+        className="flex max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)] w-full max-w-md flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#11120f] shadow-2xl animate-entrance"
       >
-        <div className="flex items-start justify-between">
-          <h2 className="font-display text-2xl font-semibold text-white">Local Vault Backup</h2>
+        {/* Modal Header (Fixed) */}
+        <div className="shrink-0 flex items-start justify-between border-b border-white/[0.08] px-5 py-4 sm:px-6 sm:py-5">
+          <h2 className="font-display text-xl sm:text-2xl font-semibold text-white">Local Vault Backup</h2>
           <button
             onClick={onClose}
             aria-label="Close"
             disabled={busy}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 text-neutral-400 hover:text-white"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/5 text-neutral-400 hover:text-white transition hover:bg-white/10"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -118,20 +119,22 @@ export function VaultBackupModal({ onClose }: { onClose: () => void }) {
           </button>
         </div>
 
-        <p className="mt-3 text-sm leading-relaxed text-neutral-400">
-          Your ledger lives strictly on this device. Export a standalone ZIP archive or restore an existing KromaLedger vault.
-        </p>
-
-        <p className="mt-2.5 rounded-xl border border-white/5 bg-white/[0.02] p-2.5 text-xs leading-relaxed text-neutral-400">
-          <span className="font-semibold text-neutral-300">Privacy Notice:</span> Backups are unencrypted ZIP archives holding your raw ledger records and attachments. Store exported copies in a secure, private location.
-        </p>
-
-        <div className="mt-4 rounded-xl border border-white/[0.06] bg-black/30 p-3">
-          <p className="text-xs font-medium tracking-wider text-neutral-400">Local device storage</p>
-          <p className="mt-1 font-mono text-xs text-neutral-200">
-            {formatBytes(usage?.usage ?? null)} used of {formatBytes(usage?.quota ?? null)}
+        {/* Scrollable Body */}
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
+          <p className="text-sm leading-relaxed text-neutral-400">
+            Your ledger lives strictly on this device. Export a standalone ZIP archive or restore an existing KromaLedger vault.
           </p>
-        </div>
+
+          <p className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5 text-xs leading-relaxed text-neutral-400">
+            <span className="font-semibold text-neutral-300">Privacy Notice:</span> Backups are unencrypted ZIP archives holding your raw ledger records and attachments. Store exported copies in a secure, private location.
+          </p>
+
+          <div className="rounded-xl border border-white/[0.06] bg-black/30 p-3">
+            <p className="text-xs font-medium tracking-wider text-neutral-400">Local device storage</p>
+            <p className="mt-1 font-mono text-xs text-neutral-200">
+              {formatBytes(usage?.usage ?? null)} used of {formatBytes(usage?.quota ?? null)}
+            </p>
+          </div>
 
         {/* Destructive restore confirmation step */}
         {pendingFile ? (
@@ -195,6 +198,7 @@ export function VaultBackupModal({ onClose }: { onClose: () => void }) {
             {message}
           </p>
         )}
+        </div>
       </section>
     </div>
   );

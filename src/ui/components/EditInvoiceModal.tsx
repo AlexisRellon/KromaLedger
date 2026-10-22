@@ -64,6 +64,8 @@ export function EditInvoiceModal({
         title: title.trim(),
         totalMinor: minor,
         subtotalMinor: minor,
+        discountMinor: 0,
+        taxMinor: 0,
         dueDate,
         direction,
         categoryId: categoryId || undefined,
@@ -80,7 +82,7 @@ export function EditInvoiceModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 grid place-items-center bg-black/80 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget && !busy) onClose();
       }}
@@ -89,9 +91,10 @@ export function EditInvoiceModal({
         role="dialog"
         aria-modal="true"
         aria-label="Edit invoice"
-        className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl border border-white/10 bg-[#11120f] p-6 shadow-2xl animate-entrance"
+        className="flex max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#11120f] shadow-2xl animate-entrance"
       >
-        <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+        {/* Modal Header (Fixed) */}
+        <div className="shrink-0 flex items-center justify-between border-b border-white/[0.08] px-5 py-4 sm:px-6 sm:py-4">
           <div>
             <h2 className="font-display text-xl font-bold text-white">Edit Invoice</h2>
             <p className="font-mono text-xs text-neutral-400 mt-0.5">
@@ -110,7 +113,9 @@ export function EditInvoiceModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          {/* Scrollable Body */}
+          <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
           {/* Direction toggle */}
           <div className="flex rounded-xl bg-black/40 p-1 border border-white/10">
             <button
@@ -212,8 +217,10 @@ export function EditInvoiceModal({
             </p>
           )}
 
-          {/* Footer */}
-          <div className="flex items-center justify-between border-t border-white/[0.08] pt-4 mt-6">
+          </div>
+
+          {/* Footer Actions (Fixed) */}
+          <div className="shrink-0 flex items-center justify-between border-t border-white/[0.08] bg-[#11120f] px-5 py-3.5 sm:px-6 sm:py-4">
             {onDelete ? (
               <button
                 type="button"
@@ -237,7 +244,7 @@ export function EditInvoiceModal({
                 type="button"
                 onClick={onClose}
                 disabled={busy}
-                className="rounded-xl border border-white/10 px-4 py-2 text-xs font-medium text-neutral-300 transition hover:bg-white/5"
+                className="rounded-xl border border-white/10 px-4 py-2 text-xs font-medium text-neutral-300 transition hover:bg-white/5 hover:text-white"
               >
                 Cancel
               </button>

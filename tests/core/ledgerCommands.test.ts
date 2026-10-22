@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { invoiceSchema, transactionSchema, type Invoice, type InvoiceItem, type Subscription, type Transaction } from "../../src/core/models";
+import { invoiceSchema, transactionSchema, type Invoice, type InvoiceItem, type Subscription, type Transaction, type Wallet } from "../../src/core/models";
 import { commitInvoice, confirmSubscriptionCycle, detachSubscriptionHistory, detachWalletReferences, settleInvoice, type LedgerCommandGateway, type LedgerCommandUnit } from "../../src/core/engine/ledgerCommands";
 
 const invoice = (overrides: Partial<Invoice> = {}): Invoice => invoiceSchema.parse({
@@ -14,7 +14,13 @@ const payment = (amountMinor = 400): Transaction => transactionSchema.parse({
 const item = (id: string): InvoiceItem => ({ id, invoiceId: "inv", description: id, quantity: 1, unitPriceMinor: 1000 });
 
 function memoryGateway(initial: Invoice) {
-  const state = { invoice: initial, items: [] as InvoiceItem[], payments: [] as Transaction[], subscription: undefined as Subscription | undefined };
+  const state = {
+    invoice: initial,
+    items: [] as InvoiceItem[],
+    payments: [] as Transaction[],
+    subscription: undefined as Subscription | undefined,
+    wallets: [] as Wallet[],
+  };
   const gateway: LedgerCommandGateway = {
     async atomic(_scope, work) {
       const unit: LedgerCommandUnit = {
@@ -24,6 +30,7 @@ function memoryGateway(initial: Invoice) {
         putInvoice: async (value) => { state.invoice = value; },
         replaceInvoiceItems: async (_id, values) => { state.items = values; },
         addTransaction: async (value) => { state.payments.push(value); },
+        getWallet: async (id) => state.wallets.find((w) => w.id === id),
       };
       return work(unit);
     },
@@ -57,14 +64,30 @@ describe("portable atomic invoice commands", () => {
 
   it("confirms one deterministic manual subscription cycle and advances its date", async () => {
     const { gateway, state } = memoryGateway(invoice());
-    state.subscription = { id: "weekly", title: "Cloud", amountMinor: 1000, currency: "PHP", billingCycle: "WEEKLY", nextBillingDate: "2026-10-19", active: true, autoLog: false };
-    const row: Transaction = { id: "sub:weekly:2026-10-19", date: "2026-10-19", title: "Cloud", amountMinor: -1000, currency: "PHP", type: "SUBSCRIPTION_PAYMENT", subscriptionId: "weekly" };
+    state.wallets = [{ id: "wallet-1", name: "Wallet", type: "BANK", currency: "PHP", balanceMinor: 50000, color: "#fff", isDefault: true }];
+    state.subscription = { id: "weekly", title: "Cloud", amountMinor: 1000, currency: "PHP", billingCycle: "WEEKLY", nextBillingDate: "2026-10-19", active: true, autoLog: false, walletId: "wallet-1" };
+    const row: Transaction = { id: "sub:weekly:2026-10-19", date: "2026-10-19", title: "Cloud", amountMinor: -1000, currency: "PHP", type: "SUBSCRIPTION_PAYMENT", subscriptionId: "weekly", walletId: "wallet-1" };
     const next = await confirmSubscriptionCycle(gateway, row);
     expect(next.nextBillingDate).toBe("2026-10-26");
     expect(next.autoLog).toBe(false);
     expect(state.payments).toEqual([row]);
     await expect(confirmSubscriptionCycle(gateway, row)).rejects.toThrow();
     expect(state.payments).toHaveLength(1);
+  });
+
+  it("rejects manual subscription confirmation when wallet has insufficient balance", async () => {
+    const { gateway, state } = memoryGateway(invoice());
+    state.wallets = [{ id: "wallet-low", name: "Low", type: "BANK", currency: "PHP", balanceMinor: 500, color: "#fff", isDefault: true }];
+    state.subscription = { id: "weekly", title: "Cloud", amountMinor: 1000, currency: "PHP", billingCycle: "WEEKLY", nextBillingDate: "2026-10-19", active: true, autoLog: false, walletId: "wallet-low" };
+    const row: Transaction = { id: "sub:weekly:2026-10-19", date: "2026-10-19", title: "Cloud", amountMinor: -1000, currency: "PHP", type: "SUBSCRIPTION_PAYMENT", subscriptionId: "weekly", walletId: "wallet-low" };
+    await expect(confirmSubscriptionCycle(gateway, row)).rejects.toThrow(/Insufficient balance/);
+  });
+
+  it("rejects manual subscription confirmation when subscription has no linked wallet", async () => {
+    const { gateway, state } = memoryGateway(invoice());
+    state.subscription = { id: "weekly", title: "Cloud", amountMinor: 1000, currency: "PHP", billingCycle: "WEEKLY", nextBillingDate: "2026-10-19", active: true, autoLog: false };
+    const row: Transaction = { id: "sub:weekly:2026-10-19", date: "2026-10-19", title: "Cloud", amountMinor: -1000, currency: "PHP", type: "SUBSCRIPTION_PAYMENT", subscriptionId: "weekly" };
+    await expect(confirmSubscriptionCycle(gateway, row)).rejects.toThrow(/requires a linked wallet/);
   });
 
   it("detaches historical subscription payments while retaining ledger rows", () => {

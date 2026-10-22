@@ -33,8 +33,26 @@ describe("entry draft factory", () => {
     expect(allowDigit).not.toHaveBeenCalled();
   });
 
-  it("builds signed expense and anchored subscription records", () => {
+  it("builds signed expense, transfer, and anchored subscription records", () => {
     expect(buildEntryDraft({ ...base, mode: "EXPENSE", walletId: "w-1" })).toMatchObject({ kind: "EXPENSE", transaction: { amountMinor: -12345, categoryId: "dining", walletId: "w-1" } });
+    expect(buildEntryDraft({
+      ...base,
+      mode: "TRANSFER",
+      walletId: "w-mari",
+      toWalletId: "w-gcash",
+      feeMinor: 1000,
+      channel: "INSTAPAY",
+    })).toMatchObject({
+      kind: "TRANSFER",
+      transaction: {
+        amountMinor: 12345,
+        type: "TRANSFER",
+        walletId: "w-mari",
+        toWalletId: "w-gcash",
+        feeMinor: 1000,
+        channel: "INSTAPAY",
+      },
+    });
     expect(buildEntryDraft({ ...base, mode: "SUBSCRIPTION", cycle: "MONTHLY", autoLog: false, walletId: "w-2" })).toMatchObject({ kind: "SUBSCRIPTION", subscription: { amountMinor: 12345, nextBillingDate: base.date, billingAnchorDate: base.date, autoLog: false, walletId: "w-2" } });
   });
 

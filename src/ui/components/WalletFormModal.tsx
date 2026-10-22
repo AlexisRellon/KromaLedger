@@ -172,7 +172,7 @@ export function WalletFormModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/75 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget && !busy) onClose();
       }}
@@ -181,15 +181,12 @@ export function WalletFormModal({
         role="dialog"
         aria-modal="true"
         aria-label={isEdit ? "Edit Wallet" : "Add Wallet"}
-        className="animate-drawer max-h-[94vh] w-full max-w-lg overflow-y-auto rounded-t-[2rem] border border-white/10 bg-[#10110e] p-5 shadow-2xl sm:rounded-[2rem] sm:p-7"
+        className="flex max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)] w-full max-w-lg flex-col overflow-hidden rounded-3xl sm:rounded-[2rem] border border-white/10 bg-[#10110e] shadow-2xl animate-entrance"
       >
-        {/* Mobile drawer handle pill */}
-        <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-white/20 sm:hidden" />
-
-        {/* Modal Header */}
-        <div className="mb-5 flex items-center justify-between">
+        {/* Modal Header (Fixed) */}
+        <div className="shrink-0 flex items-center justify-between border-b border-white/[0.08] px-5 py-4 sm:px-7 sm:py-5">
           <div>
-            <h2 className="font-display text-2xl font-semibold text-white">
+            <h2 className="font-display text-xl sm:text-2xl font-semibold text-white">
               {isEdit ? "Edit Wallet Card" : "Add Wallet Card"}
             </h2>
             <p className="mt-0.5 text-xs text-neutral-400">
@@ -202,7 +199,7 @@ export function WalletFormModal({
             onClick={onClose}
             disabled={busy}
             aria-label="Close"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 text-neutral-400 transition hover:bg-white/10 hover:text-white"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/5 text-neutral-400 transition hover:bg-white/10 hover:text-white"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -210,25 +207,26 @@ export function WalletFormModal({
           </button>
         </div>
 
-        {/* Live Preview Physical Card */}
-        <div className="mx-auto mb-6 w-full max-w-[380px]">
-          <PhysicalWalletCard
-            wallet={{
-              id: wallet?.id ?? "preview",
-              name: name.trim() || "YOUR NAME HERE",
-              type,
-              currency,
-              balanceMinor: Math.round((parseFloat(amountStr || "0") || 0) * 100),
-              color,
-              institution: institution.trim() || undefined,
-              accountNumber: accountNumber.trim() || undefined,
-              isDefault,
-              createdAt: wallet?.createdAt ?? new Date().toISOString().slice(0, 10),
-            }}
-          />
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          {/* Scrollable Body */}
+          <div className="flex-1 overflow-y-auto p-5 sm:p-7 space-y-4">
+            {/* Live Preview Physical Card */}
+            <div className="mx-auto mb-6 w-full max-w-[380px]">
+              <PhysicalWalletCard
+                wallet={{
+                  id: wallet?.id ?? "preview",
+                  name: name.trim() || "YOUR NAME HERE",
+                  type,
+                  currency,
+                  balanceMinor: Math.round((parseFloat(amountStr || "0") || 0) * 100),
+                  color,
+                  institution: institution.trim() || undefined,
+                  accountNumber: accountNumber.trim() || undefined,
+                  isDefault,
+                  createdAt: wallet?.createdAt ?? new Date().toISOString().slice(0, 10),
+                }}
+              />
+            </div>
           <div>
             <label className="block text-xs font-medium text-neutral-400">Wallet Name</label>
             <input
@@ -406,12 +404,15 @@ export function WalletFormModal({
             </label>
           </div>
 
-          <div className="mt-6 flex items-center justify-end gap-3 border-t border-white/10 pt-4">
+          </div>
+
+          {/* Card Footer (Fixed) */}
+          <div className="shrink-0 flex items-center justify-end gap-3 border-t border-white/10 bg-[#10110e] px-5 py-3.5 sm:px-7 sm:py-4">
             <button
               type="button"
               disabled={busy}
               onClick={onClose}
-              className="rounded-xl border border-white/10 px-4 py-2.5 text-xs font-semibold text-neutral-300 hover:text-white"
+              className="rounded-xl border border-white/10 px-4 py-2.5 text-xs font-semibold text-neutral-300 hover:text-white transition hover:bg-white/5"
             >
               Cancel
             </button>

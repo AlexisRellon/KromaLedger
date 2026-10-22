@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { format, parseISO } from "date-fns";
-import { calculateCashflow } from "../../core/engine/cashflowAnalytics";
+import { calculateCashflow, calculateCashForecast } from "../../core/engine/cashflowAnalytics";
 import {
   formatCurrency,
   type AttachmentMeta,
@@ -15,6 +15,7 @@ import { StackedWalletDeck } from "../components/StackedWalletDeck";
 import { AnimatedMoney, AnimatedProgressBar, DonutChartSVG, SmokedCard, VoltButton } from "../primitives";
 import { EditEntryModal } from "../components/EditEntryModal";
 import { ConfirmDeleteModal } from "../components/ConfirmDeleteModal";
+import { DashboardSkeleton } from "../components/skeletons";
 
 const money = (minor: number) => formatCurrency(minor);
 
@@ -26,6 +27,7 @@ export function HomeDashboard({
   attachments,
   categories,
   onQuickAdd,
+  isLoading = false,
 }: {
   month: string;
   analytics: ReturnType<typeof calculateCashflow>;
@@ -34,14 +36,20 @@ export function HomeDashboard({
   attachments: AttachmentMeta[];
   categories: Category[];
   onQuickAdd: () => void;
+  isLoading?: boolean;
 }) {
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
+
   const [showAll, setShowAll] = useState(false);
+  const [showSubDeductions, setShowSubDeductions] = useState(false);
   const [previewAttachment, setPreviewAttachment] = useState<{
     meta: AttachmentMeta;
     url: string;
   } | null>(null);
 
-  const [activityFilter, setActivityFilter] = useState<"ALL" | "EXPENSE" | "SUBSCRIPTION" | "INVOICE">("ALL");
+  const [activityFilter, setActivityFilter] = useState<"ALL" | "EXPENSE" | "TRANSFER" | "SUBSCRIPTION" | "INVOICE">("ALL");
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [deletingTransaction, setDeletingTransaction] = useState<Transaction | null>(null);
   const walletsQuery = useWallets();
@@ -49,18 +57,23 @@ export function HomeDashboard({
   const deleteTxMutation = useDeleteTransaction();
   const wallets = walletsQuery.data ?? [];
 
-  const inflowsMinor = transactions
-    .filter((t) => t.amountMinor > 0)
-    .reduce((s, t) => s + t.amountMinor, 0);
-  const outflowsMinor = transactions
-    .filter((t) => t.amountMinor < 0)
-    .reduce((s, t) => s - t.amountMinor, 0);
+  const forecast = useMemo(
+    () =>
+      calculateCashForecast({
+        totalCashMinor: wallets.reduce((sum, w) => sum + w.balanceMinor, 0),
+        month,
+        transactions,
+        subscriptions,
+      }),
+    [wallets, month, transactions, subscriptions]
+  );
 
   const filteredTransactions = transactions.filter((t) => {
     if (activityFilter === "ALL") return true;
     if (activityFilter === "SUBSCRIPTION") return t.type === "SUBSCRIPTION_PAYMENT";
     if (activityFilter === "INVOICE") return Boolean(t.invoiceId);
-    if (activityFilter === "EXPENSE") return t.type !== "SUBSCRIPTION_PAYMENT" && !t.invoiceId;
+    if (activityFilter === "TRANSFER") return t.type === "TRANSFER";
+    if (activityFilter === "EXPENSE") return (t.type === "EXPENSE" || t.amountMinor < 0) && t.type !== "INCOME" && t.type !== "SUBSCRIPTION_PAYMENT" && t.type !== "TRANSFER" && !t.invoiceId;
     return true;
   });
 
@@ -69,14 +82,15 @@ export function HomeDashboard({
   return (
     <div className="grid gap-6 lg:grid-cols-[1.25fr_.75fr]">
       <div className="space-y-6">
-        {/* Net Outflow Hero Card */}
+        {/* 3-Tier Financial Hero Card: Total Cash + Net Flow + Subscription-Predicted Cash */}
         <SmokedCard className="relative overflow-hidden">
           <div className="relative">
+            {/* Header: Label & Multi-Wallet Status */}
             <div className="flex items-baseline justify-between gap-2">
               <h2 className="font-display text-lg font-bold text-white">
-                Net Outflow
+                Total Liquid Cash
                 <span className="ml-2.5 text-xs font-normal text-neutral-400">
-                  {format(parseISO(`${month}-01`), "MMMM yyyy")}
+                  {wallets.length} {wallets.length === 1 ? "wallet" : "wallets"}
                 </span>
               </h2>
               <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 font-mono text-xs text-neutral-400">
@@ -84,30 +98,110 @@ export function HomeDashboard({
               </span>
             </div>
 
-            <div className="font-mono mt-4 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
-              <AnimatedMoney minor={analytics.netOutflowMinor} />
+            {/* Tier 1: Total Liquid Cash Anchor */}
+            <div className="font-mono mt-3 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+              <AnimatedMoney minor={forecast.totalCashMinor} />
             </div>
 
-            {/* Split Inflow vs Outflow metrics */}
+            {/* Tier 2: Monthly Net Gain or Loss Velocity Pill */}
+            <div className="mt-2.5 flex flex-wrap items-center gap-2">
+              <span
+                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-mono font-medium ${
+                  forecast.isNetGain
+                    ? "border border-[#D9F938]/30 bg-[#D9F938]/10 text-[#D9F938]"
+                    : "border border-rose-500/30 bg-rose-500/10 text-rose-400"
+                }`}
+              >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${
+                    forecast.isNetGain ? "bg-[#D9F938]" : "bg-rose-400"
+                  }`}
+                />
+                <span>
+                  {forecast.isNetGain ? "+" : "−"}
+                  {money(Math.abs(forecast.netGainLossMinor))} {forecast.isNetGain ? "Net Gain" : "Net Loss"}
+                </span>
+              </span>
+              <span className="text-xs text-neutral-400">
+                in {format(parseISO(`${month}-01`), "MMMM yyyy")}
+              </span>
+            </div>
+
+            {/* Inflows vs Outflows Breakdown */}
             <div className="mt-5 grid grid-cols-2 gap-4 border-t border-white/[0.08] pt-4">
               <div>
-                <div className="flex items-center gap-1.5 text-xs text-neutral-400">
+                <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-white" />
                   <span>IN · {format(parseISO(`${month}-01`), "MMM").toUpperCase()}</span>
                 </div>
                 <p className="mt-1 font-mono text-base font-bold text-white tabular-nums">
-                  +<AnimatedMoney minor={inflowsMinor} />
+                  +<AnimatedMoney minor={forecast.inflowsMinor} />
                 </p>
               </div>
               <div>
-                <div className="flex items-center gap-1.5 text-xs text-neutral-400">
+                <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#D9F938]" />
                   <span>OUT · {format(parseISO(`${month}-01`), "MMM").toUpperCase()}</span>
                 </div>
                 <p className="mt-1 font-mono text-base font-bold text-neutral-200 tabular-nums">
-                  −<AnimatedMoney minor={outflowsMinor} />
+                  −<AnimatedMoney minor={forecast.outflowsMinor} />
                 </p>
               </div>
+            </div>
+
+            {/* Tier 3: Subscription-Predicted Cash Runway */}
+            <div className="mt-5 border-t border-white/[0.08] pt-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#D9F938]" />
+                  <span className="font-mono text-xs font-semibold uppercase tracking-wider text-neutral-200">
+                    Predicted Cash · Month-End
+                  </span>
+                </div>
+                <span className="font-mono text-xs text-neutral-400">
+                  {forecast.upcomingSubsCount > 0
+                    ? `−${money(forecast.upcomingSubsMinor)} upcoming subs`
+                    : "All subs cleared"}
+                </span>
+              </div>
+
+              <div className="mt-2 flex items-baseline justify-between">
+                <div>
+                  <span className="font-mono text-2xl font-bold tracking-tight text-[#D9F938]">
+                    <AnimatedMoney minor={forecast.projectedCashMinor} />
+                  </span>
+                  <span className="ml-2 text-xs text-neutral-300">safe to spend</span>
+                </div>
+
+                {forecast.upcomingSubsCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowSubDeductions((v) => !v)}
+                    className="text-xs font-medium text-[#D9F938]/90 hover:text-[#D9F938] underline underline-offset-2 transition"
+                  >
+                    {showSubDeductions ? "Hide details" : `View ${forecast.upcomingSubsCount} pending`}
+                  </button>
+                )}
+              </div>
+
+              {/* Collapsible detail list for pending subscriptions contributing to the prediction */}
+              {showSubDeductions && forecast.pendingSubscriptions.length > 0 && (
+                <div className="mt-3 divide-y divide-white/[0.06] border-t border-white/[0.08] pt-2 text-xs">
+                  {forecast.pendingSubscriptions.map((sub) => (
+                    <div key={sub.id} className="flex items-center justify-between py-1.5 text-neutral-300">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-neutral-400">
+                          {format(parseISO(sub.nextBillingDate), "MMM d")}
+                        </span>
+                        <span>{sub.title}</span>
+                      </div>
+                      <span className="font-mono font-medium text-neutral-200">
+                        −{money(sub.amountMinor)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <VoltButton onClick={onQuickAdd} className="mt-5 flex w-full items-center justify-center gap-2 text-sm font-semibold">
@@ -129,7 +223,7 @@ export function HomeDashboard({
             
             {/* Filter Pills */}
             <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-              {(["ALL", "EXPENSE", "SUBSCRIPTION", "INVOICE"] as const).map((filter) => (
+              {(["ALL", "EXPENSE", "TRANSFER", "SUBSCRIPTION", "INVOICE"] as const).map((filter) => (
                 <button
                   key={filter}
                   onClick={() => setActivityFilter(filter)}
@@ -139,7 +233,7 @@ export function HomeDashboard({
                       : "bg-white/[0.04] text-neutral-400 hover:text-white hover:bg-white/[0.08]"
                   }`}
                 >
-                  {filter === "ALL" ? "All" : filter === "EXPENSE" ? "Expenses" : filter === "SUBSCRIPTION" ? "Subs" : "Invoices"}
+                  {filter === "ALL" ? "All" : filter === "EXPENSE" ? "Expenses" : filter === "TRANSFER" ? "Transfers" : filter === "SUBSCRIPTION" ? "Subs" : "Invoices"}
                 </button>
               ))}
             </div>
@@ -305,7 +399,8 @@ function ActivityRow({
     const bytes = await files.load(attachment.id);
     if (!bytes) return;
     const isImage = attachment.mimeType.startsWith("image/");
-    const blob = new Blob([new Uint8Array(bytes).buffer], {
+    const buffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+    const blob = new Blob([buffer], {
       type: isImage ? attachment.mimeType : "application/octet-stream",
     });
     const url = URL.createObjectURL(blob);
@@ -313,6 +408,15 @@ function ActivityRow({
   };
 
   const getMicroBadge = () => {
+    if (row.type === "TRANSFER") {
+      const channelLabel = row.channel ?? "Transfer";
+      const feeLabel = row.feeMinor && row.feeMinor > 0 ? ` (+${money(row.feeMinor)} fee)` : "";
+      return (
+        <span className="inline-flex items-center rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 font-mono text-xs text-cyan-400">
+          Transfer • {channelLabel}{feeLabel}
+        </span>
+      );
+    }
     if (row.type === "SUBSCRIPTION_PAYMENT") {
       const cycle = subscription?.billingCycle?.toLowerCase() ?? "monthly";
       return (
@@ -336,6 +440,15 @@ function ActivityRow({
   };
 
   const getEntityIcon = () => {
+    if (row.type === "TRANSFER") {
+      return (
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-cyan-500/30 bg-cyan-500/10 text-cyan-400">
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+          </svg>
+        </div>
+      );
+    }
     if (row.invoiceId) {
       return (
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[#D9F938]/30 bg-[#D9F938]/10 text-[#D9F938]">
@@ -422,10 +535,14 @@ function ActivityRow({
       <div className="flex items-center gap-2.5 shrink-0">
         <span
           className={`font-mono text-sm font-semibold tabular-nums text-right ${
-            incoming ? "text-[#D9F938]" : "text-neutral-200"
+            row.type === "TRANSFER"
+              ? "text-cyan-400"
+              : incoming
+                ? "text-[#D9F938]"
+                : "text-neutral-200"
           }`}
         >
-          {incoming ? "+" : "−"}
+          {row.type === "TRANSFER" ? "⇄ " : incoming ? "+" : "−"}
           {money(Math.abs(row.amountMinor))}
         </span>
 
@@ -486,7 +603,7 @@ function AttachmentPreviewModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 grid place-items-center bg-black/80 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -495,9 +612,9 @@ function AttachmentPreviewModal({
         role="dialog"
         aria-modal="true"
         aria-label="Attachment preview"
-        className="max-h-[90vh] w-full max-w-lg overflow-hidden rounded-3xl border border-white/10 bg-[#11120f] p-5 shadow-2xl"
+        className="flex max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#11120f] shadow-2xl animate-entrance"
       >
-        <div className="flex items-center justify-between pb-3">
+        <div className="shrink-0 flex items-center justify-between border-b border-white/[0.08] px-5 py-4 sm:px-6">
           <div className="min-w-0 pr-3">
             <h3 className="truncate text-sm font-semibold text-white">{attachment.meta.filename}</h3>
             <p className="font-mono text-xs text-neutral-400">
@@ -507,7 +624,7 @@ function AttachmentPreviewModal({
           <button
             onClick={onClose}
             aria-label="Close"
-            className="rounded-full bg-white/5 p-1.5 text-neutral-400 hover:text-white hover:bg-white/10 transition"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/5 text-neutral-400 hover:text-white transition hover:bg-white/10"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -515,28 +632,31 @@ function AttachmentPreviewModal({
           </button>
         </div>
 
-        <div className="mt-2 flex max-h-[60vh] items-center justify-center overflow-auto rounded-2xl bg-black/50 p-2">
-          {isImage ? (
-            <img
-              src={attachment.url}
-              alt={attachment.meta.filename}
-              className="max-h-[55vh] max-w-full rounded-xl object-contain"
-            />
-          ) : (
-            <div className="py-12 text-center">
-              <p className="text-sm text-neutral-300">Document preview ({attachment.meta.mimeType})</p>
-              <a
-                href={attachment.url}
-                download={attachment.meta.filename}
-                className="mt-3 inline-block rounded-xl bg-[#D9F938] px-4 py-2 text-xs font-semibold text-[#070806]"
-              >
-                Download Document
-              </a>
-            </div>
-          )}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5">
+          <div className="flex min-h-[240px] items-center justify-center overflow-auto rounded-2xl bg-black/50 p-2">
+            {isImage ? (
+              <img
+                src={attachment.url}
+                alt={attachment.meta.filename}
+                className="max-h-[55vh] max-w-full rounded-xl object-contain"
+              />
+            ) : (
+              <div className="py-12 text-center">
+                <p className="text-sm text-neutral-300">Document preview ({attachment.meta.mimeType})</p>
+                <a
+                  href={attachment.url}
+                  download={attachment.meta.filename}
+                  className="mt-3 inline-block rounded-xl bg-[#D9F938] px-4 py-2 text-xs font-semibold text-[#070806]"
+                >
+                  Download Document
+                </a>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="mt-4 flex justify-end gap-2">
+        {/* Fixed Footer */}
+        <div className="shrink-0 flex justify-end gap-2 border-t border-white/[0.08] bg-[#11120f] px-5 py-3.5 sm:px-6 sm:py-4">
           <a
             href={attachment.url}
             download={attachment.meta.filename}

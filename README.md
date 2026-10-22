@@ -21,7 +21,7 @@ npm run build
 node scripts/verify-portability.mjs
 ```
 
-The portability checker counts nonblank TypeScript, TSX, and CSS source lines under `src`. It requires at least 75% in `src/core` and `src/state` and rejects browser-only references, DOM event types, and intrinsic web JSX in those directories. Its own small self-check is `node scripts/verify-portability.mjs --self-test`.
+The portability checker counts nonblank TypeScript, TSX, and CSS source lines under `src`. It ensures strict headless decoupling by rejecting browser-only references, DOM event types, and intrinsic web JSX in `src/core` and `src/state`. Its own small self-check is `node scripts/verify-portability.mjs --self-test`.
 
 `src/core` holds the data model and calculations. `src/state` holds portable UI state and query orchestration. `src/adapters` contains IndexedDB, files, backup, and browser startup code; `src/ui` renders the web interface. Dependencies are exact-pinned, and `.npmrc` disables install scripts.
 

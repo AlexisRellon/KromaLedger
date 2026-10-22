@@ -1,17 +1,19 @@
-import { dateOnlySchema, invoiceItemSchema, invoiceSchema, subscriptionSchema, transactionSchema, type Invoice, type InvoiceItem, type Subscription, type Transaction } from "../core/models";
+import { dateOnlySchema, invoiceItemSchema, invoiceSchema, subscriptionSchema, transactionSchema, type Invoice, type InvoiceItem, type Subscription, type Transaction, type TransferChannel } from "../core/models";
 import { calculateInvoice } from "../core/engine/invoiceCalculator";
 import { parseMinorInput } from "../core/engine/moneyInput";
 export { parseMinorInput } from "../core/engine/moneyInput";
 
-export type EntryMode = "EXPENSE" | "SUBSCRIPTION" | "INVOICE";
+export type EntryMode = "EXPENSE" | "TRANSFER" | "SUBSCRIPTION" | "INVOICE";
 export type InvoiceLineDraft = { description: string; quantity: number; unitPriceMinor: number };
 type Common = { id(prefix: "transaction" | "subscription" | "invoice" | "item"): string; today: string; date: string; title: string; amount: string; currency?: string; categoryId?: string; walletId?: string };
 type ExpenseInput = Common & { mode: "EXPENSE" };
+type TransferInput = Common & { mode: "TRANSFER"; toWalletId?: string; feeMinor?: number; channel?: TransferChannel };
 type SubscriptionInput = Common & { mode: "SUBSCRIPTION"; cycle: "WEEKLY" | "MONTHLY" | "YEARLY"; autoLog: boolean };
 type InvoiceInput = Common & { mode: "INVOICE"; direction: "PAYABLE" | "RECEIVABLE"; dueDate: string; lines: InvoiceLineDraft[]; taxRateBps: number; discountMinor: number };
-export type EntryDraftInput = ExpenseInput | SubscriptionInput | InvoiceInput;
+export type EntryDraftInput = ExpenseInput | TransferInput | SubscriptionInput | InvoiceInput;
 export type EntryDraft =
   | { kind: "EXPENSE"; transaction: Transaction }
+  | { kind: "TRANSFER"; transaction: Transaction }
   | { kind: "SUBSCRIPTION"; subscription: Subscription }
   | { kind: "INVOICE"; invoice: Invoice; items: InvoiceItem[] };
 
@@ -25,6 +27,25 @@ export function buildEntryDraft(input: EntryDraftInput): EntryDraft {
   if (input.mode === "EXPENSE") {
     const amountMinor = parseMinorInput(input.amount);
     return { kind: "EXPENSE", transaction: transactionSchema.parse({ id: input.id("transaction"), date: input.date, title, amountMinor: -amountMinor, currency, type: "EXPENSE", categoryId: input.categoryId, walletId: input.walletId }) };
+  }
+  if (input.mode === "TRANSFER") {
+    const amountMinor = parseMinorInput(input.amount);
+    return {
+      kind: "TRANSFER",
+      transaction: transactionSchema.parse({
+        id: input.id("transaction"),
+        date: input.date,
+        title,
+        amountMinor,
+        currency,
+        type: "TRANSFER",
+        categoryId: input.categoryId,
+        walletId: input.walletId,
+        toWalletId: input.toWalletId,
+        feeMinor: input.feeMinor ?? 0,
+        channel: input.channel,
+      }),
+    };
   }
   if (input.mode === "SUBSCRIPTION") {
     const amountMinor = parseMinorInput(input.amount);

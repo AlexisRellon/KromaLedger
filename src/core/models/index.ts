@@ -8,11 +8,15 @@ const idSchema = z.string().min(1);
 const amountSchema = z.number().int().safe();
 const currencySchema = z.string().length(3).default("PHP");
 
-export const transactionTypeSchema = z.enum(["EXPENSE", "SUBSCRIPTION_PAYMENT", "INCOME"]);
+export const transactionTypeSchema = z.enum(["EXPENSE", "SUBSCRIPTION_PAYMENT", "INCOME", "TRANSFER"]);
+export const transferChannelSchema = z.enum(["INSTAPAY", "PESONET", "DIRECT", "MANUAL"]);
+export type TransferChannel = z.infer<typeof transferChannelSchema>;
+
 export const transactionSchema = z.object({
   id: idSchema, date: dateOnlySchema, title: z.string().min(1), amountMinor: amountSchema,
   currency: currencySchema, type: transactionTypeSchema, categoryId: idSchema.optional(), notes: z.string().optional(),
   subscriptionId: idSchema.optional(), invoiceId: idSchema.optional(), walletId: idSchema.optional(),
+  toWalletId: idSchema.optional(), feeMinor: amountSchema.nonnegative().optional(), channel: transferChannelSchema.optional(),
 });
 export type Transaction = z.infer<typeof transactionSchema>;
 
@@ -103,3 +107,20 @@ export function formatWalletLabel(wallet: Pick<Wallet, "name" | "institution">):
   }
   return name;
 }
+
+export const notificationTypeSchema = z.enum(["INFO", "WARNING", "ALERT", "SUCCESS"]);
+export type NotificationType = z.infer<typeof notificationTypeSchema>;
+
+export const appNotificationSchema = z.object({
+  id: idSchema,
+  title: z.string().min(1),
+  message: z.string().min(1),
+  type: notificationTypeSchema,
+  createdAt: z.string(),
+  read: z.boolean().default(false),
+  entityType: z.enum(["SUBSCRIPTION", "INVOICE", "WALLET", "SYSTEM"]).optional(),
+  entityId: idSchema.optional(),
+  actionLink: z.string().optional(),
+});
+export type AppNotification = z.infer<typeof appNotificationSchema>;
+

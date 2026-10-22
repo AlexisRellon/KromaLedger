@@ -20,6 +20,7 @@ import { DonutChartSVG, HatchedProgressBar, SmokedCard, StatusDot, VoltButton } 
 import { EditSubscriptionModal } from "../components/EditSubscriptionModal";
 import { EditInvoiceModal } from "../components/EditInvoiceModal";
 import { ConfirmDeleteModal } from "../components/ConfirmDeleteModal";
+import { PendingSkeleton } from "../components/skeletons";
 
 const today = () => format(new Date(), "yyyy-MM-dd");
 const money = (minor: number) => formatCurrency(minor);
@@ -32,12 +33,18 @@ export function PendingAndSubsHub({
   invoices,
   analytics,
   onQuickAdd,
+  isLoading = false,
 }: {
   subscriptions: SubscriptionRow[];
   invoices: InvoiceRow[];
   analytics: ReturnType<typeof calculateCashflow>;
   onQuickAdd: () => void;
+  isLoading?: boolean;
 }) {
+  if (isLoading) {
+    return <PendingSkeleton />;
+  }
+
   const confirmSub = useConfirmSubscriptionPayment();
   const categoriesQuery = useCategories();
   const walletsQuery = useWallets();
@@ -61,16 +68,26 @@ export function PendingAndSubsHub({
   );
 
   const unpaidInvoices = invoices.filter((invoice) => invoice.status !== "PAID");
+  const wallets = walletsQuery.data ?? [];
 
   const confirmPayment = async (s: SubscriptionRow) => {
     setActionError("");
+    const wallet = s.walletId ? wallets.find((w) => w.id === s.walletId) : undefined;
+    if (!wallet) {
+      setActionError("Cannot confirm payment: No wallet linked to this subscription.");
+      return;
+    }
+    if (wallet.balanceMinor < s.amountMinor) {
+      setActionError(`Cannot confirm payment: Insufficient balance in ${wallet.name} (${formatCurrency(wallet.balanceMinor, wallet.currency)}).`);
+      return;
+    }
     try {
       await confirmSub.mutateAsync({
         id: `sub:${s.id}:${s.nextBillingDate}`,
         date: s.nextBillingDate,
         title: s.title,
         amountMinor: -s.amountMinor,
-        currency: "PHP",
+        currency: s.currency,
         type: "SUBSCRIPTION_PAYMENT",
         subscriptionId: s.id,
         categoryId: s.categoryId,
@@ -101,23 +118,47 @@ export function PendingAndSubsHub({
         </div>
 
         <div className="mt-4 divide-y divide-white/[0.06]">
-          {upcomingSubs.map((s) => (
-            <UpcomingRow
-              key={s.id}
-              title={s.title}
-              date={s.nextBillingDate}
-              amount={s.amountMinor}
-              badge={`${s.billingCycle.toLowerCase()}`}
-              type="sub"
-              onEdit={() => setEditingSubscription(s)}
-              onDelete={() => setDeletingSubscription(s)}
-              onConfirm={
-                !s.autoLog && s.nextBillingDate <= today()
-                  ? () => void confirmPayment(s)
-                  : undefined
-              }
-            />
-          ))}
+          {upcomingSubs.map((s) => {
+            const wallet = s.walletId ? wallets.find((w) => w.id === s.walletId) : undefined;
+            const isInsufficient = !wallet || wallet.balanceMinor < s.amountMinor;
+            const isDue = s.nextBillingDate <= today();
+
+            return (
+              <UpcomingRow
+                key={s.id}
+                title={s.title}
+                date={s.nextBillingDate}
+                amount={s.amountMinor}
+                badge={`${s.billingCycle.toLowerCase()}`}
+                type="sub"
+                isInsufficient={isDue && isInsufficient}
+                insufficientReason={
+                  !wallet
+                    ? "No wallet linked"
+                    : `Low balance (${formatCurrency(wallet.balanceMinor, wallet.currency)})`
+                }
+                onEdit={() => setEditingSubscription(s)}
+                onDelete={() => setDeletingSubscription(s)}
+                onPostpone={
+                  isDue && isInsufficient
+                    ? async () => {
+                        const tomorrow = format(addDays(new Date(), 1), "yyyy-MM-dd");
+                        await saveSubMutation.mutateAsync({
+                          ...s,
+                          billingAnchorDate: s.billingAnchorDate ?? s.nextBillingDate,
+                          nextBillingDate: tomorrow,
+                        });
+                      }
+                    : undefined
+                }
+                onConfirm={
+                  !s.autoLog && isDue && !isInsufficient
+                    ? () => void confirmPayment(s)
+                    : undefined
+                }
+              />
+            );
+          })}
 
           {upcomingInvoices.map((i) => (
             <UpcomingRow
@@ -412,7 +453,7 @@ function InvoicePaymentModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 grid place-items-center bg-black/75 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -421,14 +462,15 @@ function InvoicePaymentModal({
         role="dialog"
         aria-modal="true"
         aria-label="Record invoice payment"
-        className="w-full max-w-sm rounded-3xl border border-white/10 bg-[#11120f] p-6 shadow-2xl"
+        className="flex max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)] w-full max-w-sm flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#11120f] shadow-2xl animate-entrance"
       >
-        <div className="flex items-start justify-between">
-          <h2 className="font-display text-2xl font-bold text-white">{invoice.title}</h2>
+        {/* Modal Header (Fixed) */}
+        <div className="shrink-0 flex items-start justify-between border-b border-white/[0.08] px-5 py-4 sm:px-6 sm:py-5">
+          <h2 className="font-display text-xl sm:text-2xl font-bold text-white">{invoice.title}</h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 text-neutral-400 hover:text-white"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/5 text-neutral-400 hover:text-white transition hover:bg-white/10"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -436,13 +478,15 @@ function InvoicePaymentModal({
           </button>
         </div>
 
-        <p className="mt-2 text-sm text-neutral-400">
-          Remaining balance: <span className="font-mono font-medium text-white">{money(remainingMinor)}</span>
-        </p>
+        {/* Scrollable Body */}
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
+          <p className="text-sm text-neutral-400">
+            Remaining balance: <span className="font-mono font-medium text-white">{money(remainingMinor)}</span>
+          </p>
 
-        {/* 1-Tap Quick Settlement Options */}
-        <div className="mt-4">
-          <p className="text-xs font-semibold tracking-wider text-neutral-400">Quick settlement</p>
+          {/* 1-Tap Quick Settlement Options */}
+          <div>
+            <p className="text-xs font-semibold tracking-wider text-neutral-400">Quick settlement</p>
           <div className="mt-1.5 grid grid-cols-3 gap-2">
             <button
               type="button"
@@ -510,23 +554,25 @@ function InvoicePaymentModal({
           />
         </label>
 
-        {error && (
-          <p role="alert" className="mt-3 text-sm text-rose-400">
-            {error}
-          </p>
-        )}
+          {error && (
+            <p role="alert" className="text-sm text-rose-400">
+              {error}
+            </p>
+          )}
+        </div>
 
-        <div className="mt-5 flex gap-2">
+        {/* Fixed Footer */}
+        <div className="shrink-0 flex gap-2 border-t border-white/[0.08] bg-[#11120f] px-5 py-3.5 sm:px-6 sm:py-4">
           <button
             onClick={onClose}
-            className="flex-1 rounded-xl border border-white/10 py-3 text-sm font-medium text-neutral-300 hover:bg-white/5"
+            className="flex-1 rounded-xl border border-white/10 py-2.5 text-xs font-semibold text-neutral-300 transition hover:bg-white/5 hover:text-white"
           >
             Cancel
           </button>
           <VoltButton
             onClick={() => void submit()}
             disabled={payment.isPending}
-            className="flex-1"
+            className="flex-1 py-2.5 text-xs"
           >
             {payment.isPending ? "Saving…" : "Save Payment"}
           </VoltButton>
@@ -543,6 +589,9 @@ function UpcomingRow({
   badge,
   type = "sub",
   isOverdue = false,
+  isInsufficient = false,
+  insufficientReason,
+  onPostpone,
   onConfirm,
   onEdit,
   onDelete,
@@ -553,12 +602,15 @@ function UpcomingRow({
   badge?: string;
   type?: "sub" | "invoice";
   isOverdue?: boolean;
+  isInsufficient?: boolean;
+  insufficientReason?: string;
+  onPostpone?: () => void;
   onConfirm?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
 }) {
   const days = Math.round((parseISO(date).getTime() - parseISO(today()).getTime()) / 86400000);
-  const tone = isOverdue ? "rose" : days <= 1 ? "amber" : "green";
+  const tone = isInsufficient || isOverdue ? "rose" : days <= 1 ? "amber" : "green";
 
   const getEntityIcon = () => {
     const tLower = title.toLowerCase();
@@ -605,13 +657,18 @@ function UpcomingRow({
             <p className="truncate text-sm font-medium text-white">{title}</p>
             <StatusDot tone={tone} />
           </div>
-          <div className="mt-0.5 flex items-center gap-2">
+          <div className="mt-0.5 flex flex-wrap items-center gap-2">
             <span className="text-xs text-neutral-400">
               {isOverdue ? "Overdue" : days === 0 ? "Today" : days === 1 ? "Tomorrow" : format(parseISO(date), "MMM d")}
             </span>
             {badge && (
               <span className="rounded-full bg-white/[0.04] px-2 py-0.5 font-mono text-xs text-neutral-400">
                 {badge}
+              </span>
+            )}
+            {isInsufficient && insufficientReason && (
+              <span className="rounded-full bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 text-[11px] font-medium text-rose-300">
+                {insufficientReason}
               </span>
             )}
           </div>
@@ -650,6 +707,15 @@ function UpcomingRow({
           )}
         </div>
 
+        {onPostpone && (
+          <button
+            onClick={onPostpone}
+            className="rounded-full border border-rose-500/30 bg-rose-500/10 px-2.5 py-1 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20"
+          >
+            Move to tomorrow
+          </button>
+        )}
+
         {onConfirm && (
           <button
             onClick={onConfirm}
@@ -662,3 +728,4 @@ function UpcomingRow({
     </div>
   );
 }
+

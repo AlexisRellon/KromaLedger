@@ -1,4 +1,4 @@
-import type { AppMeta, AttachmentMeta, Category, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../models";
+import type { AppMeta, AppNotification, AttachmentMeta, Category, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../models";
 import type { ReconcileResult } from "../engine/reconciler";
 
 export interface IStorageRepo {
@@ -33,6 +33,11 @@ export interface IStorageRepo {
   getWallet(id: string): Promise<Wallet | undefined>;
   saveWallet(value: Wallet): Promise<void>;
   deleteWallet(id: string): Promise<void>;
+  listNotifications(): Promise<AppNotification[]>;
+  saveNotification(value: AppNotification): Promise<void>;
+  markNotificationRead(id: string): Promise<void>;
+  deleteNotification(id: string): Promise<void>;
+  clearNotifications(): Promise<void>;
   clearAllData(): Promise<void>;
   resetToDemo(today?: string): Promise<void>;
 }

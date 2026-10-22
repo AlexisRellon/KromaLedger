@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../../core/models";
+import type { AppNotification, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../../core/models";
 import { useStorage } from "../StorageContext";
 import { useUIStore } from "../useUIStore";
 
@@ -11,6 +11,7 @@ export const queryKeys = {
   attachments: ["attachments"] as const,
   profile: ["profile"] as const,
   wallets: ["wallets"] as const,
+  notifications: ["notifications"] as const,
 };
 export function useTransactions() { const { repo } = useStorage(); const month = useUIStore((s) => s.selectedMonth); return useQuery({ queryKey: [...queryKeys.transactions, month], queryFn: () => repo.listTransactions(`${month}-01`, `${month}-31`) }); }
 export function useAllTransactions() { const { repo } = useStorage(); return useQuery({ queryKey: queryKeys.transactions, queryFn: () => repo.listTransactions() }); }
@@ -20,6 +21,7 @@ export function useCategories() { const { repo } = useStorage(); return useQuery
 export function useAttachments() { const { repo } = useStorage(); return useQuery({ queryKey: queryKeys.attachments, queryFn: () => repo.listAttachments() }); }
 export function useProfile() { const { repo } = useStorage(); return useQuery({ queryKey: queryKeys.profile, queryFn: () => repo.getProfile() }); }
 export function useWallets() { const { repo } = useStorage(); return useQuery({ queryKey: queryKeys.wallets, queryFn: () => repo.listWallets() }); }
+export function useNotifications() { const { repo } = useStorage(); return useQuery({ queryKey: queryKeys.notifications, queryFn: () => repo.listNotifications() }); }
 
 export function useSaveProfile() {
   const { repo } = useStorage();
@@ -77,5 +79,10 @@ export function useDeleteSubscription() { const { repo } = useStorage(); const c
 export function useDeleteInvoice() { const { repo } = useStorage(); const client = useQueryClient(); return useMutation({ mutationFn: (id: string) => repo.deleteInvoice(id), onSuccess: () => Promise.all([client.invalidateQueries({ queryKey: queryKeys.invoices }), client.invalidateQueries({ queryKey: queryKeys.transactions }), client.invalidateQueries({ queryKey: queryKeys.wallets })]) }); }
 export function useConfirmSubscriptionPayment() { const { repo } = useStorage(); const client = useQueryClient(); return useMutation({ mutationFn: (payment: Transaction) => repo.confirmSubscriptionPayment(payment), onSuccess: () => Promise.all([client.invalidateQueries({ queryKey: queryKeys.subscriptions }), client.invalidateQueries({ queryKey: queryKeys.transactions }), client.invalidateQueries({ queryKey: queryKeys.wallets })]) }); }
 export function useSaveInvoice() { const { repo } = useStorage(); const client = useQueryClient(); return useMutation({ mutationFn: ({ invoice, items }: { invoice: Invoice; items: InvoiceItem[] }) => repo.saveInvoiceWithItems(invoice, items), onSuccess: () => Promise.all([client.invalidateQueries({ queryKey: queryKeys.invoices }), client.invalidateQueries({ queryKey: queryKeys.transactions }), client.invalidateQueries({ queryKey: queryKeys.wallets })]) }); }
-export function useReconcileCommand() { const { repo } = useStorage(); const client = useQueryClient(); return useMutation({ mutationFn: (today: string) => repo.reconcile(today), onSuccess: () => Promise.all([client.invalidateQueries({ queryKey: queryKeys.transactions }), client.invalidateQueries({ queryKey: queryKeys.subscriptions }), client.invalidateQueries({ queryKey: queryKeys.invoices }), client.invalidateQueries({ queryKey: queryKeys.wallets })]) }); }
+export function useReconcileCommand() { const { repo } = useStorage(); const client = useQueryClient(); return useMutation({ mutationFn: (today: string) => repo.reconcile(today), onSuccess: () => Promise.all([client.invalidateQueries({ queryKey: queryKeys.transactions }), client.invalidateQueries({ queryKey: queryKeys.subscriptions }), client.invalidateQueries({ queryKey: queryKeys.invoices }), client.invalidateQueries({ queryKey: queryKeys.wallets }), client.invalidateQueries({ queryKey: queryKeys.notifications })]) }); }
 export function useRecordInvoicePayment() { const { repo } = useStorage(); const client = useQueryClient(); return useMutation({ mutationFn: ({ invoiceId, payment }: { invoiceId: string; payment: Transaction }) => repo.recordInvoicePayment(invoiceId, payment), onSuccess: () => Promise.all([client.invalidateQueries({ queryKey: queryKeys.transactions }), client.invalidateQueries({ queryKey: queryKeys.invoices }), client.invalidateQueries({ queryKey: queryKeys.wallets })]) }); }
+export function useMarkNotificationRead() { const { repo } = useStorage(); const client = useQueryClient(); return useMutation({ mutationFn: (id: string) => repo.markNotificationRead(id), onSuccess: () => client.invalidateQueries({ queryKey: queryKeys.notifications }) }); }
+export function useDeleteNotification() { const { repo } = useStorage(); const client = useQueryClient(); return useMutation({ mutationFn: (id: string) => repo.deleteNotification(id), onSuccess: () => client.invalidateQueries({ queryKey: queryKeys.notifications }) }); }
+export function useClearNotifications() { const { repo } = useStorage(); const client = useQueryClient(); return useMutation({ mutationFn: () => repo.clearNotifications(), onSuccess: () => client.invalidateQueries({ queryKey: queryKeys.notifications }) }); }
+export function useSaveNotification() { const { repo } = useStorage(); const client = useQueryClient(); return useMutation({ mutationFn: (value: AppNotification) => repo.saveNotification(value), onSuccess: () => client.invalidateQueries({ queryKey: queryKeys.notifications }) }); }
+

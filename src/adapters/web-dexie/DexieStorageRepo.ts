@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import type { Table } from "dexie";
-import type { AppMeta, AttachmentMeta, Category, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../../core/models";
-import { appMetaSchema, categorySchema, dateOnlySchema, invoiceItemSchema, invoiceSchema, subscriptionSchema, transactionSchema, userProfileSchema, walletSchema } from "../../core/models";
+import type { AppMeta, AppNotification, AttachmentMeta, Category, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../../core/models";
+import { appMetaSchema, appNotificationSchema, categorySchema, dateOnlySchema, invoiceItemSchema, invoiceSchema, subscriptionSchema, transactionSchema, userProfileSchema, walletSchema } from "../../core/models";
 import type { IStorageRepo } from "../../core/ports/IStorageRepo";
 import { createDemoSeed } from "../../core/engine/demoSeed";
 import { reconcile, type ReconcileResult } from "../../core/engine/reconciler";
@@ -24,12 +24,28 @@ export class DexieStorageRepo implements IStorageRepo {
     return this.db.transaction("rw", tableList, async () => work({
       getInvoice: (id) => this.db.invoices.get(id),
       getSubscription: (id) => this.db.subscriptions.get(id),
+      getWallet: (id) => this.db.wallets.get(id),
       putSubscription: async (value) => { await this.db.subscriptions.put(value); },
       putInvoice: async (value) => { await this.db.invoices.put(value); },
       replaceInvoiceItems: async (id, values) => { await this.db.invoiceItems.where("invoiceId").equals(id).delete(); await this.db.invoiceItems.bulkPut(values); },
       addTransaction: async (value) => {
         const parsed = transactionSchema.parse(value);
-        if (parsed.walletId) {
+        if (parsed.type === "TRANSFER") {
+          const fee = parsed.feeMinor ?? 0;
+          const principal = Math.abs(parsed.amountMinor);
+          if (parsed.walletId) {
+            const src = await this.db.wallets.get(parsed.walletId);
+            if (src) {
+              await this.db.wallets.put({ ...src, balanceMinor: src.balanceMinor - (principal + fee) });
+            }
+          }
+          if (parsed.toWalletId) {
+            const dst = await this.db.wallets.get(parsed.toWalletId);
+            if (dst) {
+              await this.db.wallets.put({ ...dst, balanceMinor: dst.balanceMinor + principal });
+            }
+          }
+        } else if (parsed.walletId) {
           const wallet = await this.db.wallets.get(parsed.walletId);
           if (wallet) {
             await this.db.wallets.put({
@@ -76,33 +92,40 @@ export class DexieStorageRepo implements IStorageRepo {
     const parsed = transactionSchema.parse(value);
     await this.db.transaction("rw", this.db.transactions, this.db.wallets, this.db.invoices, async () => {
       const existing = await this.db.transactions.get(parsed.id);
-      if (existing?.walletId && parsed.walletId && existing.walletId === parsed.walletId) {
-        const delta = parsed.amountMinor - existing.amountMinor;
+
+      const deltas = new Map<string, number>();
+      const addDelta = (wid: string | undefined, delta: number) => {
+        if (!wid) return;
+        deltas.set(wid, (deltas.get(wid) ?? 0) + delta);
+      };
+
+      if (existing) {
+        if (existing.type === "TRANSFER") {
+          const fee = existing.feeMinor ?? 0;
+          const principal = Math.abs(existing.amountMinor);
+          addDelta(existing.walletId, +(principal + fee));
+          addDelta(existing.toWalletId, -principal);
+        } else {
+          addDelta(existing.walletId, -existing.amountMinor);
+        }
+      }
+
+      if (parsed.type === "TRANSFER") {
+        const fee = parsed.feeMinor ?? 0;
+        const principal = Math.abs(parsed.amountMinor);
+        addDelta(parsed.walletId, -(principal + fee));
+        addDelta(parsed.toWalletId, +principal);
+      } else {
+        addDelta(parsed.walletId, +parsed.amountMinor);
+      }
+
+      for (const [wid, delta] of deltas.entries()) {
         if (delta !== 0) {
-          const wallet = await this.db.wallets.get(parsed.walletId);
+          const wallet = await this.db.wallets.get(wid);
           if (wallet) {
             await this.db.wallets.put({
               ...wallet,
               balanceMinor: wallet.balanceMinor + delta,
-            });
-          }
-        }
-      } else {
-        if (existing?.walletId) {
-          const oldWallet = await this.db.wallets.get(existing.walletId);
-          if (oldWallet) {
-            await this.db.wallets.put({
-              ...oldWallet,
-              balanceMinor: oldWallet.balanceMinor - existing.amountMinor,
-            });
-          }
-        }
-        if (parsed.walletId) {
-          const newWallet = await this.db.wallets.get(parsed.walletId);
-          if (newWallet) {
-            await this.db.wallets.put({
-              ...newWallet,
-              balanceMinor: newWallet.balanceMinor + parsed.amountMinor,
             });
           }
         }
@@ -152,13 +175,32 @@ export class DexieStorageRepo implements IStorageRepo {
   async deleteTransaction(id: string): Promise<void> {
     await this.db.transaction("rw", this.db.transactions, this.db.attachments, this.db.attachmentFiles, this.db.wallets, this.db.invoices, async () => {
       const existing = await this.db.transactions.get(id);
-      if (existing?.walletId) {
-        const wallet = await this.db.wallets.get(existing.walletId);
-        if (wallet) {
-          await this.db.wallets.put({
-            ...wallet,
-            balanceMinor: wallet.balanceMinor - existing.amountMinor,
-          });
+      if (existing) {
+        const deltas = new Map<string, number>();
+        const addDelta = (wid: string | undefined, delta: number) => {
+          if (!wid) return;
+          deltas.set(wid, (deltas.get(wid) ?? 0) + delta);
+        };
+
+        if (existing.type === "TRANSFER") {
+          const fee = existing.feeMinor ?? 0;
+          const principal = Math.abs(existing.amountMinor);
+          addDelta(existing.walletId, +(principal + fee));
+          addDelta(existing.toWalletId, -principal);
+        } else {
+          addDelta(existing.walletId, -existing.amountMinor);
+        }
+
+        for (const [wid, delta] of deltas.entries()) {
+          if (delta !== 0) {
+            const wallet = await this.db.wallets.get(wid);
+            if (wallet) {
+              await this.db.wallets.put({
+                ...wallet,
+                balanceMinor: wallet.balanceMinor + delta,
+              });
+            }
+          }
         }
       }
       if (existing?.invoiceId) {
@@ -226,6 +268,9 @@ export class DexieStorageRepo implements IStorageRepo {
   async saveCategory(value: Category): Promise<void> { await this.db.categories.put(categorySchema.parse(value)); }
   async deleteCategory(id: string): Promise<void> { await this.db.categories.delete(id); }
   listAttachments(entityType?: AttachmentMeta["entityType"], entityId?: string): Promise<AttachmentMeta[]> {
+    if (entityType && entityId) {
+      return this.db.attachments.where("[entityType+entityId]").equals([entityType, entityId]).toArray();
+    }
     return this.db.attachments.toCollection().filter((row) => (!entityType || row.entityType === entityType) && (!entityId || row.entityId === entityId)).toArray();
   }
 
@@ -267,7 +312,9 @@ export class DexieStorageRepo implements IStorageRepo {
   async deleteWallet(id: string): Promise<void> {
     await this.db.transaction("rw", this.db.wallets, this.db.transactions, this.db.subscriptions, async () => {
       await this.db.wallets.delete(id);
-      const affectedTransactions = await this.db.transactions.where("walletId").equals(id).toArray();
+      const affectedTransactions = await this.db.transactions
+        .filter((tx) => tx.walletId === id || tx.toWalletId === id)
+        .toArray();
       const affectedSubscriptions = await this.db.subscriptions.toCollection().filter((subscription) => subscription.walletId === id).toArray();
       const detached = detachWalletReferences(affectedTransactions, affectedSubscriptions, id);
       if (detached.transactions.length) await this.db.transactions.bulkPut(detached.transactions);
@@ -287,6 +334,7 @@ export class DexieStorageRepo implements IStorageRepo {
       this.db.wallets,
       this.db.profiles,
       this.db.appMeta,
+      this.db.notifications,
     ], async () => {
       await Promise.all([
         this.db.transactions.clear(),
@@ -299,6 +347,7 @@ export class DexieStorageRepo implements IStorageRepo {
         this.db.wallets.clear(),
         this.db.profiles.clear(),
         this.db.appMeta.clear(),
+        this.db.notifications.clear(),
       ]);
       await this.db.appMeta.put({ id: "app", currency: "PHP", seedVersion: 999 });
       await this.db.profiles.put({
@@ -326,6 +375,7 @@ export class DexieStorageRepo implements IStorageRepo {
       this.db.wallets,
       this.db.profiles,
       this.db.appMeta,
+      this.db.notifications,
     ], async () => {
       await Promise.all([
         this.db.transactions.clear(),
@@ -338,6 +388,7 @@ export class DexieStorageRepo implements IStorageRepo {
         this.db.wallets.clear(),
         this.db.profiles.clear(),
         this.db.appMeta.clear(),
+        this.db.notifications.clear(),
       ]);
       const seed = createDemoSeed(today);
       await this.db.categories.bulkAdd(seed.categories);
@@ -356,9 +407,23 @@ export class DexieStorageRepo implements IStorageRepo {
   }
 
   async reconcile(currentDate: string): Promise<ReconcileResult> {
-    return this.db.transaction("rw", this.db.transactions, this.db.subscriptions, this.db.invoices, this.db.appMeta, this.db.wallets, async () => {
+    return this.db.transaction("rw", [
+      this.db.transactions,
+      this.db.subscriptions,
+      this.db.invoices,
+      this.db.appMeta,
+      this.db.wallets,
+      this.db.notifications,
+    ], async () => {
       const meta = await this.getAppMeta();
-      const result = reconcile({ subscriptions: await this.db.subscriptions.toArray(), invoices: await this.db.invoices.toArray(), lastReconciledDate: meta.lastReconciledDate, currentDate });
+      const wallets = await this.db.wallets.toArray();
+      const result = reconcile({
+        subscriptions: await this.db.subscriptions.toArray(),
+        invoices: await this.db.invoices.toArray(),
+        lastReconciledDate: meta.lastReconciledDate,
+        currentDate,
+        wallets,
+      });
       for (const t of result.transactions) {
         if (t.walletId) {
           const wallet = await this.db.wallets.get(t.walletId);
@@ -370,11 +435,41 @@ export class DexieStorageRepo implements IStorageRepo {
           }
         }
       }
+      for (const n of result.notifications) {
+        const existing = await this.db.notifications.get(n.id);
+        if (!existing) {
+          await this.db.notifications.add(n);
+        }
+      }
       await this.db.transactions.bulkPut(result.transactions);
       await this.db.subscriptions.bulkPut(result.subscriptions);
       await this.db.invoices.bulkPut(result.invoices);
       await this.db.appMeta.put({ ...meta, lastReconciledDate: result.lastReconciledDate });
       return result;
     });
+  }
+
+  async listNotifications(): Promise<AppNotification[]> {
+    const all = await this.db.notifications.toArray();
+    return all.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+
+  async saveNotification(value: AppNotification): Promise<void> {
+    await this.db.notifications.put(appNotificationSchema.parse(value));
+  }
+
+  async markNotificationRead(id: string): Promise<void> {
+    const item = await this.db.notifications.get(id);
+    if (item) {
+      await this.db.notifications.put({ ...item, read: true });
+    }
+  }
+
+  async deleteNotification(id: string): Promise<void> {
+    await this.db.notifications.delete(id);
+  }
+
+  async clearNotifications(): Promise<void> {
+    await this.db.notifications.clear();
   }
 }

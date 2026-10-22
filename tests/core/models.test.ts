@@ -5,6 +5,18 @@ describe("core models", () => {
   it("validates transactions in integer minor units", () => {
     expect(transactionSchema.safeParse({ id: "1", date: "2026-10-20", title: "Lunch", amountMinor: -1250, currency: "PHP", type: "EXPENSE" }).success).toBe(true);
     expect(transactionSchema.safeParse({ id: "1", date: "2026-10-20", title: "Lunch", amountMinor: -12.5, currency: "PHP", type: "EXPENSE" }).success).toBe(false);
+    expect(transactionSchema.safeParse({
+      id: "tx-xfer",
+      date: "2026-10-20",
+      title: "Transfer to GCash",
+      amountMinor: 100000,
+      currency: "PHP",
+      type: "TRANSFER",
+      walletId: "w-mari",
+      toWalletId: "w-gcash",
+      feeMinor: 1000,
+      channel: "INSTAPAY",
+    }).success).toBe(true);
   });
   it("formats PHP amounts with the peso sign by default", () => expect(formatCurrency(123456)).toContain("₱1,234.56"));
 

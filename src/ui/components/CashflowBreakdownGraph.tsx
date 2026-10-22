@@ -84,14 +84,19 @@ export function CashflowBreakdownGraph({
   }, [timeframe]);
 
   const buckets = useMemo((): ChartBarData[] => {
+    const getInflow = (txs: Transaction[]) =>
+      txs.reduce((sum, t) => sum + (t.type === "TRANSFER" ? 0 : (t.amountMinor > 0 ? t.amountMinor : 0)), 0);
+    const getOutflow = (txs: Transaction[]) =>
+      txs.reduce((sum, t) => sum + (t.type === "TRANSFER" ? (t.feeMinor ?? 0) : (t.amountMinor < 0 ? -t.amountMinor : 0)), 0);
+
     if (timeframe === "DAILY") {
       // Last 7 days
       return Array.from({ length: 7 })
         .map((_, i) => {
           const date = subDays(currentDate, 6 - i);
           const dayTx = transactions.filter((t) => isSameDay(parseISO(t.date), date));
-          const inflow = dayTx.filter((t) => t.amountMinor > 0).reduce((s, t) => s + t.amountMinor, 0);
-          const outflow = dayTx.filter((t) => t.amountMinor < 0).reduce((s, t) => s - t.amountMinor, 0);
+          const inflow = getInflow(dayTx);
+          const outflow = getOutflow(dayTx);
           return {
             label: format(date, "EEE"),
             sublabel: format(date, "MMM d"),
@@ -113,8 +118,8 @@ export function CashflowBreakdownGraph({
             const d = parseISO(t.date);
             return isSameWeek(d, weekDate, { weekStartsOn: 1 });
           });
-          const inflow = weekTx.filter((t) => t.amountMinor > 0).reduce((s, t) => s + t.amountMinor, 0);
-          const outflow = weekTx.filter((t) => t.amountMinor < 0).reduce((s, t) => s - t.amountMinor, 0);
+          const inflow = getInflow(weekTx);
+          const outflow = getOutflow(weekTx);
           return {
             label: `W${format(weekDate, "w")}`,
             sublabel: `${format(wStart, "MMM d")} - ${format(wEnd, "d")}`,
@@ -131,8 +136,8 @@ export function CashflowBreakdownGraph({
         .map((_, i) => {
           const mDate = subMonths(currentDate, 5 - i);
           const monthTx = transactions.filter((t) => isSameMonth(parseISO(t.date), mDate));
-          const inflow = monthTx.filter((t) => t.amountMinor > 0).reduce((s, t) => s + t.amountMinor, 0);
-          const outflow = monthTx.filter((t) => t.amountMinor < 0).reduce((s, t) => s - t.amountMinor, 0);
+          const inflow = getInflow(monthTx);
+          const outflow = getOutflow(monthTx);
           return {
             label: format(mDate, "MMM"),
             sublabel: format(mDate, "yyyy"),
@@ -149,8 +154,8 @@ export function CashflowBreakdownGraph({
         .map((_, i) => {
           const qDate = subQuarters(currentDate, 3 - i);
           const qTx = transactions.filter((t) => isSameQuarter(parseISO(t.date), qDate));
-          const inflow = qTx.filter((t) => t.amountMinor > 0).reduce((s, t) => s + t.amountMinor, 0);
-          const outflow = qTx.filter((t) => t.amountMinor < 0).reduce((s, t) => s - t.amountMinor, 0);
+          const inflow = getInflow(qTx);
+          const outflow = getOutflow(qTx);
           return {
             label: `Q${Math.floor(qDate.getMonth() / 3) + 1}`,
             sublabel: format(qDate, "yyyy"),
@@ -166,8 +171,8 @@ export function CashflowBreakdownGraph({
       .map((_, i) => {
         const yDate = subYears(currentDate, 2 - i);
         const yTx = transactions.filter((t) => isSameYear(parseISO(t.date), yDate));
-        const inflow = yTx.filter((t) => t.amountMinor > 0).reduce((s, t) => s + t.amountMinor, 0);
-        const outflow = yTx.filter((t) => t.amountMinor < 0).reduce((s, t) => s - t.amountMinor, 0);
+        const inflow = getInflow(yTx);
+        const outflow = getOutflow(yTx);
         return {
           label: format(yDate, "yyyy"),
           sublabel: "Annual",

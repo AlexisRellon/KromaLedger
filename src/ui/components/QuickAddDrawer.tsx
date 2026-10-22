@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { addDays, format } from "date-fns";
 import { calculateInvoice } from "../../core/engine/invoiceCalculator";
 import { addLineItem } from "../../core/engine/lineItemWorkflow";
@@ -6,7 +6,8 @@ import { parseMinorInput } from "../../core/engine/moneyInput";
 import { evaluateNumpad } from "../../core/engine/numpadEvaluator";
 import { buildEntryDraft } from "../../state/entryDraft";
 import { LineItemBuilder, type LineDraft } from "../components/LineItemBuilder";
-import { formatWalletLabel, ALLOWED_ATTACHMENT_MIME_TYPES, attachmentMimeTypeSchema, type AttachmentMeta, type Transaction } from "../../core/models";
+import { formatCurrency, formatWalletLabel, ALLOWED_ATTACHMENT_MIME_TYPES, attachmentMimeTypeSchema, type AttachmentMeta, type Transaction, type TransferChannel } from "../../core/models";
+import { detectTransferFee } from "../../core/engine/transferFees";
 import { useUIStore, type QuickAddMode } from "../../state/useUIStore";
 import { useSaveAttachment, useSaveInvoice, useSaveSubscription, useSaveTransaction, useWallets } from "../../state/queries";
 import { saveEntryAndAttachment } from "../../state/entrySaveWorkflow";
@@ -41,10 +42,48 @@ export function QuickAddDrawer({
   const [discountMinor, setDiscountMinor] = useState(0);
   const [savedId, setSavedId] = useState("");
   const [walletId, setWalletId] = useState("");
+  const [toWalletId, setToWalletId] = useState("");
+  const [channel, setChannel] = useState<TransferChannel>("INSTAPAY");
+  const [feeMinor, setFeeMinor] = useState(0);
+  const [feeCustomized, setFeeCustomized] = useState(false);
   const descriptionInputRef = useRef<HTMLInputElement>(null);
+  const tabContainerRef = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<Partial<Record<QuickAddMode, HTMLButtonElement | null>>>({});
+  const [indicatorStyle, setIndicatorStyle] = useState<{ left: number; width: number } | null>(null);
+
+  useLayoutEffect(() => {
+    const activeEl = tabRefs.current[mode];
+    const container = tabContainerRef.current;
+    if (!activeEl || !container) return;
+
+    const updateIndicator = () => {
+      setIndicatorStyle({
+        left: activeEl.offsetLeft,
+        width: activeEl.offsetWidth,
+      });
+    };
+
+    updateIndicator();
+
+    const ro = new ResizeObserver(updateIndicator);
+    ro.observe(container);
+    ro.observe(activeEl);
+    return () => ro.disconnect();
+  }, [mode]);
 
   const walletsQuery = useWallets();
   const wallets = walletsQuery.data ?? [];
+
+  const fromWallet = wallets.find((w) => w.id === walletId);
+  const targetWallet = wallets.find((w) => w.id === toWalletId);
+
+  const feeDetection = useMemo(() => {
+    return detectTransferFee({
+      origin: fromWallet?.institution || fromWallet?.name,
+      destination: targetWallet?.institution || targetWallet?.name,
+      channel,
+    });
+  }, [fromWallet, targetWallet, channel]);
 
   const saveAttachment = useSaveAttachment();
   const saveTx = useSaveTransaction();
@@ -53,11 +92,43 @@ export function QuickAddDrawer({
   const closeStore = useUIStore((s) => s.closeQuickAdd);
 
   useEffect(() => {
-    if ((mode === "EXPENSE" || mode === "SUBSCRIPTION") && !walletId && wallets.length > 0) {
+    if ((mode === "EXPENSE" || mode === "SUBSCRIPTION" || mode === "TRANSFER") && !walletId && wallets.length > 0) {
       const def = wallets.find((w) => w.isDefault) ?? wallets[0];
       if (def) setWalletId(def.id);
     }
   }, [wallets, walletId, mode]);
+
+  useEffect(() => {
+    if (mode === "TRANSFER" && wallets.length > 1) {
+      if (!toWalletId || toWalletId === walletId) {
+        const other = wallets.find((w) => w.id !== walletId);
+        if (other) setToWalletId(other.id);
+      }
+    }
+  }, [mode, wallets, walletId, toWalletId]);
+
+  // Auto-detect and auto-apply transfer fee charge by checking origin to destination
+  useEffect(() => {
+    if (mode === "TRANSFER" && !feeCustomized) {
+      setFeeMinor(feeDetection.feeMinor);
+    }
+  }, [mode, feeDetection, feeCustomized]);
+
+  // When origin or destination wallet changes, re-arm auto-apply
+  const handleOriginChange = (newOriginId: string) => {
+    setWalletId(newOriginId);
+    setFeeCustomized(false);
+  };
+
+  const handleDestinationChange = (newDestId: string) => {
+    setToWalletId(newDestId);
+    setFeeCustomized(false);
+  };
+
+  const handleChannelChange = (newChannel: TransferChannel) => {
+    setChannel(newChannel);
+    setFeeCustomized(false);
+  };
 
   useEffect(() => {
     if (!categoryId && categories.length > 0) {
@@ -70,6 +141,15 @@ export function QuickAddDrawer({
     setMode(m);
     if (m === "INVOICE") {
       setWalletId("");
+    } else if (m === "TRANSFER") {
+      if (!walletId && wallets.length > 0) {
+        const def = wallets.find((w) => w.isDefault) ?? wallets[0];
+        if (def) setWalletId(def.id);
+      }
+      if (!toWalletId && wallets.length > 1) {
+        const other = wallets.find((w) => w.id !== (walletId || wallets[0]?.id));
+        if (other) setToWalletId(other.id);
+      }
     } else if (wallets.length > 0) {
       const def = wallets.find((w) => w.isDefault) ?? wallets[0];
       if (def) setWalletId(def.id);
@@ -204,7 +284,26 @@ export function QuickAddDrawer({
       }
     }
 
-    if (!title.trim() || !Number.isSafeInteger(calculatedFinalCents) || calculatedFinalCents <= 0) {
+    if (mode === "TRANSFER") {
+      if (!walletId || !toWalletId) {
+        setError("Select both source and destination accounts.");
+        return;
+      }
+      if (walletId === toWalletId) {
+        setError("Source and destination accounts must be different.");
+        return;
+      }
+    }
+
+    const fromWallet = wallets.find((w) => w.id === walletId);
+    const targetWallet = wallets.find((w) => w.id === toWalletId);
+    const effectiveTitle = title.trim() || (
+      mode === "TRANSFER"
+        ? `Transfer: ${fromWallet?.name ?? "Account"} → ${targetWallet?.name ?? "Account"}`
+        : ""
+    );
+
+    if (!effectiveTitle || !Number.isSafeInteger(calculatedFinalCents) || calculatedFinalCents <= 0) {
       setError("Add a title and a valid amount above zero.");
       return;
     }
@@ -217,7 +316,7 @@ export function QuickAddDrawer({
           prefix === "item" ? id() : entryId,
         today: today(),
         date,
-        title,
+        title: effectiveTitle,
         amount: cleanAmountString,
         currency: "PHP",
         categoryId: categoryId || undefined,
@@ -227,33 +326,36 @@ export function QuickAddDrawer({
       const draft =
         mode === "EXPENSE"
           ? buildEntryDraft({ ...shared, mode })
-          : mode === "SUBSCRIPTION"
-            ? buildEntryDraft({ ...shared, mode, cycle, autoLog })
-            : buildEntryDraft({
+          : mode === "TRANSFER"
+            ? buildEntryDraft({
                 ...shared,
                 mode,
-                direction,
-                dueDate,
-                lines: effectiveLines,
-                taxRateBps,
-                discountMinor,
-              });
+                toWalletId,
+                feeMinor,
+                channel,
+              })
+            : mode === "SUBSCRIPTION"
+              ? buildEntryDraft({ ...shared, mode, cycle, autoLog })
+              : buildEntryDraft({
+                  ...shared,
+                  mode,
+                  direction,
+                  dueDate,
+                  lines: effectiveLines,
+                  taxRateBps,
+                  discountMinor,
+                });
 
       await saveEntryAndAttachment(
         saveProgress.current,
         async () => {
-          if (draft.kind === "EXPENSE") {
-            await saveTx.mutateAsync({ ...draft.transaction, walletId: walletId || undefined });
+          if (draft.kind === "EXPENSE" || draft.kind === "TRANSFER") {
+            await saveTx.mutateAsync(draft.transaction);
           } else if (draft.kind === "SUBSCRIPTION") {
             await saveSub.mutateAsync({ ...draft.subscription, walletId: walletId || undefined });
           } else {
             if (walletId) {
-              const paidInvoice = {
-                ...draft.invoice,
-                paidMinor: draft.invoice.totalMinor,
-                status: "PAID" as const,
-              };
-              await saveInv.mutateAsync({ invoice: paidInvoice, items: draft.items });
+              await saveInv.mutateAsync({ invoice: draft.invoice, items: draft.items });
               const paymentTx: Transaction = {
                 id: id(),
                 date,
@@ -261,7 +363,7 @@ export function QuickAddDrawer({
                 amountMinor: direction === "RECEIVABLE" ? draft.invoice.totalMinor : -draft.invoice.totalMinor,
                 currency: draft.invoice.currency,
                 type: direction === "RECEIVABLE" ? "INCOME" : "EXPENSE",
-                invoiceId: paidInvoice.id,
+                invoiceId: draft.invoice.id,
                 walletId,
                 categoryId: categoryId || undefined,
               };
@@ -343,7 +445,7 @@ export function QuickAddDrawer({
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-end justify-center bg-black/75 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+      className="fixed inset-0 z-40 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) close();
       }}
@@ -352,14 +454,15 @@ export function QuickAddDrawer({
         role="dialog"
         aria-modal="true"
         aria-label="Quick add entry"
-        className="animate-drawer max-h-[94vh] w-full max-w-lg overflow-y-auto rounded-t-[2rem] border border-white/10 bg-[#10110e] p-5 shadow-2xl sm:rounded-[2rem] sm:p-7"
+        className="flex max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)] w-full max-w-lg flex-col overflow-hidden rounded-3xl sm:rounded-[2rem] border border-white/10 bg-[#10110e] shadow-2xl animate-entrance"
       >
-        <div className="mb-5 flex items-center justify-between">
-          <h2 className="font-display text-2xl font-semibold text-white">New Entry</h2>
+        {/* Drawer Header (Fixed) */}
+        <div className="shrink-0 flex items-center justify-between border-b border-white/[0.08] px-5 py-4 sm:px-7 sm:py-5">
+          <h2 className="font-display text-xl sm:text-2xl font-semibold text-white">New Entry</h2>
           <button
             onClick={close}
             aria-label="Close"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 text-neutral-400 hover:text-white"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 text-neutral-400 hover:text-white transition hover:bg-white/10"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -367,28 +470,48 @@ export function QuickAddDrawer({
           </button>
         </div>
 
-        {/* 3-way Segmented Mode Pill */}
-        <div className="relative mb-6 flex rounded-full border border-white/[0.06] bg-black/40 p-1 select-none">
+        {/* Scrollable Body */}
+        <div className="flex-1 overflow-y-auto px-5 py-4 sm:px-7">
+        {/* 4-way Segmented Mode Pill */}
+        <div
+          ref={tabContainerRef}
+          style={{ containerType: "inline-size" }}
+          className="@container relative mb-6 flex rounded-full border border-white/[0.06] bg-black/40 p-1 select-none"
+        >
           <span
             aria-hidden="true"
-            className="absolute inset-y-1 w-[calc((100%-8px)/3)] rounded-full bg-[#D9F938] transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]"
+            className="absolute inset-y-1 rounded-full bg-[#D9F938] transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]"
             style={{
-              left: mode === "EXPENSE" ? "4px" : mode === "SUBSCRIPTION" ? "calc(33.333% + 1.33px)" : "calc(66.666% - 1.33px)",
+              left: indicatorStyle
+                ? `${indicatorStyle.left}px`
+                : mode === "EXPENSE"
+                  ? "4px"
+                  : mode === "TRANSFER"
+                    ? "calc(25% + 2px)"
+                    : mode === "SUBSCRIPTION"
+                      ? "calc(50% + 1px)"
+                      : "calc(75% - 1px)",
+              width: indicatorStyle
+                ? `${indicatorStyle.width}px`
+                : "calc((100% - 8px) / 4)",
             }}
           />
-          {(["EXPENSE", "SUBSCRIPTION", "INVOICE"] as const).map((m) => (
+          {(["EXPENSE", "TRANSFER", "SUBSCRIPTION", "INVOICE"] as const).map((m) => (
             <button
               key={m}
+              ref={(el) => {
+                tabRefs.current[m] = el;
+              }}
               type="button"
               onClick={() => handleModeChange(m)}
               disabled={Boolean(savedId)}
-              className={`relative z-10 flex-1 rounded-full py-2 text-xs font-semibold tracking-wider transition-colors duration-200 ${
+              className={`relative z-10 flex-auto rounded-full px-2.5 sm:px-3 py-2 text-xs font-semibold tracking-normal sm:tracking-wider whitespace-nowrap transition-colors duration-200 text-center ${
                 mode === m
                   ? "text-[#070806]"
                   : "text-neutral-400 hover:text-white"
               }`}
             >
-              {m === "EXPENSE" ? "Expense" : m === "SUBSCRIPTION" ? "Subscription" : "Invoice"}
+              {m === "EXPENSE" ? "Expense" : m === "TRANSFER" ? "Transfer" : m === "SUBSCRIPTION" ? "Subscription" : "Invoice"}
             </button>
           ))}
         </div>
@@ -410,72 +533,226 @@ export function QuickAddDrawer({
           </p>
         </div>
 
-        {/* Category & Receipt Pills */}
-        <div className="my-4 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {filteredCategories.map((c) => {
-            const catName = c.name.toLowerCase();
-            return (
-              <button
-                key={c.id}
-                onClick={() => setCategoryId(c.id)}
-                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-xs font-medium transition ${
-                  categoryId === c.id
-                    ? "border-[#D9F938] bg-[#D9F938] text-[#070806] font-semibold"
-                    : "border-white/10 bg-white/[0.03] text-neutral-300 hover:border-white/25 hover:text-white"
-                }`}
-              >
-                {catName.includes("dining") || catName.includes("food") ? (
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
-                  </svg>
-                ) : catName.includes("util") || catName.includes("power") ? (
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
-                  </svg>
-                ) : catName.includes("service") || catName.includes("work") ? (
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
-                  </svg>
-                ) : (
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
-                  </svg>
-                )}
-                <span>{c.name}</span>
-              </button>
-            );
-          })}
-          {mode !== "SUBSCRIPTION" && (
-            <label className="inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 text-xs text-neutral-300 transition hover:border-[#D9F938]/40 hover:text-white">
-              <svg className="h-3.5 w-3.5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.373L8.557 18.315a1.5 1.5 0 1 1-2.121-2.121l9.879-9.879" />
-              </svg>
-              <span>{receipt ? receipt.name : "Attach receipt"}</span>
-              <input
-                type="file"
-                accept={ALLOWED_ATTACHMENT_MIME_TYPES.join(",")}
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) {
-                    setReceipt(null);
-                    return;
-                  }
-                  if (!attachmentMimeTypeSchema.safeParse(file.type).success) {
-                    setError("Only PNG, JPEG, WEBP, GIF, and PDF files are supported.");
-                    e.target.value = "";
-                    setReceipt(null);
-                    return;
-                  }
-                  setReceipt(file);
-                }}
-              />
-            </label>
-          )}
-        </div>
+        {/* Transfer Configuration Zone */}
+        {mode === "TRANSFER" && (
+          <div className="my-4 space-y-3.5 rounded-2xl border border-white/10 bg-black/40 p-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              {/* Source Account */}
+              <div>
+                <label className="text-[11px] font-mono uppercase tracking-wider text-neutral-400">
+                  Transfer From
+                </label>
+                <select
+                  value={walletId}
+                  onChange={(e) => handleOriginChange(e.target.value)}
+                  className="mt-1.5 w-full rounded-xl border border-white/10 bg-[#141512] px-3 py-2 text-xs font-semibold text-white outline-none focus:border-[#D9F938]/60"
+                >
+                  {wallets.map((w) => (
+                    <option key={w.id} value={w.id} className="bg-[#141512] text-white">
+                      {formatWalletLabel(w)} ({formatCurrency(w.balanceMinor, w.currency)})
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-        {/* Wallet / Source Selector */}
-        {wallets.length > 0 && (
+              {/* Destination Account */}
+              <div>
+                <label className="text-[11px] font-mono uppercase tracking-wider text-neutral-400">
+                  Transfer To
+                </label>
+                <select
+                  value={toWalletId}
+                  onChange={(e) => handleDestinationChange(e.target.value)}
+                  className="mt-1.5 w-full rounded-xl border border-white/10 bg-[#141512] px-3 py-2 text-xs font-semibold text-white outline-none focus:border-[#D9F938]/60"
+                >
+                  {wallets.map((w) => (
+                    <option key={w.id} value={w.id} disabled={w.id === walletId} className="bg-[#141512] text-white">
+                      {formatWalletLabel(w)} ({formatCurrency(w.balanceMinor, w.currency)})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2 pt-2 border-t border-white/[0.06]">
+              {/* Channel Selector */}
+              <div>
+                <label className="text-[11px] font-mono uppercase tracking-wider text-neutral-400">
+                  Transfer Channel
+                </label>
+                <div className="mt-1.5 flex rounded-lg border border-white/10 bg-black/30 p-0.5">
+                  {(["INSTAPAY", "PESONET"] as const).map((ch) => (
+                    <button
+                      key={ch}
+                      type="button"
+                      onClick={() => handleChannelChange(ch)}
+                      className={`flex-1 rounded-md py-1.5 text-xs font-semibold transition ${
+                        channel === ch
+                          ? "bg-white text-black shadow-sm"
+                          : "text-neutral-400 hover:text-white"
+                      }`}
+                    >
+                      {ch === "INSTAPAY" ? "InstaPay" : "PESONet"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Transfer Fee */}
+              <div>
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-mono uppercase tracking-wider text-neutral-400">
+                    Transfer Fee (₱)
+                  </label>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-mono text-[#D9F938]">
+                      {feeDetection.reason}
+                    </span>
+                    {feeCustomized && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFeeCustomized(false);
+                          setFeeMinor(feeDetection.feeMinor);
+                        }}
+                        className="text-[10px] text-cyan-400 hover:underline"
+                        title="Re-apply auto-detected fee"
+                      >
+                        (Reset)
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={(feeMinor / 100).toString()}
+                  onChange={(e) => {
+                    setFeeCustomized(true);
+                    const val = parseFloat(e.target.value);
+                    setFeeMinor(Number.isFinite(val) && val >= 0 ? Math.round(val * 100) : 0);
+                  }}
+                  className="mt-1.5 w-full rounded-xl border border-white/10 bg-[#141512] px-3 py-1.5 text-xs font-mono font-semibold text-white outline-none focus:border-[#D9F938]/60"
+                />
+              </div>
+            </div>
+
+            {/* Live Transfer Calculation Summary */}
+            <div className="mt-2 rounded-xl bg-white/[0.02] border border-white/[0.06] p-2.5 text-xs text-neutral-300 space-y-1">
+              <div className="flex justify-between">
+                <span className="text-neutral-400">Transfer Principal:</span>
+                <span className="font-mono font-medium text-white">₱{(finalCents / 100).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-neutral-400">Transfer Fee:</span>
+                <span className="font-mono font-medium text-white">₱{(feeMinor / 100).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between border-t border-white/[0.06] pt-1 font-semibold">
+                <span className="text-neutral-200">Total Deducted from {fromWallet?.name || "Source"}:</span>
+                <span className="font-mono text-[#D9F938]">₱{((finalCents + feeMinor) / 100).toFixed(2)}</span>
+              </div>
+            </div>
+
+            {/* Receipt / Screenshot Attachment for Transfer */}
+            <div className="pt-1">
+              <label className="inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-neutral-300 transition hover:border-[#D9F938]/40 hover:text-white">
+                <svg className="h-3.5 w-3.5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.373L8.557 18.315a1.5 1.5 0 1 1-2.121-2.121l9.879-9.879" />
+                </svg>
+                <span>{receipt ? receipt.name : "Attach transfer receipt / screenshot"}</span>
+                <input
+                  type="file"
+                  accept={ALLOWED_ATTACHMENT_MIME_TYPES.join(",")}
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) {
+                      setReceipt(null);
+                      return;
+                    }
+                    if (!attachmentMimeTypeSchema.safeParse(file.type).success) {
+                      setError("Only PNG, JPEG, WEBP, GIF, and PDF files are supported.");
+                      e.target.value = "";
+                      setReceipt(null);
+                      return;
+                    }
+                    setReceipt(file);
+                  }}
+                />
+              </label>
+            </div>
+          </div>
+        )}
+
+        {/* Category & Receipt Pills (Expense & Invoice) */}
+        {mode !== "TRANSFER" && (
+          <div className="my-4 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {filteredCategories.map((c) => {
+              const catName = c.name.toLowerCase();
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => setCategoryId(c.id)}
+                  className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-xs font-medium transition ${
+                    categoryId === c.id
+                      ? "border-[#D9F938] bg-[#D9F938] text-[#070806] font-semibold"
+                      : "border-white/10 bg-white/[0.03] text-neutral-300 hover:border-white/25 hover:text-white"
+                  }`}
+                >
+                  {catName.includes("dining") || catName.includes("food") ? (
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                    </svg>
+                  ) : catName.includes("util") || catName.includes("power") ? (
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
+                    </svg>
+                  ) : catName.includes("service") || catName.includes("work") ? (
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
+                    </svg>
+                  ) : (
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+                    </svg>
+                  )}
+                  <span>{c.name}</span>
+                </button>
+              );
+            })}
+            {mode !== "SUBSCRIPTION" && (
+              <label className="inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 text-xs text-neutral-300 transition hover:border-[#D9F938]/40 hover:text-white">
+                <svg className="h-3.5 w-3.5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.373L8.557 18.315a1.5 1.5 0 1 1-2.121-2.121l9.879-9.879" />
+                </svg>
+                <span>{receipt ? receipt.name : "Attach receipt"}</span>
+                <input
+                  type="file"
+                  accept={ALLOWED_ATTACHMENT_MIME_TYPES.join(",")}
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) {
+                      setReceipt(null);
+                      return;
+                    }
+                    if (!attachmentMimeTypeSchema.safeParse(file.type).success) {
+                      setError("Only PNG, JPEG, WEBP, GIF, and PDF files are supported.");
+                      e.target.value = "";
+                      setReceipt(null);
+                      return;
+                    }
+                    setReceipt(file);
+                  }}
+                />
+              </label>
+            )}
+          </div>
+        )}
+
+        {/* Wallet / Source Selector (Non-Transfer) */}
+        {mode !== "TRANSFER" && wallets.length > 0 && (
           <div className="mb-4 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
             <span className="text-xs font-mono uppercase tracking-wider text-neutral-400 shrink-0">
               Paid With:
@@ -521,7 +798,9 @@ export function QuickAddDrawer({
               ? "SERVICE NAME"
               : mode === "INVOICE"
                 ? "CLIENT / VENDOR"
-                : "MERCHANT / NOTE"}
+                : mode === "TRANSFER"
+                  ? "TRANSFER NOTE / TITLE"
+                  : "MERCHANT / NOTE"}
             <input
               autoFocus
               value={title}
@@ -537,7 +816,9 @@ export function QuickAddDrawer({
                   ? "e.g. Netflix"
                   : mode === "INVOICE"
                     ? "e.g. Acme Corp"
-                    : "e.g. GrabCar Commute"
+                    : mode === "TRANSFER"
+                      ? `e.g. ${fromWallet?.name ?? "Source"} to ${targetWallet?.name ?? "Destination"}`
+                      : "e.g. GrabCar Commute"
               }
               className="mt-1.5 w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-3 text-sm text-white outline-none transition focus:border-[#D9F938]/60 focus:ring-1 focus:ring-[#D9F938]/40"
             />
@@ -667,22 +948,25 @@ export function QuickAddDrawer({
           ))}
         </div>
 
-        {error && (
-          <p role="alert" className="mt-3 text-sm text-rose-400">
-            {error}
-          </p>
-        )}
+        </div>
 
-        {/* Save Entry CTA */}
-        <button
-          onClick={() => void submit()}
-          disabled={saveTx.isPending || saveSub.isPending || saveInv.isPending}
-          className="mt-4 w-full rounded-2xl bg-[#D9F938] py-4 font-semibold text-[#070806] transition hover:brightness-105 active:scale-[0.99] disabled:opacity-50"
-        >
-          {saveTx.isPending || saveSub.isPending || saveInv.isPending
-            ? "Saving…"
-            : "Save Entry"}
-        </button>
+        {/* Save Entry CTA Footer (Fixed) */}
+        <div className="shrink-0 border-t border-white/10 bg-[#10110e] px-5 py-3.5 sm:px-7 sm:py-4">
+          {error && (
+            <p role="alert" className="mb-2 text-center text-xs text-rose-400">
+              {error}
+            </p>
+          )}
+          <button
+            onClick={() => void submit()}
+            disabled={saveTx.isPending || saveSub.isPending || saveInv.isPending}
+            className="w-full rounded-2xl bg-[#D9F938] py-3.5 sm:py-4 font-semibold text-[#070806] transition hover:brightness-105 active:scale-[0.99] disabled:opacity-50"
+          >
+            {saveTx.isPending || saveSub.isPending || saveInv.isPending
+              ? "Saving…"
+              : "Save Entry"}
+          </button>
+        </div>
       </section>
     </div>
   );

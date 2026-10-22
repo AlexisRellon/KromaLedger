@@ -21,15 +21,8 @@ const SettingsScreen = lazy(() => import("./ui/screens/SettingsScreen").then((m)
 const VaultBackupModal = lazy(() => import("./ui/screens/VaultBackupModal").then((m) => ({ default: m.VaultBackupModal })));
 const EditProfileModal = lazy(() => import("./ui/components/EditProfileModal").then((m) => ({ default: m.EditProfileModal })));
 const QuickAddDrawer = lazy(() => import("./ui/components/QuickAddDrawer").then((m) => ({ default: m.QuickAddDrawer })));
-
-function TabSkeleton() {
-  return (
-    <div className="space-y-4 animate-pulse">
-      <div className="h-44 rounded-3xl border border-white/5 bg-white/[0.02]" />
-      <div className="h-64 rounded-3xl border border-white/5 bg-white/[0.02]" />
-    </div>
-  );
-}
+const NotificationCenterModal = lazy(() => import("./ui/components/NotificationCenterModal").then((m) => ({ default: m.NotificationCenterModal })));
+import { ScreenSkeleton } from "./ui/components/skeletons";
 
 export function App() {
   const month = useUIStore((s) => s.selectedMonth);
@@ -39,6 +32,8 @@ export function App() {
   const closeQuickAdd = useUIStore((s) => s.closeQuickAdd);
   const editProfileOpen = useUIStore((s) => s.editProfileOpen);
   const closeEditProfile = useUIStore((s) => s.closeEditProfile);
+  const notificationsOpen = useUIStore((s) => s.notificationsOpen);
+  const closeNotifications = useUIStore((s) => s.closeNotifications);
   const [backupOpen, setBackupOpen] = useState(false);
 
   const tx = useTransactions();
@@ -49,6 +44,11 @@ export function App() {
   const categories = useCategories();
   const profileQuery = useProfile();
   const saveProfileMutation = useSaveProfile();
+
+  const isHomeLoading =
+    tab === "HOME" &&
+    !tx.data &&
+    (tx.isLoading || allTx.isLoading || subs.isLoading || categories.isLoading);
 
   const analytics = useMemo(
     () =>
@@ -101,9 +101,10 @@ export function App() {
             attachments={attachments.data ?? []}
             categories={categories.data ?? []}
             onQuickAdd={() => openQuickAdd("EXPENSE")}
+            isLoading={isHomeLoading}
           />
         ) : (
-          <Suspense fallback={<TabSkeleton />}>
+          <Suspense fallback={<ScreenSkeleton tab={tab} />}>
             {tab === "WALLETS" ? (
               <WalletsScreen onQuickAdd={() => openQuickAdd("EXPENSE")} />
             ) : tab === "PENDING" ? (
@@ -151,6 +152,7 @@ export function App() {
             }}
           />
         )}
+        {notificationsOpen && <NotificationCenterModal onClose={closeNotifications} />}
       </Suspense>
     </main>
   );

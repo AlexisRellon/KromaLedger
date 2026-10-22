@@ -1,6 +1,7 @@
 import { useEffect, useState, type ButtonHTMLAttributes, type PropsWithChildren } from "react";
+export * from "./Skeleton";
 
-export function BrandLogo() { return <div className="flex items-center gap-1 font-mono text-sm font-bold tracking-[.22em]"><span className="text-white">KROMA</span><span className="font-normal text-neutral-400">LEDGER</span><span aria-hidden className="ml-0.5 h-1.5 w-1.5 rounded-full bg-[#D9F938]" /></div>; }
+export function BrandLogo() { return <div className="flex items-center gap-1 font-mono text-sm font-bold tracking-[.22em]"><span className="text-white">KROMA</span><span className="font-normal text-neutral-400">LEDGER</span><span aria-hidden className="ml-1 h-1.5 w-1.5 rounded-full bg-[#D9F938]" /></div>; }
 export function SmokedCard({ children, className = "" }: PropsWithChildren<{ className?: string }>) { return <section className={`rounded-3xl border border-white/[.08] bg-white/[.035] p-5.5 shadow-2xl shadow-black/40 backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] transition-all duration-200 hover:border-white/[.12] ${className}`}>{children}</section>; }
 export function VoltButton({ children, className = "", ...props }: ButtonHTMLAttributes<HTMLButtonElement>) { return <button {...props} className={`rounded-2xl bg-[#D9F938] px-5 py-3.5 font-semibold text-[#070806] transition-all hover:brightness-105 active:scale-[0.98] disabled:opacity-50 ${className}`}>{children}</button>; }
 
@@ -127,4 +128,4 @@ export function AnimatedMoney({ minor }: { minor: number }) {
   return <span>₱{pesos}</span>;
 }
 
-export function StatusDot({ tone = "amber" }: { tone?: "amber" | "green" | "rose" }) { const color = tone === "green" ? "bg-emerald-400" : tone === "rose" ? "bg-rose-500" : "bg-amber-400"; return <span aria-hidden className={`inline-block h-2 w-2 rounded-full ${color}`} />; }
+export function StatusDot({ tone = "amber" }: { tone?: "amber" | "green" | "rose" }) { const color = tone === "green" ? "bg-[#D9F938]" : tone === "rose" ? "bg-rose-500" : "bg-amber-400"; return <span aria-hidden className={`inline-block h-2 w-2 rounded-full ${color}`} />; }

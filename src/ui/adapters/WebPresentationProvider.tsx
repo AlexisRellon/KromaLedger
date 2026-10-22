@@ -61,7 +61,7 @@ function WebInput({ value, accessibilityLabel, type = "text", onValueChange }: P
 
 function WebModal({ children, accessibilityLabel, onDismiss }: PresentationModalProps) {
   return <div role="dialog" aria-modal="true" aria-label={accessibilityLabel} onKeyDown={(event) => { if (event.key === "Escape") onDismiss(); }}
-    className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4">{children}</div>;
+    className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm">{children}</div>;
 }
 
 const components: PresentationComponents = { Box: WebBox, Text: WebText, Button: WebButton, Icon: WebIcon, Input: WebInput, Modal: WebModal };

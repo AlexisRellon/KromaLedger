@@ -1,5 +1,5 @@
 import Dexie, { type Table } from "dexie";
-import type { AppMeta, AttachmentMeta, Category, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../../core/models";
+import type { AppMeta, AppNotification, AttachmentMeta, Category, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../../core/models";
 
 export interface AttachmentFileRecord {
   id: string;
@@ -19,6 +19,7 @@ export class KromaLedgerDB extends Dexie {
   appMeta!: Table<AppMeta, string>;
   wallets!: Table<Wallet, string>;
   profiles!: Table<UserProfile, string>;
+  notifications!: Table<AppNotification, string>;
 
   constructor() {
     super("KromaLedgerDB");
@@ -36,6 +37,12 @@ export class KromaLedgerDB extends Dexie {
       transactions: "&id,date,type,categoryId,subscriptionId,invoiceId,walletId",
       wallets: "&id,name,type,isDefault",
       profiles: "&id",
+    });
+    this.version(4).stores({
+      transactions: "&id,date,type,categoryId,subscriptionId,invoiceId,walletId,toWalletId",
+    });
+    this.version(5).stores({
+      notifications: "&id,createdAt,read,type,entityId",
     });
   }
 }

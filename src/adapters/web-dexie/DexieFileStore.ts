@@ -10,7 +10,8 @@ export class DexieFileStore implements IFileStore {
   async save(id: string, data: Uint8Array, mimeType: string): Promise<void> {
     if (!safeId.test(id)) throw new RangeError("Attachment id contains unsafe path characters");
     if (!attachmentMimeTypeSchema.safeParse(mimeType).success) throw new RangeError("Unsupported or disallowed attachment MIME type");
-    const blob = new Blob([new Uint8Array(data).buffer], { type: mimeType });
+    const buffer = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer;
+    const blob = new Blob([buffer], { type: mimeType });
     await this.db.attachmentFiles.put({ id, mimeType, size: blob.size, blob });
   }
 
@@ -20,13 +21,15 @@ export class DexieFileStore implements IFileStore {
     let bytes = data;
     if (meta.mimeType.startsWith("image/") && meta.mimeType !== "image/webp") {
       const { default: imageCompression } = await import("browser-image-compression");
-      const file = new File([new Uint8Array(data).buffer], meta.filename, { type: meta.mimeType });
+      const inBuffer = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer;
+      const file = new File([inBuffer], meta.filename, { type: meta.mimeType });
       const compressed = await imageCompression(file, { maxSizeMB: 0.5, maxWidthOrHeight: 1920, useWebWorker: false, fileType: "image/webp" });
       bytes = new Uint8Array(await compressed.arrayBuffer());
       const baseName = meta.filename.lastIndexOf(".") > 0 ? meta.filename.slice(0, meta.filename.lastIndexOf(".")) : meta.filename;
       meta = attachmentMetaSchema.parse({ ...meta, filename: `${baseName}.webp`, mimeType: "image/webp", size: compressed.size });
     }
-    const blob = new Blob([new Uint8Array(bytes).buffer], { type: meta.mimeType });
+    const outBuffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+    const blob = new Blob([outBuffer], { type: meta.mimeType });
     await this.db.transaction("rw", this.db.attachments, this.db.attachmentFiles, this.db.transactions, this.db.invoices, async () => {
       const parentExists = meta.entityType === "TRANSACTION"
         ? await this.db.transactions.get(meta.entityId)

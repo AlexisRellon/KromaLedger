@@ -18,15 +18,22 @@ import { SmokedCard } from "../primitives";
 import { EditEntryModal } from "../components/EditEntryModal";
 import { ConfirmDeleteModal } from "../components/ConfirmDeleteModal";
 import { WalletOverviewPanel } from "../../state/presentation/WalletOverviewPanel";
+import { WalletsSkeleton } from "../components/skeletons";
 
 export function WalletsScreen({
   onQuickAdd,
+  isLoading = false,
 }: {
   onQuickAdd: () => void;
+  isLoading?: boolean;
 }) {
   const walletsQuery = useWallets();
   const txQuery = useAllTransactions();
   const profileQuery = useProfile();
+
+  if (isLoading || (walletsQuery.isLoading && !walletsQuery.data)) {
+    return <WalletsSkeleton />;
+  }
   const saveWalletMutation = useSaveWallet();
   const deleteWalletMutation = useDeleteWallet();
 
@@ -64,7 +71,7 @@ export function WalletsScreen({
 
   const walletTransactions = useMemo(() => {
     if (!activeWallet) return [];
-    return allTx.filter((t) => t.walletId === activeWallet.id);
+    return allTx.filter((t) => t.walletId === activeWallet.id || t.toWalletId === activeWallet.id);
   }, [allTx, activeWallet]);
 
   const showNotice = (msg: string) => {
@@ -268,7 +275,12 @@ export function WalletsScreen({
 
             <div className="divide-y divide-white/[0.06]">
               {walletTransactions.slice(0, 8).map((tx) => {
-                const incoming = tx.amountMinor > 0;
+                const isIncomingTransfer = tx.type === "TRANSFER" && tx.toWalletId === activeWallet?.id;
+                const isOutgoingTransfer = tx.type === "TRANSFER" && tx.walletId === activeWallet?.id;
+                const incoming = tx.type === "TRANSFER" ? isIncomingTransfer : tx.amountMinor > 0;
+                const displayAmount = tx.type === "TRANSFER"
+                  ? (isOutgoingTransfer ? Math.abs(tx.amountMinor) + (tx.feeMinor ?? 0) : Math.abs(tx.amountMinor))
+                  : Math.abs(tx.amountMinor);
                 return (
                   <div
                     key={tx.id}
@@ -276,7 +288,14 @@ export function WalletsScreen({
                     className="group flex cursor-pointer items-center justify-between py-3 px-1.5 -mx-1.5 rounded-xl hover:bg-white/[0.02] transition"
                   >
                     <div>
-                      <h4 className="text-sm font-medium text-white group-hover:text-[#D9F938] transition-colors">{tx.title}</h4>
+                      <h4 className="text-sm font-medium text-white group-hover:text-[#D9F938] transition-colors">
+                        {tx.title}
+                        {tx.type === "TRANSFER" && tx.feeMinor && tx.feeMinor > 0 && isOutgoingTransfer && (
+                          <span className="ml-1.5 font-mono text-xs text-cyan-400">
+                            (incl. {formatCurrency(tx.feeMinor, tx.currency)} fee)
+                          </span>
+                        )}
+                      </h4>
                       <p className="text-xs text-neutral-400 font-mono">{tx.date}</p>
                     </div>
 
@@ -284,11 +303,11 @@ export function WalletsScreen({
                       <div className="text-right">
                         <span
                           className={`font-mono text-sm font-bold tabular-nums ${
-                            incoming ? "text-emerald-400" : "text-white"
+                            incoming ? "text-[#D9F938]" : "text-white"
                           }`}
                         >
                           {incoming ? "+" : "−"}
-                          {formatCurrency(Math.abs(tx.amountMinor), tx.currency)}
+                          {formatCurrency(displayAmount, tx.currency)}
                         </span>
                       </div>
 

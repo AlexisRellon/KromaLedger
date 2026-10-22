@@ -120,6 +120,39 @@ describe("Dexie local vault", () => {
     const walletAfterRevert = await repo.getWallet("w-crypto");
     expect(walletAfterRevert?.balanceMinor).toBe(balBefore);
 
+    // Bank Transfer (e.g. MariBank -> GCash with fee)
+    const mariWallet = { id: "w-mari", name: "MariBank", type: "BANK" as const, currency: "PHP", balanceMinor: 1000000, color: "#10B981", isDefault: false };
+    const gcashWallet = { id: "w-gcash", name: "GCash", type: "E_WALLET" as const, currency: "PHP", balanceMinor: 50000, color: "#007DFE", isDefault: false };
+    await repo.saveWallet(mariWallet);
+    await repo.saveWallet(gcashWallet);
+
+    const xferTx: Transaction = {
+      id: "tx-xfer-1",
+      date: "2026-10-20",
+      title: "Transfer MariBank to GCash",
+      amountMinor: 200000, // ₱2,000.00
+      currency: "PHP",
+      type: "TRANSFER",
+      walletId: "w-mari",
+      toWalletId: "w-gcash",
+      feeMinor: 1000, // ₱10.00 fee
+      channel: "INSTAPAY",
+    };
+    await repo.saveTransaction(xferTx);
+
+    expect((await repo.getWallet("w-mari"))?.balanceMinor).toBe(1000000 - 201000); // 799,000
+    expect((await repo.getWallet("w-gcash"))?.balanceMinor).toBe(50000 + 200000);   // 250,000
+
+    // Edit transfer amount to ₱3,000.00 with ₱0 fee
+    await repo.saveTransaction({ ...xferTx, amountMinor: 300000, feeMinor: 0 });
+    expect((await repo.getWallet("w-mari"))?.balanceMinor).toBe(1000000 - 300000); // 700,000
+    expect((await repo.getWallet("w-gcash"))?.balanceMinor).toBe(50000 + 300000);   // 350,000
+
+    // Delete transfer reverts both wallets
+    await repo.deleteTransaction("tx-xfer-1");
+    expect((await repo.getWallet("w-mari"))?.balanceMinor).toBe(1000000);
+    expect((await repo.getWallet("w-gcash"))?.balanceMinor).toBe(50000);
+
     // Re-link transaction and delete wallet
     await repo.saveTransaction(tx({ id: "tx-w", walletId: "w-crypto" }));
     expect((await repo.getTransaction("tx-w"))?.walletId).toBe("w-crypto");
@@ -251,7 +284,7 @@ describe("Dexie local vault", () => {
 
   it("deletes a subscription while preserving and detaching its historical payment", async () => {
     await repo.initialize("2026-10-20");
-    await repo.saveSubscription(sub());
+    await repo.saveSubscription(sub({ walletId: "wallet-cash" }));
     await repo.confirmSubscriptionPayment(tx({ id: "sub:sub:2026-10-20", date: "2026-10-20", title: "Netflix", amountMinor: -54900, type: "SUBSCRIPTION_PAYMENT", subscriptionId: "sub" }));
     await repo.deleteSubscription("sub");
     expect(await repo.getSubscription("sub")).toBeUndefined();
@@ -287,4 +320,107 @@ describe("Dexie local vault", () => {
     await files.delete("receipt");
     expect(await repo.listAttachments()).toEqual([]);
   });
+
+  it("postpones subscription date and records warning notification in local vault when wallet balance is insufficient", async () => {
+    await repo.initialize("2026-10-20");
+    await repo.saveWallet({ id: "wallet-broke", name: "Empty", type: "CASH", currency: "PHP", balanceMinor: 100, color: "#fff", isDefault: false });
+    await repo.saveSubscription(sub({ id: "sub-broke", nextBillingDate: "2026-10-20", autoLog: true, walletId: "wallet-broke", amountMinor: 50000 }));
+
+    const res = await repo.reconcile("2026-10-20");
+    expect(res.transactions.filter((t) => t.subscriptionId === "sub-broke")).toHaveLength(0);
+    expect(await repo.getSubscription("sub-broke")).toMatchObject({ nextBillingDate: "2026-10-21" });
+    expect((await repo.getWallet("wallet-broke"))?.balanceMinor).toBe(100);
+
+    const notifs = await repo.listNotifications();
+    expect(notifs.some((n) => n.type === "WARNING" && n.entityId === "sub-broke")).toBe(true);
+  });
+
+  it("supports notification CRUD, marking as read, and clearing in local vault", async () => {
+    await repo.initialize("2026-10-20");
+    const notif = {
+      id: "n-1",
+      title: "Reminder",
+      message: "Subscription due soon",
+      type: "INFO" as const,
+      createdAt: "2026-10-20T10:00:00.000Z",
+      read: false,
+    };
+    await repo.saveNotification(notif);
+    expect(await repo.listNotifications()).toContainEqual(notif);
+
+    await repo.markNotificationRead("n-1");
+    expect((await repo.listNotifications())[0]?.read).toBe(true);
+
+    await repo.deleteNotification("n-1");
+    expect(await repo.listNotifications()).toHaveLength(0);
+  });
+
+  it("clears notifications when restoring a vault", async () => {
+    await repo.initialize("2026-10-20");
+    const vault = await exportVault(db, "2026-10-20");
+
+    await repo.saveNotification({
+      id: "orphan-notif",
+      title: "Old notification",
+      message: "Should be wiped on restore",
+      type: "ALERT",
+      createdAt: "2026-10-20T12:00:00.000Z",
+      read: false,
+    });
+    expect(await repo.listNotifications()).toHaveLength(1);
+
+    await restoreVault(db, vault.data);
+    expect(await repo.listNotifications()).toHaveLength(0);
+  });
+
+  it("reconciles invoice payment without double-counting paidMinor", async () => {
+    await repo.initialize("2026-10-20");
+    const inv = invoice({ id: "inv-immediate", totalMinor: 5000, paidMinor: 0, status: "PENDING", itemIds: ["item-1"] });
+    await repo.saveInvoiceWithItems(inv, [{ id: "item-1", invoiceId: "inv-immediate", description: "Design", quantity: 1, unitPriceMinor: 5000 }]);
+
+    const payment = tx({
+      id: "tx-pay-imm",
+      amountMinor: 5000,
+      type: "INCOME",
+      invoiceId: "inv-immediate",
+      currency: "PHP",
+    });
+    await repo.saveTransaction(payment);
+
+    const stored = await repo.getInvoice("inv-immediate");
+    expect(stored?.paidMinor).toBe(5000);
+    expect(stored?.status).toBe("PAID");
+  });
+
+  it("confirms subscription payments for non-PHP currencies", async () => {
+    await repo.initialize("2026-10-20");
+    await repo.saveWallet({ id: "w-usd", name: "USD Account", type: "BANK", currency: "USD", balanceMinor: 100000, color: "#fff", isDefault: false });
+    await repo.saveSubscription({
+      id: "sub-usd",
+      title: "AWS Cloud",
+      amountMinor: 2000,
+      currency: "USD",
+      billingCycle: "MONTHLY",
+      nextBillingDate: "2026-10-20",
+      active: true,
+      autoLog: false,
+      walletId: "w-usd",
+    });
+
+    const confirmed = await repo.confirmSubscriptionPayment({
+      id: "sub:sub-usd:2026-10-20",
+      date: "2026-10-20",
+      title: "AWS Cloud",
+      amountMinor: -2000,
+      currency: "USD",
+      type: "SUBSCRIPTION_PAYMENT",
+      subscriptionId: "sub-usd",
+      walletId: "w-usd",
+    });
+
+    expect(confirmed.nextBillingDate).toBe("2026-11-20");
+    const wallet = await repo.getWallet("w-usd");
+    expect(wallet?.balanceMinor).toBe(98000);
+  });
 });
+
