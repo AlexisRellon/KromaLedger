@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { formatCurrency } from "../../core/models";
 
 export function ConfirmDeleteModal({
@@ -42,7 +43,7 @@ export function ConfirmDeleteModal({
 
   const entityType = isSubscription ? "subscription" : isInvoice ? "invoice" : "entry";
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm"
       onMouseDown={(e) => {
@@ -107,6 +108,7 @@ export function ConfirmDeleteModal({
           </button>
         </div>
       </section>
-    </div>
+    </div>,
+    document.body
   );
 }

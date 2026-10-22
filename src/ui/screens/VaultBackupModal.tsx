@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { format } from "date-fns";
 import { useStorage } from "../../state/StorageContext";
 import { VoltButton } from "../primitives";
@@ -91,7 +92,7 @@ export function VaultBackupModal({ onClose }: { onClose: () => void }) {
     }
   };
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm"
       onMouseDown={(e) => {
@@ -200,6 +201,7 @@ export function VaultBackupModal({ onClose }: { onClose: () => void }) {
         )}
         </div>
       </section>
-    </div>
+    </div>,
+    document.body
   );
 }

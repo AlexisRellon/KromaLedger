@@ -16,7 +16,9 @@ export function StackedWalletDeck({
   const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [editingWallet, setEditingWallet] = useState<Wallet | null>(null);
 
+  const startXRef = useRef(0);
   const startYRef = useRef(0);
+  const currentDeltaXRef = useRef(0);
   const currentDeltaYRef = useRef(0);
   const isDraggingRef = useRef(false);
   const hasMovedRef = useRef(false);
@@ -50,7 +52,9 @@ export function StackedWalletDeck({
     if (wallets.length <= 1) return;
     if (e.button !== 0) return;
 
+    startXRef.current = e.clientX;
     startYRef.current = e.clientY;
+    currentDeltaXRef.current = 0;
     currentDeltaYRef.current = 0;
     isDraggingRef.current = true;
     hasMovedRef.current = false;
@@ -73,10 +77,12 @@ export function StackedWalletDeck({
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDraggingRef.current) return;
+    const deltaX = e.clientX - startXRef.current;
     const deltaY = e.clientY - startYRef.current;
+    currentDeltaXRef.current = deltaX;
     currentDeltaYRef.current = deltaY;
 
-    if (Math.abs(deltaY) > 5) {
+    if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
       hasMovedRef.current = true;
     }
 
@@ -86,17 +92,24 @@ export function StackedWalletDeck({
         rafIdRef.current = null;
         if (!isDraggingRef.current) return;
 
-        const delta = currentDeltaYRef.current;
+        const dX = currentDeltaXRef.current;
+        const dY = currentDeltaYRef.current;
+        const isHorizontal = Math.abs(dX) >= Math.abs(dY);
+        const primaryDelta = isHorizontal ? dX : dY;
+
         if (topCardRef.current) {
-          const scale = 1 - Math.min(Math.abs(delta) * 0.0008, 0.08);
-          const rotate = delta * 0.035;
-          topCardRef.current.style.transform = `translate3d(0, ${delta}px, 0) scale(${scale}) rotate(${rotate}deg)`;
+          const scale = 1 - Math.min(Math.abs(primaryDelta) * 0.0008, 0.08);
+          const rotate = isHorizontal ? dX * 0.04 : dY * 0.035;
+          const translateX = isHorizontal ? dX : 0;
+          const translateY = isHorizontal ? 0 : dY;
+          topCardRef.current.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale}) rotate(${rotate}deg)`;
         }
 
         if (secondCardRef.current) {
-          const dragInfluence = delta < 0 ? Math.min(Math.abs(delta) * 0.25, 14) : 0;
-          const translateY = 18 - dragInfluence;
-          const scale = 0.94 + (dragInfluence / 14) * 0.06;
+          const dragInfluence = isHorizontal ? Math.abs(dX) : dY < 0 ? Math.abs(dY) : 0;
+          const influenceCapped = Math.min(dragInfluence * 0.25, 14);
+          const translateY = 18 - influenceCapped;
+          const scale = 0.94 + (influenceCapped / 14) * 0.06;
           secondCardRef.current.style.transform = `translate3d(0, ${translateY}px, 0) scale(${scale}) rotate(0deg)`;
         }
       });
@@ -118,14 +131,17 @@ export function StackedWalletDeck({
       rafIdRef.current = null;
     }
 
+    const finalDeltaX = currentDeltaXRef.current;
     const finalDeltaY = currentDeltaYRef.current;
+    const isHorizontal = Math.abs(finalDeltaX) >= Math.abs(finalDeltaY);
+    const primaryDelta = isHorizontal ? finalDeltaX : finalDeltaY;
     const elapsed = performance.now() - startTimeRef.current;
-    const velocity = Math.abs(finalDeltaY) / (elapsed || 1);
-    const threshold = 40;
-    const isFlick = velocity > 0.45 && Math.abs(finalDeltaY) > 18;
+    const velocity = Math.abs(primaryDelta) / (elapsed || 1);
+    const threshold = 35;
+    const isFlick = velocity > 0.4 && Math.abs(primaryDelta) > 15;
 
-    if (finalDeltaY < -threshold || (finalDeltaY < -18 && isFlick)) {
-      // Dragged UP -> cycle forward
+    if (primaryDelta < -threshold || (primaryDelta < -15 && isFlick)) {
+      // Dragged LEFT or UP -> cycle forward
       if (topCardRef.current) {
         topCardRef.current.style.transition = "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease";
       }
@@ -133,8 +149,8 @@ export function StackedWalletDeck({
         secondCardRef.current.style.transition = "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease";
       }
       setActiveIndex((prev) => (prev + 1) % wallets.length);
-    } else if (finalDeltaY > threshold || (finalDeltaY > 18 && isFlick)) {
-      // Dragged DOWN -> cycle backward
+    } else if (primaryDelta > threshold || (primaryDelta > 15 && isFlick)) {
+      // Dragged RIGHT or DOWN -> cycle backward
       if (topCardRef.current) {
         topCardRef.current.style.transition = "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease";
       }
@@ -154,6 +170,7 @@ export function StackedWalletDeck({
       }
     }
 
+    currentDeltaXRef.current = 0;
     currentDeltaYRef.current = 0;
   };
 
@@ -248,7 +265,7 @@ export function StackedWalletDeck({
         <div className="relative pt-1 select-none">
           {/* Card stack viewport container with standard physical card aspect ratio (ISO/IEC 7810 ID-1: 85.6mm x 53.98mm) */}
           <div
-            className="relative mx-auto w-full max-w-[420px] aspect-[85.6/53.98] touch-none cursor-grab active:cursor-grabbing"
+            className="relative mx-auto w-full max-w-[420px] aspect-[85.6/53.98] touch-pan-y cursor-grab active:cursor-grabbing"
             style={{
               marginBottom: wallets.length > 2 ? "38px" : wallets.length > 1 ? "22px" : "8px",
             }}
@@ -356,7 +373,7 @@ export function StackedWalletDeck({
               <svg className="h-3.5 w-3.5 text-[#D9F938]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
               </svg>
-              <span>Drag up or down to cycle cards</span>
+              <span>Swipe or tap cards to cycle</span>
             </div>
 
             {/* Pagination dots & Edit Card Button */}

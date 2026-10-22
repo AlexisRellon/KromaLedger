@@ -11,13 +11,18 @@ import {
 } from "../../state/presentation/PresentationContext";
 import { SmokedCard } from "../primitives";
 
+import { createPortal } from "react-dom";
+
 const directionClasses = { row: "flex-row", column: "flex-col" };
 const gapClasses = { none: "gap-0", sm: "gap-2", md: "gap-4", lg: "gap-6" };
 const paddingClasses = { none: "p-0", sm: "p-3", md: "p-4", lg: "p-6" };
 const alignClasses = { start: "items-start", center: "items-center", end: "items-end", between: "items-center justify-between" };
 
 function WebBox({ children, surface = "plain", direction = "column", align = "start", gap = "none", padding = "none" }: PresentationBoxProps) {
-  const classes = `flex min-w-0 ${directionClasses[direction]} ${alignClasses[align]} ${gapClasses[gap]} ${paddingClasses[padding]}`;
+  const isCardHeader = surface === "card" && direction === "row" && align === "between";
+  const classes = isCardHeader
+    ? "flex min-w-0 flex-col sm:flex-row sm:items-center sm:justify-between items-start gap-4 sm:gap-6 p-5 sm:p-6"
+    : `flex min-w-0 ${directionClasses[direction]} ${alignClasses[align]} ${gapClasses[gap]} ${paddingClasses[padding]} ${direction === "row" ? "flex-wrap" : ""}`;
   return surface === "card"
     ? <SmokedCard className={classes}>{children}</SmokedCard>
     : <div className={`${classes} ${surface === "muted" ? "rounded-2xl bg-black/20" : ""}`}>{children}</div>;
@@ -34,14 +39,14 @@ function WebText({ children, as = "body", size = "md", tone = "primary", weight 
     inherit: "text-inherit",
   }[tone];
   const weightClass = { normal: "font-normal", medium: "font-medium", bold: "font-bold" }[weight];
-  return <Tag className={`min-w-0 ${sizeClass} ${toneClass} ${weightClass} ${mono ? "font-mono" : ""} ${as === "heading" ? "font-display" : ""}`}>{children}</Tag>;
+  return <Tag className={`min-w-0 ${sizeClass} ${toneClass} ${weightClass} ${mono ? "font-mono" : ""} ${as === "heading" ? "font-display" : ""} ${as === "caption" ? "whitespace-nowrap" : ""}`}>{children}</Tag>;
 }
 
 function WebButton({ children, variant = "secondary", disabled, accessibilityLabel, onPress }: PresentationButtonProps) {
   return <button type="button" aria-label={accessibilityLabel} disabled={disabled} onClick={onPress}
     className={variant === "primary"
-      ? "flex shrink-0 items-center gap-2 rounded-xl bg-[#D9F938] px-4 py-2.5 text-xs font-bold text-[#070806] [&_*]:text-[#070806] transition hover:brightness-110 active:scale-95 disabled:opacity-50"
-      : "flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-xs font-semibold text-white disabled:opacity-50"}>
+      ? "flex shrink-0 w-full sm:w-auto justify-center items-center gap-2 rounded-xl bg-[#D9F938] px-4 py-2.5 text-xs font-bold text-[#070806] [&_*]:text-[#070806] transition hover:brightness-110 active:scale-95 disabled:opacity-50"
+      : "flex shrink-0 w-full sm:w-auto justify-center items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-xs font-semibold text-white disabled:opacity-50"}>
     {children}
   </button>;
 }
@@ -60,8 +65,11 @@ function WebInput({ value, accessibilityLabel, type = "text", onValueChange }: P
 }
 
 function WebModal({ children, accessibilityLabel, onDismiss }: PresentationModalProps) {
-  return <div role="dialog" aria-modal="true" aria-label={accessibilityLabel} onKeyDown={(event) => { if (event.key === "Escape") onDismiss(); }}
-    className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm">{children}</div>;
+  return createPortal(
+    <div role="dialog" aria-modal="true" aria-label={accessibilityLabel} onKeyDown={(event) => { if (event.key === "Escape") onDismiss(); }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm">{children}</div>,
+    document.body
+  );
 }
 
 const components: PresentationComponents = { Box: WebBox, Text: WebText, Button: WebButton, Icon: WebIcon, Input: WebInput, Modal: WebModal };

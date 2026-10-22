@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { addDays, format } from "date-fns";
 import { calculateInvoice } from "../../core/engine/invoiceCalculator";
 import { addLineItem } from "../../core/engine/lineItemWorkflow";
@@ -443,9 +444,9 @@ export function QuickAddDrawer({
     return () => window.removeEventListener("keydown", handleKeyDown);
   });
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-40 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) close();
       }}
@@ -968,6 +969,7 @@ export function QuickAddDrawer({
           </button>
         </div>
       </section>
-    </div>
+    </div>,
+    document.body
   );
 }

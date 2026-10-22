@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { formatCurrency, formatWalletLabel, type Category, type Transaction, type Wallet, type TransferChannel } from "../../core/models";
 import { detectTransferFee } from "../../core/engine/transferFees";
 import { blockInvalidNumberKeys, sanitizeMoneyInput, parseMinorInput } from "../../core/engine/moneyInput";
@@ -189,7 +190,7 @@ export function EditEntryModal({
     }
   };
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm"
       onMouseDown={(e) => {
@@ -591,6 +592,7 @@ export function EditEntryModal({
           </div>
         </form>
       </section>
-    </div>
+    </div>,
+    document.body
   );
 }

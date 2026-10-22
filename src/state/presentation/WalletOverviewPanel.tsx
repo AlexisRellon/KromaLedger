@@ -17,7 +17,7 @@ export function WalletOverviewPanel({ walletCount, primaryWalletName, totalBalan
         <Text as="caption" tone="muted">{walletCount} active</Text>
       </Box>
       <Text as="body" tone="muted">Manage cash vaults, bank accounts, credit cards, and digital e-wallets stored on-device.</Text>
-      <Box direction="row" align="center" gap="md">
+      <Box direction="row" align="center" gap="sm">
         <Text as="caption">Primary: {primaryWalletName || "None"}</Text>
         <Text as="caption" tone="muted">•</Text>
         <Text as="caption" tone="accent" mono>Total Liquid: {formatCurrency(totalBalanceMinor, currency)}</Text>

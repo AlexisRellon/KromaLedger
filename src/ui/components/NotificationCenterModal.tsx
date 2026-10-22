@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { format, parseISO } from "date-fns";
 import type { AppNotification } from "../../core/models";
 import {
@@ -62,7 +63,7 @@ export function NotificationCenterModal({ onClose }: { onClose: () => void }) {
     }
   };
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm animate-entrance"
       onMouseDown={(e) => {
@@ -247,6 +248,7 @@ export function NotificationCenterModal({ onClose }: { onClose: () => void }) {
           )}
         </div>
       </section>
-    </div>
+    </div>,
+    document.body
   );
 }

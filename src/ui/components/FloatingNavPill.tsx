@@ -51,11 +51,26 @@ export function FloatingNavPill() {
     };
   }, [active]);
 
+  const [hasModalOpen, setHasModalOpen] = useState(false);
+
+  useEffect(() => {
+    const checkModal = () => {
+      const dialog = document.querySelector('[role="dialog"]');
+      setHasModalOpen(Boolean(dialog));
+    };
+    checkModal();
+    const observer = new MutationObserver(checkModal);
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <nav
       ref={navRef}
       aria-label="Main navigation"
-      className="fixed bottom-[max(1.5rem,calc(env(safe-area-inset-bottom)+0.75rem))] left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 sm:gap-2.5 rounded-full border border-white/10 bg-[#11120f]/95 p-2 sm:p-2.5 shadow-2xl backdrop-blur-xl touch-manipulation"
+      className={`fixed bottom-[max(1.5rem,calc(env(safe-area-inset-bottom)+0.75rem))] left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 sm:gap-2.5 rounded-full border border-white/10 bg-[#11120f]/95 p-2 sm:p-2.5 shadow-2xl backdrop-blur-xl touch-manipulation transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        hasModalOpen ? "pointer-events-none opacity-0 translate-y-8" : "opacity-100 translate-y-0"
+      }`}
     >
       {/* Smooth gliding active tab highlight pill */}
       {indicatorStyle.ready && (

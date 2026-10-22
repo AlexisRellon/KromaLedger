@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { type Category, type Invoice } from "../../core/models";
 import { blockInvalidNumberKeys, parseMinorInput, sanitizeMoneyInput } from "../../core/engine/moneyInput";
 import { VoltButton } from "../primitives";
@@ -80,7 +81,7 @@ export function EditInvoiceModal({
     }
   };
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm"
       onMouseDown={(e) => {
@@ -255,6 +256,7 @@ export function EditInvoiceModal({
           </div>
         </form>
       </section>
-    </div>
+    </div>,
+    document.body
   );
 }
