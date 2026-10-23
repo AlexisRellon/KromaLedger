@@ -62,7 +62,7 @@ export function App() {
   );
 
   return (
-    <main className="mx-auto min-h-screen max-w-6xl px-4 pb-[max(9rem,calc(env(safe-area-inset-bottom)+7.5rem))] sm:pb-36 pt-5 sm:px-7 lg:px-10">
+    <main className="mx-auto min-h-screen max-w-6xl overflow-x-clip px-4 pb-[max(9rem,calc(env(safe-area-inset-bottom)+7.5rem))] sm:pb-36 pt-5 sm:px-7 lg:px-10">
       <TopStatusHeader onBackup={() => setBackupOpen(true)} />
 
       <div className="mb-6 mt-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

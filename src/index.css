@@ -15,12 +15,14 @@
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
   background-color: #070806;
   position: relative;
+  overflow-x: hidden;
 }
 
 body::before {

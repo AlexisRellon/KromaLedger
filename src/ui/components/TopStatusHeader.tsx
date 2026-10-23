@@ -42,9 +42,9 @@ export function TopStatusHeader({
   const profile = profileQuery.data;
 
   return (
-    <header className="flex flex-wrap items-center justify-between gap-4 py-2">
+    <header className="flex items-center justify-between gap-3 py-2">
       <BrandLogo />
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-2 sm:gap-2.5">
         <button
           onClick={openNotifications}
           aria-label="Notifications"
@@ -72,29 +72,44 @@ export function TopStatusHeader({
         <button
           onClick={onBackup}
           aria-label="Storage status and vault backup"
-          className="rounded-full border border-white/10 bg-white/[.04] px-3.5 py-1.5 text-xs text-neutral-300 transition hover:border-[#D9F938]/40 hover:text-white"
+          title={`${status} • Tap to Backup`}
+          className="relative flex h-8 w-8 sm:w-auto items-center justify-center rounded-full border border-white/10 bg-white/[.04] sm:px-3 sm:py-1.5 text-xs text-neutral-300 transition hover:border-[#D9F938]/40 hover:text-white"
         >
           <span
-            className={`mr-2 inline-block h-1.5 w-1.5 rounded-full align-middle ${
+            className={`hidden sm:inline-block h-1.5 w-1.5 rounded-full mr-2 shrink-0 ${
               persistent ? "bg-[#D9F938]" : "bg-amber-400"
             }`}
           />
-          {status}
-          <span className="mx-1.5 text-neutral-600">•</span>
-          Tap to Backup
+          <svg className="h-4 w-4 shrink-0 sm:mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
+            />
+          </svg>
+          <span
+            className={`sm:hidden absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full ring-2 ring-[#070806] ${
+              persistent ? "bg-[#D9F938]" : "bg-amber-400"
+            }`}
+          />
+          <span className="hidden sm:inline font-medium">
+            {persistent ? "Protected" : "Local Vault"}
+          </span>
+          <span className="hidden sm:inline mx-1 text-neutral-600">•</span>
+          <span className="hidden sm:inline">Backup</span>
         </button>
 
         <button
           onClick={() => (onEditProfile ? onEditProfile() : openEditProfile())}
           aria-label="Edit local profile"
-          className={`group flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition ${
+          className={`group flex h-8 items-center justify-center rounded-full border p-1 sm:px-3 sm:py-1.5 text-xs transition ${
             editProfileOpen
               ? "border-[#D9F938]/60 bg-[#D9F938]/10 text-white"
               : "border-white/10 bg-white/[.04] text-neutral-300 hover:border-[#D9F938]/40 hover:text-white"
           }`}
         >
           <span
-            className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-black"
+            className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-black shrink-0"
             style={{ backgroundColor: profile?.themeColor || "#D9F938" }}
           >
             {profile?.initials || "KO"}

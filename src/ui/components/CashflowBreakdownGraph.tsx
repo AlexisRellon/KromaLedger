@@ -213,7 +213,7 @@ export function CashflowBreakdownGraph({
           ref={pillContainerRef}
           role="tablist"
           aria-label="Timeframe"
-          className="relative inline-flex self-start sm:self-auto items-center rounded-full bg-black/40 p-0.5 select-none"
+          className="relative inline-flex max-w-full overflow-x-auto scrollbar-none self-start sm:self-auto items-center rounded-full bg-black/40 p-0.5 select-none"
         >
           {indicatorStyle.ready && (
             <span
@@ -236,7 +236,7 @@ export function CashflowBreakdownGraph({
                 setTimeframe(tf);
                 setActiveIndex(null);
               }}
-              className={`relative z-10 flex items-center justify-center rounded-full px-3.5 py-1.5 text-xs font-semibold tracking-normal transition-colors duration-200 text-center ${
+              className={`relative z-10 flex shrink-0 items-center justify-center rounded-full px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold tracking-normal transition-colors duration-200 text-center ${
                 timeframe === tf
                   ? `text-[#070806] ${!indicatorStyle.ready ? "bg-[#D9F938]" : ""}`
                   : "text-neutral-400 hover:text-white"

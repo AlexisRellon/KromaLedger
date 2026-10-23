@@ -80,20 +80,20 @@ export function HomeDashboard({
   const displayedTransactions = showAll ? filteredTransactions : filteredTransactions.slice(0, 7);
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.25fr_.75fr]">
-      <div className="space-y-6">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[1.25fr_.75fr]">
+      <div className="min-w-0 space-y-6">
         {/* 3-Tier Financial Hero Card: Total Cash + Net Flow + Subscription-Predicted Cash */}
         <SmokedCard className="relative overflow-hidden">
           <div className="relative">
             {/* Header: Label & Multi-Wallet Status */}
-            <div className="flex items-baseline justify-between gap-2">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="font-display text-lg font-bold text-white">
                 Total Liquid Cash
                 <span className="ml-2.5 text-xs font-normal text-neutral-400">
                   {wallets.length} {wallets.length === 1 ? "wallet" : "wallets"}
                 </span>
               </h2>
-              <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 font-mono text-xs text-neutral-400">
+              <span className="shrink-0 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 font-mono text-xs text-neutral-400">
                 PHP · Local Vault
               </span>
             </div>
@@ -151,7 +151,7 @@ export function HomeDashboard({
 
             {/* Tier 3: Subscription-Predicted Cash Runway */}
             <div className="mt-5 border-t border-white/[0.08] pt-4">
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
                 <div className="flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#D9F938]" />
                   <span className="font-mono text-xs font-semibold uppercase tracking-wider text-neutral-200">
@@ -165,7 +165,7 @@ export function HomeDashboard({
                 </span>
               </div>
 
-              <div className="mt-2 flex items-baseline justify-between">
+              <div className="mt-2 flex flex-wrap items-baseline justify-between gap-2">
                 <div>
                   <span className="font-mono text-2xl font-bold tracking-tight text-[#D9F938]">
                     <AnimatedMoney minor={forecast.projectedCashMinor} />
@@ -287,7 +287,7 @@ export function HomeDashboard({
         </SmokedCard>
       </div>
 
-      <div className="space-y-6">
+      <div className="min-w-0 space-y-6">
         {/* Dedicated Stacked Wallet Section */}
         <StackedWalletDeck wallets={walletsQuery.data ?? []} />
 

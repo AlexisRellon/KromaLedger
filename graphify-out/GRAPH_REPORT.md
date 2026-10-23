@@ -1,7 +1,7 @@
 # Graph Report - KromaLedger  (2026-10-23)
 
 ## Corpus Check
-- 95 files · ~57,799 words
+- 95 files · ~57,909 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 8 file(s) not represented in the graph (top: (none) 3, .woff2 3, .toml 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `29c3782a`
+- Built from commit: `044918c7`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
