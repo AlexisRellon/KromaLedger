@@ -33,6 +33,7 @@ describe("Dexie local vault", () => {
     expect(await repo.listTransactions("2026-10-01", "2026-10-31")).toHaveLength(initial.length);
     await repo.initialize("2026-10-20");
     expect(await repo.listTransactions()).toHaveLength(initial.length);
+    expect(await repo.countTransactions()).toBe(initial.length);
     expect((await repo.getAppMeta()).seedVersion).toBeGreaterThan(0);
   });
 

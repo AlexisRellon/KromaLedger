@@ -4,6 +4,7 @@ import type { ReconcileResult } from "../engine/reconciler";
 export interface IStorageRepo {
   getTransaction(id: string): Promise<Transaction | undefined>;
   listTransactions(fromDate?: string, throughDate?: string): Promise<Transaction[]>;
+  countTransactions?(): Promise<number>;
   saveTransaction(value: Transaction): Promise<void>;
   reconcile(currentDate: string): Promise<ReconcileResult>;
   deleteTransaction(id: string): Promise<void>;

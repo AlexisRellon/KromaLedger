@@ -61,6 +61,8 @@ export class DexieStorageRepo implements IStorageRepo {
 
   async initialize(today = format(new Date(), "yyyy-MM-dd")): Promise<void> {
     if (!dateOnlySchema.safeParse(today).success) throw new RangeError("Initialization needs a real ISO date");
+    const existingMeta = await this.db.appMeta.get("app");
+    if (existingMeta) return;
     await this.db.transaction("rw", [this.db.transactions, this.db.subscriptions, this.db.invoices, this.db.invoiceItems, this.db.categories, this.db.attachments, this.db.attachmentFiles, this.db.appMeta, this.db.wallets, this.db.profiles], async () => {
       if (await this.db.appMeta.get("app")) return;
       const seed = createDemoSeed(today);
@@ -88,6 +90,7 @@ export class DexieStorageRepo implements IStorageRepo {
           : await this.db.transactions.toArray();
     return rows.sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
   }
+  countTransactions(): Promise<number> { return this.db.transactions.count(); }
   async saveTransaction(value: Transaction): Promise<void> {
     const parsed = transactionSchema.parse(value);
     await this.db.transaction("rw", this.db.transactions, this.db.wallets, this.db.invoices, async () => {

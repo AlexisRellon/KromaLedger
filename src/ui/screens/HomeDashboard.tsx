@@ -9,7 +9,18 @@ import {
   type Transaction,
 } from "../../core/models";
 import { useStorage } from "../../state/StorageContext";
-import { useDeleteTransaction, useSaveTransaction, useWallets } from "../../state/queries";
+import {
+  useAttachments,
+  useCategories,
+  useDeleteTransaction,
+  useInvoices,
+  useSaveTransaction,
+  useSubscriptions,
+  useTransactions,
+  useWallets,
+} from "../../state/queries";
+import { useUIStore } from "../../state/useUIStore";
+import { attachmentCache } from "../../adapters/web-dexie/attachmentCache";
 import { CashflowBreakdownGraph } from "../components/CashflowBreakdownGraph";
 import { StackedWalletDeck } from "../components/StackedWalletDeck";
 import { AnimatedMoney, AnimatedProgressBar, DonutChartSVG, SmokedCard, VoltButton } from "../primitives";
@@ -20,27 +31,35 @@ import { DashboardSkeleton } from "../components/skeletons";
 const money = (minor: number) => formatCurrency(minor);
 
 export function HomeDashboard({
-  month,
-  analytics,
-  transactions,
-  subscriptions,
-  attachments,
-  categories,
+  month: propMonth,
+  analytics: propAnalytics,
+  transactions: propTx,
+  subscriptions: propSubs,
+  attachments: propAttachments,
+  categories: propCategories,
   onQuickAdd,
-  isLoading = false,
+  isLoading: propIsLoading,
 }: {
-  month: string;
-  analytics: ReturnType<typeof calculateCashflow>;
-  transactions: Transaction[];
-  subscriptions: Subscription[];
-  attachments: AttachmentMeta[];
-  categories: Category[];
+  month?: string;
+  analytics?: ReturnType<typeof calculateCashflow>;
+  transactions?: Transaction[];
+  subscriptions?: Subscription[];
+  attachments?: AttachmentMeta[];
+  categories?: Category[];
   onQuickAdd: () => void;
   isLoading?: boolean;
 }) {
-  if (isLoading) {
-    return <DashboardSkeleton />;
-  }
+  const storeMonth = useUIStore((s) => s.selectedMonth);
+  const month = propMonth ?? storeMonth;
+
+  const txQuery = useTransactions(month);
+  const subsQuery = useSubscriptions();
+  const attachmentsQuery = useAttachments();
+  const categoriesQuery = useCategories();
+  const invoicesQuery = useInvoices();
+  const walletsQuery = useWallets();
+  const saveTxMutation = useSaveTransaction();
+  const deleteTxMutation = useDeleteTransaction();
 
   const [showAll, setShowAll] = useState(false);
   const [showSubDeductions, setShowSubDeductions] = useState(false);
@@ -52,10 +71,29 @@ export function HomeDashboard({
   const [activityFilter, setActivityFilter] = useState<"ALL" | "EXPENSE" | "TRANSFER" | "SUBSCRIPTION" | "INVOICE">("ALL");
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [deletingTransaction, setDeletingTransaction] = useState<Transaction | null>(null);
-  const walletsQuery = useWallets();
-  const saveTxMutation = useSaveTransaction();
-  const deleteTxMutation = useDeleteTransaction();
+
+  const transactions = propTx ?? txQuery.data ?? [];
+  const subscriptions = propSubs ?? subsQuery.data ?? [];
+  const attachments = propAttachments ?? attachmentsQuery.data ?? [];
+  const categories = propCategories ?? categoriesQuery.data ?? [];
+  const invoices = invoicesQuery.data ?? [];
   const wallets = walletsQuery.data ?? [];
+
+  const isLoading =
+    propIsLoading ??
+    (!propTx && !txQuery.data && (txQuery.isLoading || subsQuery.isLoading));
+
+  const calculatedAnalytics = useMemo(
+    () =>
+      calculateCashflow({
+        month,
+        transactions,
+        subscriptions,
+        invoices,
+      }),
+    [month, transactions, subscriptions, invoices]
+  );
+  const analytics = propAnalytics ?? calculatedAnalytics;
 
   const forecast = useMemo(
     () =>
@@ -67,6 +105,10 @@ export function HomeDashboard({
       }),
     [wallets, month, transactions, subscriptions]
   );
+
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
 
   const filteredTransactions = transactions.filter((t) => {
     if (activityFilter === "ALL") return true;
@@ -396,14 +438,12 @@ function ActivityRow({
 
   const handleOpenReceipt = async () => {
     if (!attachment) return;
-    const bytes = await files.load(attachment.id);
-    if (!bytes) return;
-    const isImage = attachment.mimeType.startsWith("image/");
-    const buffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
-    const blob = new Blob([buffer], {
-      type: isImage ? attachment.mimeType : "application/octet-stream",
-    });
-    const url = URL.createObjectURL(blob);
+    const url = await attachmentCache.getOrLoad(
+      attachment.id,
+      attachment.mimeType,
+      () => files.load(attachment.id)
+    );
+    if (!url) return;
     onPreview(attachment, url);
   };
 
@@ -595,9 +635,8 @@ function AttachmentPreviewModal({
     window.addEventListener("keydown", onKey);
     return () => {
       window.removeEventListener("keydown", onKey);
-      URL.revokeObjectURL(attachment.url);
     };
-  }, [attachment.url, onClose]);
+  }, [onClose]);
 
   const isImage = attachment.meta.mimeType.startsWith("image/");
 

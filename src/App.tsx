@@ -1,16 +1,6 @@
-import { lazy, Suspense, useMemo, useState } from "react";
-import { calculateCashflow } from "./core/engine/cashflowAnalytics";
+import { lazy, Suspense, useState } from "react";
 import { useUIStore } from "./state/useUIStore";
-import {
-  useAllTransactions,
-  useAttachments,
-  useCategories,
-  useInvoices,
-  useProfile,
-  useSaveProfile,
-  useSubscriptions,
-  useTransactions,
-} from "./state/queries";
+import { useProfile, useSaveProfile } from "./state/queries";
 import { TopStatusHeader } from "./ui/components/TopStatusHeader";
 import { FloatingNavPill } from "./ui/components/FloatingNavPill";
 import { HomeDashboard } from "./ui/screens/HomeDashboard";
@@ -22,7 +12,9 @@ const VaultBackupModal = lazy(() => import("./ui/screens/VaultBackupModal").then
 const EditProfileModal = lazy(() => import("./ui/components/EditProfileModal").then((m) => ({ default: m.EditProfileModal })));
 const QuickAddDrawer = lazy(() => import("./ui/components/QuickAddDrawer").then((m) => ({ default: m.QuickAddDrawer })));
 const NotificationCenterModal = lazy(() => import("./ui/components/NotificationCenterModal").then((m) => ({ default: m.NotificationCenterModal })));
+const AIAssistantModal = lazy(() => import("./ui/components/AIAssistantModal").then((m) => ({ default: m.AIAssistantModal })));
 import { ScreenSkeleton } from "./ui/components/skeletons";
+import { useAIStore } from "./state/useAIStore";
 
 export function App() {
   const month = useUIStore((s) => s.selectedMonth);
@@ -34,32 +26,12 @@ export function App() {
   const closeEditProfile = useUIStore((s) => s.closeEditProfile);
   const notificationsOpen = useUIStore((s) => s.notificationsOpen);
   const closeNotifications = useUIStore((s) => s.closeNotifications);
+  const aiOpen = useAIStore((s) => s.isOpen);
+  const closeAI = useAIStore((s) => s.closeModal);
   const [backupOpen, setBackupOpen] = useState(false);
 
-  const tx = useTransactions();
-  const allTx = useAllTransactions();
-  const attachments = useAttachments();
-  const subs = useSubscriptions();
-  const invoices = useInvoices();
-  const categories = useCategories();
   const profileQuery = useProfile();
   const saveProfileMutation = useSaveProfile();
-
-  const isHomeLoading =
-    tab === "HOME" &&
-    !tx.data &&
-    (tx.isLoading || allTx.isLoading || subs.isLoading || categories.isLoading);
-
-  const analytics = useMemo(
-    () =>
-      calculateCashflow({
-        month,
-        transactions: allTx.data ?? [],
-        subscriptions: subs.data ?? [],
-        invoices: invoices.data ?? [],
-      }),
-    [month, allTx.data, subs.data, invoices.data]
-  );
 
   return (
     <main className="mx-auto min-h-screen max-w-6xl overflow-x-clip px-4 pb-[max(9rem,calc(env(safe-area-inset-bottom)+7.5rem))] sm:pb-36 pt-5 sm:px-7 lg:px-10">
@@ -93,27 +65,13 @@ export function App() {
 
       <div key={tab} className="animate-entrance">
         {tab === "HOME" ? (
-          <HomeDashboard
-            month={month}
-            analytics={analytics}
-            transactions={tx.data ?? []}
-            subscriptions={subs.data ?? []}
-            attachments={attachments.data ?? []}
-            categories={categories.data ?? []}
-            onQuickAdd={() => openQuickAdd("EXPENSE")}
-            isLoading={isHomeLoading}
-          />
+          <HomeDashboard onQuickAdd={() => openQuickAdd("EXPENSE")} />
         ) : (
           <Suspense fallback={<ScreenSkeleton tab={tab} />}>
             {tab === "WALLETS" ? (
               <WalletsScreen onQuickAdd={() => openQuickAdd("EXPENSE")} />
             ) : tab === "PENDING" ? (
-              <PendingAndSubsHub
-                subscriptions={subs.data ?? []}
-                invoices={invoices.data ?? []}
-                analytics={analytics}
-                onQuickAdd={() => openQuickAdd("SUBSCRIPTION")}
-              />
+              <PendingAndSubsHub onQuickAdd={() => openQuickAdd("SUBSCRIPTION")} />
             ) : (
               <SettingsScreen onOpenBackup={() => setBackupOpen(true)} />
             )}
@@ -124,12 +82,7 @@ export function App() {
       <FloatingNavPill />
 
       <Suspense fallback={null}>
-        {quickOpen && (
-          <QuickAddDrawer
-            onClose={closeQuickAdd}
-            categories={categories.data ?? []}
-          />
-        )}
+        {quickOpen && <QuickAddDrawer onClose={closeQuickAdd} />}
         {backupOpen && <VaultBackupModal onClose={() => setBackupOpen(false)} />}
         {editProfileOpen && (
           <EditProfileModal
@@ -153,11 +106,8 @@ export function App() {
           />
         )}
         {notificationsOpen && <NotificationCenterModal onClose={closeNotifications} />}
+        {aiOpen && <AIAssistantModal onClose={closeAI} />}
       </Suspense>
     </main>
   );
 }
-
-
-
-

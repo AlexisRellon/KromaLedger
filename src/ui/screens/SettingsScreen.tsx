@@ -9,7 +9,7 @@ import {
   useResetToDemo,
   useSaveWallet,
   useWallets,
-  useAllTransactions,
+  useTransactionCount,
   useSubscriptions,
   useInvoices,
 } from "../../state/queries";
@@ -30,7 +30,7 @@ export function SettingsScreen({
   if (isLoading || (profileQuery.isLoading && !profileQuery.data)) {
     return <SettingsSkeleton />;
   }
-  const txQuery = useAllTransactions();
+  const txCountQuery = useTransactionCount();
   const subsQuery = useSubscriptions();
   const invoicesQuery = useInvoices();
 
@@ -121,7 +121,7 @@ export function SettingsScreen({
           </div>
           <div>
             <span className="text-xs font-medium uppercase tracking-wider text-neutral-400">Entries</span>
-            <p className="mt-1 text-xl font-extrabold text-white font-mono">{txQuery.data?.length ?? 0}</p>
+            <p className="mt-1 text-xl font-extrabold text-white font-mono">{txCountQuery.data ?? 0}</p>
           </div>
           <div>
             <span className="text-xs font-medium uppercase tracking-wider text-neutral-400">Subscriptions</span>

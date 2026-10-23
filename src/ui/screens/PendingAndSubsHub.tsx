@@ -11,9 +11,12 @@ import {
   useConfirmSubscriptionPayment,
   useDeleteInvoice,
   useDeleteSubscription,
+  useInvoices,
   useRecordInvoicePayment,
   useSaveInvoice,
   useSaveSubscription,
+  useSubscriptions,
+  useTransactions,
   useWallets,
 } from "../../state/queries";
 import { useUIStore } from "../../state/useUIStore";
@@ -30,21 +33,43 @@ type SubscriptionRow = Subscription;
 type InvoiceRow = Invoice;
 
 export function PendingAndSubsHub({
-  subscriptions,
-  invoices,
-  analytics,
+  subscriptions: propSubs,
+  invoices: propInvoices,
+  analytics: propAnalytics,
   onQuickAdd,
-  isLoading = false,
+  isLoading: propIsLoading,
 }: {
-  subscriptions: SubscriptionRow[];
-  invoices: InvoiceRow[];
-  analytics: ReturnType<typeof calculateCashflow>;
+  subscriptions?: SubscriptionRow[];
+  invoices?: InvoiceRow[];
+  analytics?: ReturnType<typeof calculateCashflow>;
   onQuickAdd: () => void;
   isLoading?: boolean;
 }) {
+  const storeMonth = useUIStore((s) => s.selectedMonth);
+  const subsQuery = useSubscriptions();
+  const invoicesQuery = useInvoices();
+  const txQuery = useTransactions(storeMonth);
+
+  const subscriptions = propSubs ?? subsQuery.data ?? [];
+  const invoices = propInvoices ?? invoicesQuery.data ?? [];
+
+  const isLoading =
+    propIsLoading ??
+    (!propSubs && !subsQuery.data && (subsQuery.isLoading || invoicesQuery.isLoading));
+
+  const analytics =
+    propAnalytics ??
+    calculateCashflow({
+      month: storeMonth,
+      transactions: txQuery.data ?? [],
+      subscriptions,
+      invoices,
+    });
+
   if (isLoading) {
     return <PendingSkeleton />;
   }
+
 
   const confirmSub = useConfirmSubscriptionPayment();
   const categoriesQuery = useCategories();

@@ -8,8 +8,13 @@
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
 
 # Only Vite's hashed build output lives in /assets — safe to cache forever.
-# /fonts, /sw.js and index.html are NOT hashed, so they must stay revalidatable.
 [[headers]]
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+

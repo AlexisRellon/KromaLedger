@@ -10,7 +10,7 @@ import { LineItemBuilder, type LineDraft } from "../components/LineItemBuilder";
 import { formatCurrency, formatWalletLabel, ALLOWED_ATTACHMENT_MIME_TYPES, attachmentMimeTypeSchema, type AttachmentMeta, type Transaction, type TransferChannel } from "../../core/models";
 import { detectTransferFee } from "../../core/engine/transferFees";
 import { useUIStore, type QuickAddMode } from "../../state/useUIStore";
-import { useSaveAttachment, useSaveInvoice, useSaveSubscription, useSaveTransaction, useWallets } from "../../state/queries";
+import { useCategories, useSaveAttachment, useSaveInvoice, useSaveSubscription, useSaveTransaction, useWallets } from "../../state/queries";
 import { saveEntryAndAttachment } from "../../state/entrySaveWorkflow";
 
 const today = () => format(new Date(), "yyyy-MM-dd");
@@ -18,11 +18,13 @@ const id = () => crypto.randomUUID();
 
 export function QuickAddDrawer({
   onClose,
-  categories,
+  categories: propCategories,
 }: {
   onClose: () => void;
-  categories: Array<{ id: string; name: string; type: string }>;
+  categories?: Array<{ id: string; name: string; type: string }>;
 }) {
+  const categoriesQuery = useCategories();
+  const categories = propCategories ?? categoriesQuery.data ?? [];
   const storeMode = useUIStore((s) => s.quickAddMode);
   const [mode, setMode] = useState<QuickAddMode>(storeMode);
   const [amount, setAmount] = useState("0");
