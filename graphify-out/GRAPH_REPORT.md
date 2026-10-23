@@ -1,17 +1,17 @@
 # Graph Report - KromaLedger  (2026-10-23)
 
 ## Corpus Check
-- 95 files · ~57,452 words
+- 95 files · ~57,799 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 8 file(s) not represented in the graph (top: (none) 3, .woff2 3, .toml 1)
 
 ## Summary
-- 659 nodes · 1769 edges · 32 communities (22 shown, 10 thin omitted)
+- 657 nodes · 1776 edges · 29 communities (20 shown, 9 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 40 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `564bde27`
+- Built from commit: `29c3782a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -20,32 +20,29 @@
 - IStorageRepo
 - models/index.ts
 - queries/index.ts
-- db.ts
+- DexieStorageRepo
 - package.json
 - TypeScript and Build Configuration
-- zipVault.ts
+- PendingAndSubsHub.tsx
 - Design System: KromaLedger
 - verify-portability.mjs
 - Product
 - reconciler.ts
 - Repository Agent Instructions
-- WebBootstrap.tsx
+- InvoiceItem
 - Integration Verification Guidelines
 - Cabinet Grotesk Typography Asset
 - JetBrains Mono Code Font
 - Satoshi Sans-Serif Font
 - PendingAndSubsHub.tsx
-- storage.test.ts
-- InvoiceItem
-- DexieStorageRepo
-- WalletsScreen.tsx
+- vitest
 - bank-transfer-fee-chart.md
-- KromaLedger
-- StorageContext.tsx
+- WebBootstrap.tsx
 - HomeDashboard.tsx
-- DexieFileStore
+- HomeDashboard.tsx
 - MASTER PROMPT: KromaLedger — Local-First Mobile Expense, Subscription & Invoice Tracker
 - KromaLedger implementation plan
+- KromaLedger
 - AGENTS.md
 
 ## God Nodes (most connected - your core abstractions)
@@ -75,27 +72,27 @@
 ## Import Cycles
 - None detected.
 
-## Communities (32 total, 10 thin omitted)
+## Communities (29 total, 9 thin omitted)
 
 ### Community 0 - "ledgerCommands.test.ts"
 Cohesion: 0.11
-Nodes (5): commitInvoice(), confirmSubscriptionCycle(), LedgerCommandUnit, settleInvoice(), Invoice
+Nodes (6): commitInvoice(), confirmSubscriptionCycle(), LedgerCommandGateway, LedgerCommandUnit, settleInvoice(), Invoice
 
 ### Community 1 - "IStorageRepo"
 Cohesion: 0.08
 Nodes (5): ReconcileResult, AppNotification, Subscription, Transaction, IStorageRepo
 
 ### Community 2 - "models/index.ts"
-Cohesion: 0.12
-Nodes (28): Offline Double-Entry Ledger, KromaLedger Master Specification, createDemoSeed(), detachSubscriptionHistory(), detachWalletReferences(), LedgerCommandGateway, LedgerTable, amountSchema (+20 more)
+Cohesion: 0.08
+Nodes (36): Offline Double-Entry Ledger, KromaLedger Master Specification, Local Vault & State Phase, vitest, zod, dumpSchema, fileMetaSchema, MAX_ATTACHMENT_COUNT (+28 more)
 
 ### Community 3 - "queries/index.ts"
 Cohesion: 0.10
 Nodes (44): dispatchBrowserNotification(), getBrowserNotificationPermission(), getShownIds(), isBrowserNotificationSupported(), markShownId(), requestBrowserNotificationPermission(), syncBrowserNotifications(), App() (+36 more)
 
-### Community 4 - "db.ts"
-Cohesion: 0.12
-Nodes (7): dexie, KromaLedgerDB, DemoSeed, AppMeta, AttachmentMeta, Category, UserProfile
+### Community 4 - "DexieStorageRepo"
+Cohesion: 0.08
+Nodes (6): appDefaults(), DexieStorageRepo, DemoSeed, AppMeta, Category, UserProfile
 
 ### Community 5 - "package.json"
 Cohesion: 0.05
@@ -105,9 +102,9 @@ Nodes (43): dependencies, browser-image-compression, date-fns, dexie, jszip, rea
 Cohesion: 0.10
 Nodes (20): compilerOptions, allowImportingTsExtensions, isolatedModules, jsx, lib, module, moduleResolution, noEmit (+12 more)
 
-### Community 7 - "zipVault.ts"
-Cohesion: 0.17
-Nodes (9): Local Vault & State Phase, zod, dumpSchema, fileMetaSchema, MAX_ATTACHMENT_COUNT, MAX_VAULT_BYTES, AttachmentFileRecord, attachmentMetaSchema (+1 more)
+### Community 7 - "PendingAndSubsHub.tsx"
+Cohesion: 0.14
+Nodes (29): react-dom, blockInvalidNumberKeys(), parseMinorInput(), sanitizeMoneyInput(), buildInvoicePayment(), selectPendingOverview(), formatWalletLabel(), useConfirmSubscriptionPayment() (+21 more)
 
 ### Community 8 - "Design System: KromaLedger"
 Cohesion: 0.09
@@ -122,38 +119,30 @@ Cohesion: 0.17
 Nodes (11): Accessibility & Inclusion, Brand Commitments, Capabilities and Constraints, Evidence on Hand, Operating Context, Platform, Positioning, Product (+3 more)
 
 ### Community 11 - "reconciler.ts"
-Cohesion: 0.27
-Nodes (8): Deterministic Reconciliation Cycle, Portable Core Engine Phase, addDaysUtc(), asUtcDate(), cycleDate(), daysBetweenUtc(), PendingConfirmation, reconcile()
-
-### Community 13 - "WebBootstrap.tsx"
-Cohesion: 0.19
-Nodes (11): Web App HTML Entrypoint, PWA Application Icon, db, files, ForegroundReconcile(), queryClient, repo, services (+3 more)
+Cohesion: 0.14
+Nodes (10): Deterministic Reconciliation Cycle, Portable Core Engine Phase, addDaysUtc(), asUtcDate(), cycleDate(), daysBetweenUtc(), PendingConfirmation, reconcile() (+2 more)
 
 ### Community 19 - "PendingAndSubsHub.tsx"
-Cohesion: 0.05
-Nodes (73): Minor-Unit Integer Money Math, vitest, calculateInvoice(), InvoiceCalculation, InvoiceCalculationInput, safeMinor(), addLineItem(), LineItemDraft (+65 more)
+Cohesion: 0.07
+Nodes (46): Minor-Unit Integer Money Math, calculateInvoice(), InvoiceCalculation, InvoiceCalculationInput, safeMinor(), addLineItem(), LineItemDraft, lineTotalMinor() (+38 more)
 
-### Community 20 - "storage.test.ts"
-Cohesion: 0.23
-Nodes (5): Atomic ZIP Vault Restore, fake-indexeddb, jszip, exportVault(), restoreVault()
-
-### Community 22 - "DexieStorageRepo"
-Cohesion: 0.09
-Nodes (4): appDefaults(), DexieStorageRepo, ReconcileInput, Wallet
-
-### Community 23 - "WalletsScreen.tsx"
-Cohesion: 0.06
-Nodes (49): react, react-dom, formatCurrency(), WalletType, PresentationBoxProps, PresentationButtonProps, PresentationComponents, PresentationContext (+41 more)
+### Community 20 - "vitest"
+Cohesion: 0.13
+Nodes (10): Atomic ZIP Vault Restore, dexie, fake-indexeddb, jszip, exportVault(), restoreVault(), AttachmentFileRecord, KromaLedgerDB (+2 more)
 
 ### Community 24 - "bank-transfer-fee-chart.md"
 Cohesion: 0.50
 Nodes (3): Digital-First Banks, E-Wallets, Traditional Banks
 
-### Community 26 - "StorageContext.tsx"
-Cohesion: 0.20
-Nodes (4): IFileStore, StorageContext, StorageServices, VaultService
+### Community 26 - "WebBootstrap.tsx"
+Cohesion: 0.08
+Nodes (17): Web App HTML Entrypoint, PWA Application Icon, browser-image-compression, DexieFileStore, db, files, ForegroundReconcile(), queryClient (+9 more)
 
 ### Community 27 - "HomeDashboard.tsx"
+Cohesion: 0.07
+Nodes (45): react, formatCurrency(), WalletType, PresentationBoxProps, PresentationButtonProps, PresentationComponents, PresentationContext, PresentationIconProps (+37 more)
+
+### Community 29 - "HomeDashboard.tsx"
 Cohesion: 0.15
 Nodes (33): PWA & Mobile UI Phase, date-fns, calculateCashflow(), calculateCashForecast(), CashflowAnalytics, CashflowInput, CashForecast, CashForecastInput (+25 more)
 
@@ -167,23 +156,23 @@ Nodes (5): KromaLedger implementation plan, Phase 1: guardrails and portable cor
 
 ## Knowledge Gaps
 - **18 isolated node(s):** `@types/react`, `@types/react-dom`, `tailwindcss`, `typescript`, `vite` (+13 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 245 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 243 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react` connect `WalletsScreen.tsx` to `queries/index.ts`, `package.json`, `WebBootstrap.tsx`, `PendingAndSubsHub.tsx`, `StorageContext.tsx`, `HomeDashboard.tsx`?**
-  _High betweenness centrality (0.098) - this node is a cross-community bridge._
+- **Why does `react` connect `HomeDashboard.tsx` to `queries/index.ts`, `package.json`, `PendingAndSubsHub.tsx`, `PendingAndSubsHub.tsx`, `WebBootstrap.tsx`, `HomeDashboard.tsx`?**
+  _High betweenness centrality (0.087) - this node is a cross-community bridge._
 - **What connects `@types/react`, `@types/react-dom`, `tailwindcss` to the rest of the system?**
   _18 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `ledgerCommands.test.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.1111111111111111 - nodes in this community are weakly interconnected._
-- **Why does `vitest` connect `PendingAndSubsHub.tsx` to `ledgerCommands.test.ts`, `models/index.ts`, `package.json`, `verify-portability.mjs`, `reconciler.ts`, `storage.test.ts`, `WalletsScreen.tsx`, `HomeDashboard.tsx`?**
-  _High betweenness centrality (0.084) - this node is a cross-community bridge._
+  _Cohesion score 0.11375661375661375 - nodes in this community are weakly interconnected._
+- **Why does `vitest` connect `models/index.ts` to `ledgerCommands.test.ts`, `package.json`, `PendingAndSubsHub.tsx`, `verify-portability.mjs`, `reconciler.ts`, `PendingAndSubsHub.tsx`, `vitest`, `HomeDashboard.tsx`, `HomeDashboard.tsx`?**
+  _High betweenness centrality (0.082) - this node is a cross-community bridge._
 - **Should `IStorageRepo` be split into smaller, more focused modules?**
   _Cohesion score 0.07936507936507936 - nodes in this community are weakly interconnected._
-- **Why does `DexieStorageRepo` connect `DexieStorageRepo` to `ledgerCommands.test.ts`, `IStorageRepo`, `models/index.ts`, `db.ts`, `WebBootstrap.tsx`, `storage.test.ts`, `InvoiceItem`?**
+- **Why does `DexieStorageRepo` connect `DexieStorageRepo` to `ledgerCommands.test.ts`, `IStorageRepo`, `models/index.ts`, `reconciler.ts`, `InvoiceItem`, `vitest`, `WebBootstrap.tsx`?**
   _High betweenness centrality (0.055) - this node is a cross-community bridge._
 - **Should `models/index.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.11553030303030302 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08333333333333333 - nodes in this community are weakly interconnected._

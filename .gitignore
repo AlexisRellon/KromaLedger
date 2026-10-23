@@ -70,3 +70,10 @@ graphify-out/.*
 ehthumbs.db
 Thumbs.db
 Desktop.ini
+
+# Brag output
+brag-output
+
+# Git worktrees
+.worktrees/
+

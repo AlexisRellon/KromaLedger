@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9ba8cd79`
+- Built from commit: `f0728100`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -20,7 +20,7 @@
 - IStorageRepo
 - models/index.ts
 - queries/index.ts
-- WebPresentationProvider.tsx
+- DexieStorageRepo
 - package.json
 - TypeScript and Build Configuration
 - cashflowAnalytics.ts
@@ -29,22 +29,22 @@
 - Product
 - reconciler.ts
 - Repository Agent Instructions
-- WebBootstrap.tsx
+- InvoiceItem
 - Integration Verification Guidelines
 - Cabinet Grotesk Typography Asset
 - JetBrains Mono Code Font
 - Satoshi Sans-Serif Font
 - PendingAndSubsHub.tsx
 - vitest
-- InvoiceItem
-- DexieStorageRepo
-- WalletsScreen.tsx
+- WebPresentationProvider.tsx
 - bank-transfer-fee-chart.md
-- KromaLedger
-- index.tsx
+- WebBootstrap.tsx
+- HomeDashboard.tsx
+- SmokedCard
 - MASTER PROMPT: KromaLedger — Local-First Mobile Expense, Subscription & Invoice Tracker
-- Subscription
 - KromaLedger implementation plan
+- Subscription
+- KromaLedger
 - AGENTS.md
 
 ## God Nodes (most connected - your core abstractions)
@@ -92,9 +92,9 @@ Nodes (35): Offline Double-Entry Ledger, KromaLedger Master Specification, Local
 Cohesion: 0.10
 Nodes (44): dispatchBrowserNotification(), getBrowserNotificationPermission(), getShownIds(), isBrowserNotificationSupported(), markShownId(), requestBrowserNotificationPermission(), syncBrowserNotifications(), App() (+36 more)
 
-### Community 4 - "WebPresentationProvider.tsx"
-Cohesion: 0.13
-Nodes (15): PresentationBoxProps, PresentationButtonProps, PresentationContext, PresentationIconProps, PresentationInputProps, PresentationModalProps, PresentationProvider(), PresentationTextProps (+7 more)
+### Community 4 - "DexieStorageRepo"
+Cohesion: 0.09
+Nodes (5): appDefaults(), DexieStorageRepo, createDemoSeed(), ReconcileInput, Wallet
 
 ### Community 5 - "package.json"
 Cohesion: 0.05
@@ -124,10 +124,6 @@ Nodes (11): Accessibility & Inclusion, Brand Commitments, Capabilities and Const
 Cohesion: 0.27
 Nodes (8): Deterministic Reconciliation Cycle, Portable Core Engine Phase, addDaysUtc(), asUtcDate(), cycleDate(), daysBetweenUtc(), PendingConfirmation, reconcile()
 
-### Community 13 - "WebBootstrap.tsx"
-Cohesion: 0.08
-Nodes (17): Web App HTML Entrypoint, PWA Application Icon, browser-image-compression, DexieFileStore, db, files, ForegroundReconcile(), queryClient (+9 more)
-
 ### Community 19 - "PendingAndSubsHub.tsx"
 Cohesion: 0.05
 Nodes (75): Minor-Unit Integer Money Math, react, calculateInvoice(), InvoiceCalculation, InvoiceCalculationInput, safeMinor(), addLineItem(), LineItemDraft (+67 more)
@@ -136,19 +132,23 @@ Nodes (75): Minor-Unit Integer Money Math, react, calculateInvoice(), InvoiceCal
 Cohesion: 0.12
 Nodes (11): Atomic ZIP Vault Restore, dexie, fake-indexeddb, jszip, vitest, exportVault(), restoreVault(), AttachmentFileRecord (+3 more)
 
-### Community 22 - "DexieStorageRepo"
-Cohesion: 0.09
-Nodes (5): appDefaults(), DexieStorageRepo, createDemoSeed(), ReconcileInput, Wallet
-
-### Community 23 - "WalletsScreen.tsx"
-Cohesion: 0.08
-Nodes (43): PWA & Mobile UI Phase, date-fns, react-dom, formatCurrency(), WalletType, PresentationComponents, usePresentationComponents(), WalletOverviewPanel() (+35 more)
+### Community 23 - "WebPresentationProvider.tsx"
+Cohesion: 0.13
+Nodes (15): PresentationBoxProps, PresentationButtonProps, PresentationContext, PresentationIconProps, PresentationInputProps, PresentationModalProps, PresentationProvider(), PresentationTextProps (+7 more)
 
 ### Community 24 - "bank-transfer-fee-chart.md"
 Cohesion: 0.50
 Nodes (3): Digital-First Banks, E-Wallets, Traditional Banks
 
-### Community 27 - "index.tsx"
+### Community 26 - "WebBootstrap.tsx"
+Cohesion: 0.08
+Nodes (17): Web App HTML Entrypoint, PWA Application Icon, browser-image-compression, DexieFileStore, db, files, ForegroundReconcile(), queryClient (+9 more)
+
+### Community 27 - "HomeDashboard.tsx"
+Cohesion: 0.08
+Nodes (43): PWA & Mobile UI Phase, date-fns, react-dom, formatCurrency(), WalletType, PresentationComponents, usePresentationComponents(), WalletOverviewPanel() (+35 more)
+
+### Community 29 - "SmokedCard"
 Cohesion: 0.40
 Nodes (14): NavTab, DashboardSkeleton(), PendingSkeleton(), ScreenSkeleton(), SettingsSkeleton(), WalletsSkeleton(), SmokedCard(), Skeleton() (+6 more)
 
@@ -168,17 +168,17 @@ Nodes (5): KromaLedger implementation plan, Phase 1: guardrails and portable cor
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react` connect `PendingAndSubsHub.tsx` to `queries/index.ts`, `WebPresentationProvider.tsx`, `package.json`, `WebBootstrap.tsx`, `WalletsScreen.tsx`, `index.tsx`?**
+- **Why does `react` connect `PendingAndSubsHub.tsx` to `queries/index.ts`, `package.json`, `WebPresentationProvider.tsx`, `WebBootstrap.tsx`, `HomeDashboard.tsx`, `SmokedCard`?**
   _High betweenness centrality (0.099) - this node is a cross-community bridge._
 - **What connects `@types/react`, `@types/react-dom`, `tailwindcss` to the rest of the system?**
   _18 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `ledgerCommands.test.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.1111111111111111 - nodes in this community are weakly interconnected._
-- **Why does `vitest` connect `vitest` to `ledgerCommands.test.ts`, `models/index.ts`, `package.json`, `cashflowAnalytics.ts`, `verify-portability.mjs`, `reconciler.ts`, `PendingAndSubsHub.tsx`, `WalletsScreen.tsx`, `index.tsx`?**
+- **Why does `vitest` connect `vitest` to `ledgerCommands.test.ts`, `models/index.ts`, `package.json`, `cashflowAnalytics.ts`, `verify-portability.mjs`, `reconciler.ts`, `PendingAndSubsHub.tsx`, `HomeDashboard.tsx`, `SmokedCard`?**
   _High betweenness centrality (0.083) - this node is a cross-community bridge._
 - **Should `IStorageRepo` be split into smaller, more focused modules?**
   _Cohesion score 0.0664451827242525 - nodes in this community are weakly interconnected._
-- **Why does `DexieStorageRepo` connect `DexieStorageRepo` to `ledgerCommands.test.ts`, `IStorageRepo`, `models/index.ts`, `Subscription`, `WebBootstrap.tsx`, `vitest`, `InvoiceItem`?**
+- **Why does `DexieStorageRepo` connect `DexieStorageRepo` to `ledgerCommands.test.ts`, `IStorageRepo`, `models/index.ts`, `Subscription`, `InvoiceItem`, `vitest`, `WebBootstrap.tsx`?**
   _High betweenness centrality (0.055) - this node is a cross-community bridge._
 - **Should `models/index.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.09523809523809523 - nodes in this community are weakly interconnected._
