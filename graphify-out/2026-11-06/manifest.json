@@ -180,9 +180,9 @@
     "semantic_hash": ""
   },
   "src/ui/components/TopStatusHeader.tsx": {
-    "mtime": 1793898473.0926294,
-    "seen": 1793900805.1744857,
-    "ast_hash": "f89f097482bba249715b2e46efa648b6",
+    "mtime": 1793975261.1606216,
+    "seen": 1793975315.0321147,
+    "ast_hash": "d474742cbcaaf6fa5c679347c875b986",
     "semantic_hash": ""
   },
   "src/ui/primitives/index.tsx": {
@@ -2406,9 +2406,9 @@
     "semantic_hash": ""
   },
   "src/ui/components/WalletActivity.tsx": {
-    "mtime": 1793961021.773264,
-    "seen": 1793961036.8913128,
-    "ast_hash": "1a5141a3f0b29e12ec910756807e56eb",
+    "mtime": 1793975266.4100928,
+    "seen": 1793975315.03212,
+    "ast_hash": "f95e214e9fa5c8434c6305b6f3f28ba1",
     "semantic_hash": ""
   },
   "tests/core/walletActivity.test.tsx": {

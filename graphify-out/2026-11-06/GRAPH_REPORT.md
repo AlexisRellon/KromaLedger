@@ -1,12 +1,12 @@
 # Graph Report - KromaLedger  (2026-11-06)
 
 ## Corpus Check
-- 194 files · ~591,000 words
+- 194 files · ~591,108 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 20 file(s) not represented in the graph (top: .woff2 6, .otf 4, (none) 3)
 
 ## Summary
-- 1132 nodes · 3233 edges · 61 communities (47 shown, 14 thin omitted)
+- 1132 nodes · 3232 edges · 61 communities (47 shown, 14 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 100 edges (avg confidence: 0.89)
 - Token cost: 0 input · 0 output
 
