@@ -36,10 +36,10 @@ export function createDemoSeed(today: string): DemoSeed {
     invoiceSchema.parse({ id: "inv-104", title: "Invoice #104", direction: "RECEIVABLE", dueDate: day(4), status: "PARTIAL", subtotalMinor: 120000, taxMinor: 0, discountMinor: 0, totalMinor: 120000, paidMinor: 30000, currency: "PHP", itemIds: ["inv-104-line"], contact: "Client" }),
   ];
   const wallets = [
-    walletSchema.parse({ id: "wallet-cash", name: "Physical Cash", type: "CASH", currency: "PHP", balanceMinor: 150000, color: "#10B981", isDefault: true, createdAt: today }),
-    walletSchema.parse({ id: "wallet-maribank", name: "MariBank", type: "BANK", currency: "PHP", balanceMinor: 1000000, color: "#F59E0B", institution: "MariBank", accountNumber: "•• 1290", isDefault: false, createdAt: today }),
-    walletSchema.parse({ id: "wallet-gcash", name: "GCash", type: "E_WALLET", currency: "PHP", balanceMinor: 485000, color: "#007DFE", institution: "GCash", accountNumber: "•• 8821", isDefault: false, createdAt: today }),
-    walletSchema.parse({ id: "wallet-bdo", name: "BDO Business Checking", type: "BANK", currency: "PHP", balanceMinor: 2500000, color: "#6366F1", institution: "BDO", accountNumber: "•• 4019", isDefault: false, createdAt: today }),
+    walletSchema.parse({ id: "wallet-cash", name: "Physical Cash", type: "CASH", currency: "PHP", balanceMinor: 150000, color: "#10B981", cardNetwork: "NONE", isDefault: true, createdAt: today }),
+    walletSchema.parse({ id: "wallet-maribank", name: "MariBank", type: "BANK", currency: "PHP", balanceMinor: 1000000, color: "#F59E0B", cardNetwork: "MASTERCARD", institution: "MariBank", accountNumber: "•• 1290", isDefault: false, createdAt: today }),
+    walletSchema.parse({ id: "wallet-gcash", name: "GCash", type: "E_WALLET", currency: "PHP", balanceMinor: 485000, color: "#007DFE", cardNetwork: "VISA", institution: "GCash", accountNumber: "•• 8821", isDefault: false, createdAt: today }),
+    walletSchema.parse({ id: "wallet-bdo", name: "BDO Business Checking", type: "BANK", currency: "PHP", balanceMinor: 2500000, color: "#6366F1", cardNetwork: "MASTERCARD", institution: "BDO", accountNumber: "•• 4019", isDefault: false, createdAt: today }),
   ];
   const profile = userProfileSchema.parse({
     id: "profile",

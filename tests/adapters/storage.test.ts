@@ -168,7 +168,7 @@ describe("Dexie local vault", () => {
       id: "inv-test",
       title: "Design Services",
       direction: "RECEIVABLE" as const,
-      dueDate: "2026-11-01",
+      dueDate: "2029-11-01",
       status: "PENDING" as const,
       subtotalMinor: 100000,
       taxMinor: 0,

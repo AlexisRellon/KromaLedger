@@ -144,4 +144,27 @@ describe("useAIStore", () => {
     expect(secondCallArg.history.length).toBeGreaterThanOrEqual(2);
     expect(secondCallArg.history[0].content).toBe("How much can I spend per day?");
   });
+
+  it("reuses an unsent insight draft and saves it only when a message is sent", async () => {
+    const engine: IAIEngine = {
+      askWeeklyBudget: vi.fn().mockResolvedValue({ answerMarkdown: "Advice", modelUsed: "test" }),
+      getRateLimitStatus: vi.fn().mockResolvedValue({ isLimited: false, remainingCalls: 29, totalLimit: 30, resetsInSeconds: 0 }),
+    };
+    useAIStore.getState().initStore();
+    await useAIStore.getState().askBudgetQuestion(engine, "Existing conversation", dummySnapshot);
+    const savedBefore = localStorage.getItem("kromaledger_ai_threads_v2");
+
+    useAIStore.getState().openWithQuestion("Explain this insight");
+    const draftId = useAIStore.getState().activeThreadId;
+    useAIStore.getState().closeModal();
+    useAIStore.getState().openWithQuestion("Explain this insight");
+    expect(useAIStore.getState().activeThreadId).toBe(draftId);
+    expect(useAIStore.getState().threads).toHaveLength(2);
+    expect(localStorage.getItem("kromaledger_ai_threads_v2")).toBe(savedBefore);
+
+    await useAIStore.getState().askBudgetQuestion(engine, "Explain this insight", dummySnapshot);
+    useAIStore.getState().initStore();
+    expect(useAIStore.getState().activeThreadId).toBe(draftId);
+    expect(useAIStore.getState().messages[0]?.content).toBe("Explain this insight");
+  });
 });

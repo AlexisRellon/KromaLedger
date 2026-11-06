@@ -13,6 +13,7 @@ import {
   sanitizeQuantityInput,
 } from "../../core/engine/moneyInput";
 import { formatCurrency } from "../../core/models";
+import { Button, Input } from "../primitives";
 
 export type LineDraft = LineItemDraft;
 
@@ -110,32 +111,32 @@ export function LineItemBuilder({
   };
 
   return (
-    <div className="mt-4 rounded-2xl border border-white/[.08] bg-black/20 p-4">
+    <div className="mt-4 rounded-2xl border-2 border-neutral-900 bg-[#FAF8F5] p-4 shadow-[3px_3px_0px_#18181B]">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">Invoice line items</h3>
-        <span className="font-mono text-xs text-neutral-400">{lines.length} lines</span>
+        <h3 className="text-sm font-black text-neutral-900">Invoice line items</h3>
+        <span className="font-mono text-xs font-bold text-neutral-600">{lines.length} lines</span>
       </div>
 
       <div className="space-y-2 mb-3">
         {lines.map((line) => (
           <div
             key={line.id}
-            className="flex items-center justify-between gap-3 text-xs py-1 px-1 rounded-lg hover:bg-white/[0.02] transition"
+            className="flex items-center justify-between gap-3 text-xs py-1.5 px-2 rounded-xl border border-neutral-300 bg-white shadow-[1px_1px_0px_#18181B] transition"
           >
-            <span className="min-w-0 flex-1 truncate text-neutral-200">
+            <span className="min-w-0 flex-1 truncate font-semibold text-neutral-900">
               {line.description}{" "}
-              <span className="font-mono text-neutral-400">× {line.quantity}</span>
+              <span className="font-mono text-neutral-500">× {line.quantity}</span>
             </span>
 
             <div className="flex items-center gap-2.5 shrink-0">
-              <span className="font-mono text-xs font-semibold text-white tabular-nums text-right min-w-[5.5rem]">
+              <span className="font-mono text-xs font-black text-neutral-900 tabular-nums text-right min-w-[5.5rem]">
                 {formatCurrency(lineTotalMinor(line))}
               </span>
               <button
                 type="button"
                 aria-label={`Remove ${line.description}`}
                 onClick={() => onChange(removeLineItem(lines, line.id))}
-                className="grid h-5 w-5 place-items-center rounded text-neutral-500 hover:bg-white/10 hover:text-rose-400 transition"
+                className="grid h-5 w-5 place-items-center rounded-md text-neutral-500 hover:bg-rose-100 hover:text-[#BE123C] transition cursor-pointer"
               >
                 ×
               </button>
@@ -145,16 +146,16 @@ export function LineItemBuilder({
       </div>
 
       <div className="grid grid-cols-[1fr_4.5rem_6rem_auto] gap-2">
-        <input
+        <Input
           ref={descRef}
           aria-label="Line description"
           value={draft.description}
           onChange={(e) => updateDraft({ ...draft, description: e.target.value })}
           onKeyDown={handleKeyDown}
           placeholder="Description"
-          className="min-w-0 rounded-lg border border-white/10 bg-[#090a08] px-2.5 py-2 text-xs text-white placeholder-neutral-500 outline-none focus:border-[#D9F938]/50"
+          className="text-xs py-2"
         />
-        <input
+        <Input
           aria-label="Quantity"
           type="text"
           inputMode="decimal"
@@ -165,9 +166,9 @@ export function LineItemBuilder({
           }}
           onChange={(e) => updateDraft({ ...draft, quantity: sanitizeQuantityInput(e.target.value) })}
           placeholder="Qty"
-          className="rounded-lg border border-white/10 bg-[#090a08] px-2.5 py-2 font-mono text-xs text-white text-right outline-none focus:border-[#D9F938]/50"
+          className="font-mono text-xs text-right py-2"
         />
-        <input
+        <Input
           aria-label="Unit price"
           type="text"
           inputMode="decimal"
@@ -178,29 +179,31 @@ export function LineItemBuilder({
           }}
           onChange={(e) => updateDraft({ ...draft, unitPrice: sanitizeMoneyInput(e.target.value) })}
           placeholder="₱ unit"
-          className="rounded-lg border border-white/10 bg-[#090a08] px-2.5 py-2 font-mono text-xs text-white text-right outline-none focus:border-[#D9F938]/50"
+          className="font-mono text-xs text-right py-2"
         />
-        <button
+        <Button
           type="button"
+          variant="primary"
+          size="sm"
           onClick={addLine}
           aria-label="Add line item"
           title="Add line item"
-          className="flex items-center justify-center rounded-lg bg-[#D9F938]/20 border border-[#D9F938]/40 px-3 text-sm text-[#D9F938] hover:bg-[#D9F938]/30 transition active:scale-95"
+          className="!p-2 h-9 w-9 rounded-xl"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
-        </button>
+        </Button>
       </div>
 
       {lineError && (
-        <p className="mt-1.5 text-xs text-rose-400 font-medium">{lineError}</p>
+        <p className="mt-1.5 text-xs text-[#BE123C] font-bold">{lineError}</p>
       )}
 
       <div className="mt-3 grid grid-cols-2 gap-2">
-        <label className="text-xs font-mono text-neutral-400">
+        <label className="text-xs font-bold uppercase tracking-wider text-neutral-700">
           TAX %
-          <input
+          <Input
             type="text"
             inputMode="decimal"
             value={taxRateBps === 0 ? "" : String(taxRateBps / 100)}
@@ -210,12 +213,12 @@ export function LineItemBuilder({
               onTaxChange(Math.round(Number(sanitized || 0) * 100));
             }}
             placeholder="0.00"
-            className="mt-1 w-full rounded-lg border border-white/10 bg-[#090a08] px-2.5 py-2 font-mono text-xs text-white text-right outline-none focus:border-[#D9F938]/50"
+            className="mt-1 font-mono text-xs text-right py-1.5"
           />
         </label>
-        <label className="text-xs font-mono text-neutral-400">
+        <label className="text-xs font-bold uppercase tracking-wider text-neutral-700">
           DISCOUNT ₱
-          <input
+          <Input
             type="text"
             inputMode="decimal"
             value={discountMinor === 0 ? "" : String(discountMinor / 100)}
@@ -225,17 +228,17 @@ export function LineItemBuilder({
               onDiscountChange(Math.round(Number(sanitized || 0) * 100));
             }}
             placeholder="0.00"
-            className="mt-1 w-full rounded-lg border border-white/10 bg-[#090a08] px-2.5 py-2 font-mono text-xs text-white text-right outline-none focus:border-[#D9F938]/50"
+            className="mt-1 font-mono text-xs text-right py-1.5"
           />
         </label>
       </div>
 
       {total && (
-        <div className="mt-3.5 flex items-baseline justify-between border-t border-white/[.08] pt-3 text-sm">
-          <span className="text-xs text-neutral-400">
+        <div className="mt-3.5 flex items-baseline justify-between border-t-2 border-neutral-200 pt-3 text-sm">
+          <span className="text-xs font-semibold text-neutral-600">
             Subtotal {formatCurrency(total.subtotalMinor)} · tax {formatCurrency(total.taxMinor)}
           </span>
-          <strong className="font-mono text-sm font-bold text-white tabular-nums text-right">
+          <strong className="font-mono text-sm font-black text-neutral-900 tabular-nums text-right">
             {formatCurrency(total.totalMinor)}
           </strong>
         </div>

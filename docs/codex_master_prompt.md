@@ -1,36 +1,40 @@
-# MASTER PROMPT: KromaLedger — Local-First Mobile Expense, Subscription & Invoice Tracker
+# MASTER PROMPT: Kaban — Local-First Financial Vault & Ledger
 
 ## 0. AGENT SKILL ACTIVATION & ORCHESTRATION DIRECTIVES
 
-You are the **Lead Architect & Orchestrator** for **KromaLedger** (`kromaledger`). Before writing any application code, you MUST activate and strictly follow your loaded skills:
+You are the **Lead Architect & Orchestrator** for **Kaban** (`kromaledger`). Before writing any application code, you MUST activate and strictly follow your loaded skills:
 
 1. **`superpowers`**:
    * Enforce `brainstorming` / `writing-plans` to validate the implementation plan before touching code.
    * Enforce `test-driven-development` (TDD): Every core calculation, reconciler rule, and storage adapter method must have failing unit tests written BEFORE implementation.
    * Enforce `subagent-driven-development` & `dispatching-parallel-agents`: Decompose the build into isolated workstreams and spawn dedicated subagents with strict directory ownership.
-   * Enforce `verification-before-completion`: Run typechecks (`tsc --noEmit`), dependency lock checks (`npm run verify:lock`), unit test suites (`vitest run`), and production builds (`vite build`) before declaring any task complete.
+   * Enforce `verification-before-completion`: Run typechecks (`tsc --noEmit`), dependency lock checks (`npm run verify:lock`), unit test suites (`vitest run`), portability checks (`node scripts/verify-portability.mjs`), and production builds (`npm run build`) before declaring any task complete.
 
 2. **`ponytail`**:
-   * Maintain structured task tracking, clean context handoffs between subagents, atomic commits, and deterministic execution state across phases.
+   * Maintain structured task tracking, clean context handoffs between subagents, atomic changes, and deterministic execution state across phases.
 
 ---
 
 ## 1. BRANDING, IDENTITY & ARCHITECTURAL CONSTRAINTS
 
-* **App Name**: **KromaLedger**
-* **Package / Repo Slug**: `kromaledger`
-* **Local IndexedDB Name**: `KromaLedgerDB`
-* **Backup Archive Prefix**: `kromaledger-vault-YYYY-MM-DD.zip`
-* **Header / Logo Lockup**: Rendered in **`JetBrains Mono`** uppercase tracking-wider: **`KROMA`** in crisp white (`#FFFFFF`), **`LEDGER`** in muted silver (`#A3A3A3`), followed by a glowing **`#D9F938` Electric Volt dot** (`KROMA` + `LEDGER` + `●`).
+* **App Name**: **Kaban** (formerly KromaLedger)
+* **Brand Metaphor**: Traditional Filipino wooden or iron-bound treasure chest/vault for family heirlooms, land titles, and private savings.
+* **Package / Repo Slug**: `kromaledger` (preserved for package and tool consistency)
+* **Local IndexedDB Database Name**: `KromaLedgerDB` (strictly maintained for backwards-compatibility so users never lose on-device data)
+* **Backup Archive Prefix**: `kromaledger-vault-YYYY-MM-DD.zip` (strictly maintained for archive compatibility)
+* **Header / Logo Lockup**:
+  * Vault Emblem: High-contrast neobrutalist treasure chest SVG with gold/amber body (`#FBBF24` / `#F59E0B`), plum straps (`#4A154B`), and 1.5px ink outline.
+  * Typography: `KABAN` rendered in bold display typography (`font-display font-black text-neutral-900`) accompanied by a monospace pill badge `Vault` (`bg-[#EDE9FE] text-neutral-900 border border-neutral-900 font-mono font-bold`).
 
 ### Architectural Pillars
-Build a **100% Local-First, Mobile-First Progressive Web App (PWA)** for tracking **Daily Expenses, Recurring Subscriptions, and Itemized Invoices (Payables & Receivables)**.
-* **Zero Cloud Dependency**: No remote backend, no auth wall, no external API calls. All data lives on-device inside `KromaLedgerDB`.
+Build a **100% Local-First, Mobile-First Progressive Web App (PWA)** for tracking **Daily Expenses, Recurring Subscriptions, Itemized Invoices (Payables & Receivables), and Physical Wallets**.
+* **Zero Cloud Dependency**: No remote backend, no auth wall, no external telemetry or network API calls. All data lives on-device inside `KromaLedgerDB`.
 * **React Native (Expo) Port-Ready ("Headless Core" Pattern)**:
-  * **75%–85% of the codebase (`src/core/` and `src/state/`) MUST have ZERO DOM, `window`, `document`, or `dexie` imports.**
+  * **Strict Portability**: `src/core/` and `src/state/` MUST contain ZERO DOM, `window`, `document`, or `dexie` imports.
   * All UI components interact with local storage exclusively through **TanStack Query (`useQuery` / `useMutation`)** calling an injected `IStorageRepo` interface (never `useLiveQuery` directly inside React components).
+  * Enforced continuously by `node scripts/verify-portability.mjs`.
 * **Progressive Disclosure UX ("3-Second Entry")**:
-  * Adding an entry requires only **Amount**, **Title/Merchant**, and **Item Type** (`Expense | Subscription | Invoice`) on the primary numpad drawer, with progressive accordions/sheets for line items, tax/discounts, billing cycles, and receipt attachments.
+  * Adding an entry requires only **Amount**, **Title/Merchant**, and **Item Type** (`Expense | Subscription | Invoice | Transfer`) on the primary tactile drawer, with progressive sheets for line items, taxes/discounts, convenience fees, and receipt attachments.
 
 ---
 
@@ -38,177 +42,136 @@ Build a **100% Local-First, Mobile-First Progressive Web App (PWA)** for trackin
 
 * **Framework & Build**: Vite + **React 19** (`react` & `react-dom` pinned to exact stable 19.x release) + TypeScript (Strict Mode).
   * *React 19 Portability Rule*: Leverage React 19 ref-as-prop and client hooks, but DO NOT use Server Actions (`"use server"`) so 100% of state logic ports directly to React Native.
-* **Styling**: Tailwind CSS (configured with standard utility classes compatible with `NativeWind` for future React Native migration).
-* **Typography**: `Satoshi` for UI labels and body text; `Cabinet Grotesk` for display headers and the `KROMALEDGER●` brand lockup; `JetBrains Mono` (`font-mono tabular-nums`) for all currency amounts, numpad keys, invoice math, and badges.
+* **Styling**: Tailwind CSS configured with Neobrutalist design tokens and utilities (`.neo-box`, `.neo-box-sm`, `.neo-box-lg`, `.neo-btn-interactive`).
+* **Typography Stack**:
+  * `Dangwa` (`.font-brand`): Brush typeface by Aaron Amar (Manila, Philippines), 100% free for commercial & personal use. Used for brand accents and decorative headers.
+  * `Bantayog` (`.font-display`): Rough monument display typeface by Jad Maza (© 2020), single-user free license, web embedding permitted via local `@font-face`. Used for display headings and hero metrics.
+  * `Satoshi` (`.font-sans`): Clean grotesque body text by Indian Type Foundry (free commercial license).
+  * `JetBrains Mono` (`.font-mono`, `.tabular-nums`): Monospaced tabular numerals for all financial figures, keypad buttons, and timestamps.
+  * *Font Loading Constraint*: All fonts are strictly self-hosted in `public/fonts/`. No external CDN font requests allowed.
 * **State & Async Reactivity**:
   * `TanStack Query v5` (`@tanstack/react-query`) for reactive DB reads/writes and cache invalidation.
   * `Zustand` for ephemeral UI state (active month filter, numpad buffer, active drawer tab).
 * **Local Storage Adapter (Web)**:
-  * `Dexie.js` (IndexedDB) initialized as `new Dexie('KromaLedgerDB')`.g
-  * `browser-image-compression` + IndexedDB `Blob` / OPFS for storing receipt photos & invoice PDFs inside a dedicated `attachments` store (never bloat transaction list queries with raw blobs).
-  * `navigator.storage.persist()` triggered on boot to protect local storage.
+  * `Dexie.js` (IndexedDB) initialized as `new Dexie('KromaLedgerDB')`.
+  * `browser-image-compression` + IndexedDB `Blob` for storing receipt photos & invoice PDFs inside a dedicated `attachments` store (never bloat transaction list queries with raw blobs).
+  * `navigator.storage.persist()` triggered on boot to protect local storage from browser eviction.
 * **Validation & Date Math**: `Zod` + `React Hook Form` + `date-fns`
-* **Testing**: `Vitest` + `fake-indexeddb` (for testing Dexie adapters headlessly)
+* **Testing**: `Vitest` + `fake-indexeddb` (for testing Dexie adapters headlessly).
 
 ### STRICT SUPPLY-CHAIN & VERSION-LOCK POLICY (MANDATORY GUARDRAILS)
 1. **100% Exact Version Pinning**:
    * Set `"name": "kromaledger"` and `"private": true` in `package.json`.
    * Every single dependency and devDependency in `package.json` MUST use an exact semantic version (e.g., `"19.1.0"`, NEVER `"^19.1.0"`, `"~19.1.0"`, `"*"`, or `"latest"`).
 2. **Hardened `.npmrc` Configuration**:
-   * Create a root `.npmrc` containing:
+   * Root `.npmrc` enforces:
      ```ini
      save-exact=true
      engine-strict=true
      ignore-scripts=true
      audit-level=critical
      ```
-   * `ignore-scripts=true` blocks malicious `postinstall` scripts during supply-chain attacks. Explicitly allowlist only required native/WASM build scripts if strictly needed.
-3. **Immutable Lockfile Policy ("Freeze Until Zero-Day")**:
-   * Once initialized and verified working, `package.json` and `package-lock.json` are **FROZEN**.
-   * Subagents and contributors are **STRICTLY FORBIDDEN** from running `npm update`, adding unrequested packages, or bumping versions unless addressing a documented **Zero-Day Vulnerability (Critical CVE)** or **Supply-Chain Attack**.
-   * All automated installs must use `npm ci` to verify cryptographic SHA-512 lockfile integrity.
+   * `ignore-scripts=true` blocks arbitrary lifecycle scripts during package installation.
+3. **Immutable Lockfile Policy**:
+   * `package.json` and `package-lock.json` are frozen. No unrequested package additions or version bumps.
+   * All automated CI installs must use `npm ci` to verify cryptographic SHA-512 lockfile integrity.
 4. **Automated Lock Verification Script (`scripts/verify-lock.mjs`)**:
-   * Wire `"verify:lock": "node scripts/verify-lock.mjs"` into `package.json`. The script must parse `package.json` and exit with code `1` if any dependency version string starts with `^`, `~`, `>`, `<`, `*`, `latest`, `next`, `http`, or `git`.
+   * Enforced via `"verify:lock": "node scripts/verify-lock.mjs"`. Exits with code `1` if any dependency starts with `^`, `~`, `>`, `<`, `*`, or unpinned ranges.
 
 ---
 
-## 3. DESIGN SYSTEM: "STEALTH SMOKED-GLASS & ELECTRIC VOLT"
+## 3. DESIGN SYSTEM: "TACTILE PAPER & NEOBRUTALIST HERITAGE"
 
-Follow the exact visual language of the **KromaLedger** prototype:
+Follow the visual language specified in [`DESIGN.md`](file:///DESIGN.md) and [`docs/ui-components.md`](file:///docs/ui-components.md):
 
-* **Canvas Base**: Deep Obsidian `#070806` (`bg-[#070806] text-white`).
-* **Top Atmospheric Bleed**: Subtle olive-lime radial glow behind the top status header (`bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#3a4714]/40 via-[#0d0f0a] to-[#070806]`).
-* **Brand Header Lockup**:
+* **Canvas Base**: Cream Paper `#FAF8F5` (`bg-[#FAF8F5] text-neutral-900`) with subtle 28px graph paper grid texture.
+* **Surface Containers**: Solid white `#FFFFFF` cards with 2px solid charcoal ink borders (`border-2 border-neutral-900`) and hard offset shadows (`shadow-[3px_3px_0px_#18181B]`).
+* **Brand Lockup**:
   ```tsx
-  <div className="font-mono text-sm font-bold tracking-widest flex items-center gap-0.5">
-    <span className="text-white">KROMA</span>
-    <span className="text-neutral-400 font-normal">LEDGER</span>
-    <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#D9F938] ml-0.5 shadow-[0_0_8px_#D9F938]" />
-  </div>
+  <BrandLogo />
   ```
-* **Smoked-Glass Surface**: `bg-white/[0.03] backdrop-blur-md border border-white/[0.08] rounded-3xl` (razor-thin `1px` specular borders, never milky/opaque white frost).
-* **Grouped List Stack**: `bg-white/[0.02] border border-white/[0.07] divide-y divide-white/[0.05] rounded-3xl`.
-* **Primary Accent (Electric Volt)**: `#D9F938` (`bg-[#D9F938] text-[#070806] font-semibold shadow-[0_4px_20px_rgba(217,249,56,0.2)]`) for primary CTAs (`+ Quick Add Entry`), active segmented pills (`Dining`), active bottom-nav pills, and positive receivable figures (`+₱18,000.00`).
-* **Secondary Warm CTA**: Warm Amber `#F59E0B` (`bg-amber-400 text-[#070806]`) for the final `Save Entry` bar on the numpad drawer.
+* **Primary Interactive Button**: Royal Plum `#4A154B` (`bg-[#4A154B] text-white hover:bg-[#3B0764] active:bg-[#2E0854]`) with 2px ink border and tactile 3px hard offset shadow.
+* **Secondary / Subtle Button**: Lavender `#EDE9FE` (`bg-[#EDE9FE] text-neutral-900 hover:bg-[#DDD6FE]`).
+* **Accent Warm Amber / Gold**: `#F59E0B` / `#FBBF24` for quick-add drawer save actions, warning badges, and brand highlights.
 * **Semantic Status Colors**:
-  * Receivable / Paid: `#D9F938` or `#10B981`
-  * Pending / Upcoming Alert Dot: `#FBBF24` (Amber)
-  * Overdue / Urgent: `#F43F5E` (Rose)
+  * Receivable / Paid / Positive Cashflow: `#10B981` (Mint Emerald)
+  * Pending / Upcoming 7-Day Alert Dot: `#F59E0B` (Amber)
+  * Overdue / Expense Outflow / Destructive Action: `#F43F5E` or `#BE123C` (Rose Crimson)
+* **Tactile Press Physics (`.neo-btn-interactive`)**:
+  * Default: `shadow-[3px_3px_0px_#18181B]`
+  * Hover: `translate(-1px, -1px) shadow-[4px_4px_0px_#18181B]`
+  * Active (Pressed): `translate(2px, 2px) shadow-[1px_1px_0px_#18181B]`
 * **Data Visualizations**:
-  * Fixed Subscriptions vs. Variable Spend **Donut Ring** (`#D9F938` active arc over `#262626` track).
-  * Partially Paid Invoices **Hatched/Diagonal-Stripe Progress Bars** (`repeating-linear-gradient(-45deg, #D9F938, #D9F938 6px, transparent 6px, transparent 12px)`).
+  * `DonutChartSVG`: Fixed subscriptions vs. variable spend arc in `#4A154B` over neutral `#E4E4E7` track.
+  * `HatchedProgressBar`: Partially paid invoices progress meter with cream track `#F4F1EA` and `#10B981` fill.
+  * `ChartFrame` & `ChartLegend`: Structured semantic container for cashflow breakdown bars and schedules.
 
 ---
 
-## 4. TARGET DIRECTORY ARCHITECTURE
+## 4. TARGET DIRECTORY ARCHITECTURE & COMPONENT CONVENTIONS
 
 ```text
 .npmrc                            # Enforces save-exact=true & ignore-scripts=true
 scripts/
-└── verify-lock.mjs               # Guardrail script rejecting ^ or ~ in package.json
+├── verify-lock.mjs               # Guardrail rejecting ^ or ~ in package.json
+└── verify-portability.mjs        # Portability check enforcing headless core
 src/
-├── core/                         # 100% PORTABLE (NO DOM / NO DEXIE IMPORTS)
-│   ├── models/                   # Zod schemas & TS interfaces (Transaction, Subscription, Invoice, InvoiceItem, Category, AttachmentMeta)
+├── core/                         # 100% PORTABLE (NO DOM, NO DEXIE IMPORTS)
+│   ├── models/                   # Zod schemas & TS interfaces (Transaction, Subscription, Invoice, Wallet, Profile)
 │   ├── engine/
-│   │   ├── reconciler.ts         # Deterministic Boot-Up Reconciler (backfills missed subscription cycles & marks overdue invoices)
-│   │   ├── invoiceCalculator.ts  # Line-item subtotal, tax rate, discount, grand total, and remaining balance math
-│   │   ├── numpadEvaluator.ts    # Safe inline math parser for numpad (e.g., "150 + 45" -> 195)
-│   │   └── cashflowAnalytics.ts  # Net outflow, fixed burn rate %, category distribution, and partial invoice progress
+│   │   ├── reconciler.ts         # Boot-up subscription reconciler & overdue invoice transitions
+│   │   ├── invoiceCalculator.ts  # Line items, discounts, taxes, and status transitions
+│   │   ├── convenienceFee.ts     # Cash-in fees and payment transfer calculations
+│   │   ├── obligationSchedule.ts # Upcoming 7-day payments and due dates
+│   │   └── cashflowAnalytics.ts  # Net outflow, burn rate %, category distributions
 │   └── ports/
 │       ├── IStorageRepo.ts       # Abstract repository contract for all CRUD & queries
-│       └── IFileStore.ts         # Abstract contract for saving/loading binary receipt & PDF blobs
-├── adapters/                     # WEB-SPECIFIC IMPLEMENTATIONS
+│       └── IFileStore.ts         # Abstract contract for saving/loading binary receipt blobs
+├── adapters/                     # BROWSER IMPLEMENTATIONS
 │   ├── web-dexie/
-│   │   ├── db.ts                 # Dexie('KromaLedgerDB') schema definition (transactions, subscriptions, invoices, categories, attachments, appMeta)
+│   │   ├── db.ts                 # Dexie('KromaLedgerDB') schema definition
 │   │   ├── DexieStorageRepo.ts   # Implements IStorageRepo
-│   │   └── DexieFileStore.ts     # Implements IFileStore with browser-image-compression
+│   │   └── DexieFileStore.ts     # Implements IFileStore with WebP compression
 │   └── backup/
-│       └── zipVault.ts           # Exports/imports entire KromaLedgerDB + binary blobs as kromaledger-vault-YYYY-MM-DD.zip
+│       └── zipVault.ts           # Full ZIP export/restore (kromaledger-vault-YYYY-MM-DD.zip)
 ├── state/                        # 95% PORTABLE (ZUSTAND + TANSTACK QUERY)
 │   ├── StorageContext.tsx        # Dependency injection provider for IStorageRepo & IFileStore
-│   ├── useUIStore.ts             # Zustand store (selectedMonth, activeNavTab, quickAddOpen, quickAddMode)
-│   └── queries/                  # React Query hooks (useTransactions, useSubscriptions, useInvoices, useBootReconciler)
-└── ui/                           # MOBILE-FIRST VIEWPORT SHELL & SCREENS
-    ├── primitives/               # SmokedCard, VoltButton, SegmentedPill, HatchedProgressBar, StatusDot, BrandLogo
+│   ├── useUIStore.ts             # Ephemeral UI state (selectedMonth, activeNavTab, modal states)
+│   └── queries/                  # React Query hooks (useTransactions, useSubscriptions, useWallets, etc.)
+└── ui/                           # RESPONSIVE NEOBRUTALIST VIEWPORT SHELL
+    ├── primitives/               # Centralized design system controls (Button, Field, Modal, ChartFrame, Skeleton)
     ├── components/
-    │   ├── TopStatusHeader.tsx   # KROMALEDGER● lockup + "● Local Storage Protected • Tap to Backup" pill
-    │   ├── QuickAddDrawer.tsx    # Morphing 3-mode sheet (Expense | Subscription | Invoice) + Tactile Numpad
-    │   ├── LineItemBuilder.tsx   # Dynamic invoice line-item sheet
-    │   └── FloatingNavPill.tsx   # Bottom floating glass dock
+    │   ├── TopStatusHeader.tsx   # Kaban logo lockup + storage protection badge
+    │   ├── QuickAddDrawer.tsx    # Tactile 4-mode entry sheet (Expense | Subscription | Invoice | Transfer)
+    │   ├── LineItemBuilder.tsx   # Dynamic invoice item builder
+    │   ├── PhysicalWalletCard.tsx# Tactile physical account card with balance and quick-add actions
+    │   ├── StackedWalletDeck.tsx # Multi-wallet deck view
+    │   └── FloatingNavPill.tsx   # Bottom floating navigation dock
     └── screens/
-        ├── HomeDashboard.tsx     # Screen 1: Net Outflow Hero Card + Recent Activity Feed
-        ├── PendingAndSubsHub.tsx # Screen 3: Upcoming 7-Day Alerts + Fixed Subs Donut + Hatched Partial Invoices
-        └── VaultBackupModal.tsx  # Local storage persistence badge, storage quota meter, 1-tap ZIP export/restore
+        ├── HomeDashboard.tsx     # Hero net outflow card, cashflow graph, recent activity
+        ├── PendingAndSubsHub.tsx # Upcoming 7-day obligations, subs donut, partial invoice progress
+        ├── WalletsScreen.tsx     # Physical and digital wallet accounts management
+        └── SettingsScreen.tsx    # Local storage persistence status, backup ZIP export & restore
 ```
 
 ---
 
-## 5. SUBAGENT WORKSTREAM DECOMPOSITION (`subagent-driven-development`)
+## 5. CENTRALIZED COMPONENT CONTRACTS
 
-Spawn and coordinate **4 specialized subagents**. Enforce strict file-ownership boundaries so parallel subagents never create merge conflicts:
-
-### Subagent 1: `core-domain-architect`
-* **Ownership**: `src/core/**`, `tests/core/**`, `.npmrc`, and `scripts/verify-lock.mjs`
-* **Forbidden**: Any browser/DOM APIs or UI libraries.
-* **Deliverables (Strict TDD via `superpowers`)**:
-  1. Configure `.npmrc` (`save-exact=true`, `ignore-scripts=true`) and `scripts/verify-lock.mjs` to lock React 19 and all `kromaledger` dependencies with zero floating ranges.
-  2. Define all Zod schemas and TypeScript models (`Transaction`, `Subscription`, `Invoice`, `InvoiceItem`, `Category`, `AppMeta`) with default PHP (`₱`) currency formatting.
-  3. Define `IStorageRepo` and `IFileStore` interfaces in `src/core/ports/`.
-  4. Build & test `invoiceCalculator.ts` (line-item quantities, unit prices, tax %, discounts, partial payments, and status transitions: `DRAFT -> PENDING -> PARTIAL -> PAID | OVERDUE`).
-  5. Build & test `reconciler.ts` (The **Deterministic Boot-Up Reconciler**):
-     * Given `lastReconciledDate` and `currentDate`, loop through all active subscriptions where `nextBillingDate <= currentDate`.
-     * If `autoLog === true`, generate backfilled `SUBSCRIPTION_PAYMENT` transactions for every missed cycle chronologically and advance `nextBillingDate`.
-     * If `autoLog === false`, emit pending confirmation items.
-     * Automatically transition any `PENDING` or `PARTIAL` invoice where `dueDate < currentDate` to `OVERDUE`.
-  6. Build & test `numpadEvaluator.ts` and `cashflowAnalytics.ts`.
-
-### Subagent 2: `local-vault-engineer`
-* **Ownership**: `src/adapters/**`, `src/state/**`, and `tests/adapters/**`
-* **Depends On**: `src/core/ports/` and `src/core/models/` from `core-domain-architect`.
-* **Deliverables (Strict TDD with `fake-indexeddb`)**:
-  1. Implement `db.ts` using `new Dexie('KromaLedgerDB')` with indexed stores: `transactions`, `subscriptions`, `invoices`, `categories`, `attachments`, and `appMeta`.
-  2. Keep binary `Blob` attachments strictly isolated in the `attachments` table so transaction/invoice list queries remain sub-millisecond.
-  3. Implement `DexieStorageRepo.ts` and `DexieFileStore.ts` (with client-side WebP receipt compression).
-  4. Implement `zipVault.ts` for 1-tap full local backup (`kromaledger-vault-YYYY-MM-DD.zip` containing `db-dump.json` + `/attachments/*`) and atomic restore.
-  5. Build `StorageContext.tsx`, `useUIStore.ts` (Zustand), and TanStack Query hooks (`useTransactions`, `useSubscriptions`, `useInvoices`, `useReconcileOnForeground` tied to `visibilitychange`).
-  6. Seed rich, realistic demo data matching the prototype (`GitHub Copilot Pro -₱560.00`, `Client UI Milestone +₱18,000.00`, `GrabCar Commute -₱245.00`, `Netflix ₱549.00`, `Invoice #104 ₱1,200.00`) on first initialization of `KromaLedgerDB`.
-
-### Subagent 3: `stealth-ui-builder`
-* **Ownership**: `src/ui/primitives/**`, `src/ui/components/TopStatusHeader.tsx`, `src/ui/components/FloatingNavPill.tsx`, `src/ui/screens/**`, `src/App.tsx`, and `tailwind.config.js`
-* **Deliverables**:
-  1. Configure Tailwind CSS with the **Stealth Smoked-Glass & Volt** tokens (`#070806` base, `#D9F938` Volt accent, `JetBrains Mono` font stack).
-  2. Build reusable React 19 primitives: `BrandLogo` (`KROMALEDGER●` in `JetBrains Mono`), `SmokedCard`, `VoltButton`, `HatchedProgressBar` (diagonal Volt stripes for partially paid invoices), `DonutChartSVG` (Fixed Subs 40% vs Variable), and `FloatingNavPill`.
-  3. Build **Screen 1 (`HomeDashboard.tsx`)**:
-     * Top header featuring the `KROMALEDGER●` lockup and `● Local Storage Protected • Tap to Backup` status pill.
-     * Smoked-glass Hero Card showing `NET OUTFLOW • OCT 2026`, `₱24,500.00` in `JetBrains Mono`, and the full-width Volt `+ Quick Add Entry` button.
-     * Grouped `Recent Activity` stack with micro-badges (`Subscription • Monthly`, `Invoice #103 • Receivable`).
-  4. Build **Screen 3 (`PendingAndSubsHub.tsx`)**:
-     * `UPCOMING (Next 7 Days)` card with status dots (`Netflix (Tomorrow) ₱549.00`, `Invoice #104 (Oct 24) ₱1,200.00`).
-     * Split Bento row: `FIXED SUBS 40%` Donut Ring card on the left + `Partially Paid Invoices` Hatched Progress Bars card on the right (with 1-tap partial/full settlement modal).
-
-### Subagent 4: `quick-add-ux-specialist`
-* **Ownership**: `src/ui/components/QuickAddDrawer.tsx` and `src/ui/components/LineItemBuilder.tsx`
-* **Deliverables**:
-  1. Build **Screen 2 (`QuickAddDrawer.tsx`)** matching the center prototype screen:
-     * Top 3-way Segmented Pill: `Expense | Subscription | Invoice`.
-     * Giant `JetBrains Mono` tabular amount display (`₱ 0`) with subtitle `Tap keypad or attach receipt`.
-     * Horizontal scrollable category/action pills (`Dining` active in `#D9F938`, `Utilities`, `Services`, `Receipt Attach`).
-     * **Dynamic Morphing Middle Zone**:
-       * *Expense Mode*: Merchant/Note, Date, Category selector.
-       * *Subscription Mode*: Service Name, Billing Cycle (`Weekly | Monthly | Yearly`), Next Billing Date, Auto-Log toggle.
-       * *Invoice Mode*: Direction (`Payable | Receivable`), `Client/Vendor` input, `Due Date` picker, and expandable `Line Items` drawer trigger (showing live item count & subtotal).
-     * Tactile 3x4 dark smoked-glass keypad (`1-9`, `.`, `0`, `⌫`) + full-width warm amber `Save Entry` CTA button (`#F59E0B`).
+All screen builders and feature subagents must strictly adhere to the centralized component system in [`docs/ui-components.md`](file:///docs/ui-components.md):
+1. **No Bespoke Buttons**: Import `Button` from `src/ui/primitives` rather than declaring custom `<button className="border-2..." />`.
+2. **No Unwrapped Inputs**: Form fields must use `FormField` and `Input` / `Select` / `Textarea` from `src/ui/primitives` to guarantee consistent focus states, `aria-describedby` links, and error indicators.
+3. **Portal Modals**: Dialogs and popups must use `ModalShell` from `src/ui/primitives` to handle focus trapping, Escape key dismissals, and responsive backdrop blurring.
 
 ---
 
 ## 6. EXECUTION PROTOCOL & VERIFICATION GATES
 
-1. **Phase 1 (Guardrails, Contract & Core)**: Run `core-domain-architect` first to lock `.npmrc`, `scripts/verify-lock.mjs`, `src/core/models/`, and `src/core/ports/`. Verify 100% unit test pass rate on `reconciler.test.ts` and `invoiceCalculator.test.ts`.
-2. **Phase 2 (Parallel Build)**: Dispatch `local-vault-engineer`, `stealth-ui-builder`, and `quick-add-ux-specialist` in parallel. Use `ponytail` to track progress and handoff states.
-3. **Phase 3 (Integration & Verification)**:
-   * Wire `StorageContext` and `useReconcileOnForeground` into `App.tsx`.
-   * Run `npm run verify:lock` (zero floating `^` or `~` versions in `package.json`).
-   * Run `tsc --noEmit` (zero type errors).
-   * Run `vitest run` (all unit & adapter tests green).
-   * Verify ZERO imports from `dexie` or `window` inside `src/core/`.
-   * Run `vite build` to confirm a clean production bundle for `kromaledger`.
+1. **Phase 1 (Guardrails & Portability)**:
+   * Run `node scripts/verify-lock.mjs` to ensure zero unpinned dependencies.
+   * Run `node scripts/verify-portability.mjs` to certify that `src/core` and `src/state` remain 100% headless.
+2. **Phase 2 (Unit & Adapter Verification)**:
+   * Run `npm test` with Vitest to certify all math engines, models, reconcilers, and storage repos pass with 100% test coverage.
+3. **Phase 3 (Production Build & Bundle Verification)**:
+   * Run `npm run typecheck` (`tsc --noEmit`) to verify strict TypeScript adherence with zero type errors.
+   * Run `npm run build` (`vite build`) to confirm a clean production bundle.

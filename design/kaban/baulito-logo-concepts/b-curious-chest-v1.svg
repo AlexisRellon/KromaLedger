@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title"><title id="title">Baulito — Curious Chest concept</title>
+<path fill="#171717" fill-rule="evenodd" d="M16 112Q16 72 56 64L184 32Q224 24 240 80V192Q240 208 224 212L72 240Q48 244 40 224L16 160ZM32 112Q32 88 56 80L72 128L48 140Z M40 160L56 208V164Z M80 80L184 54Q208 48 220 88L100 112Z M92 136L96 152L132 144L128 128Z M188 116L192 132L224 124L220 108Z M160 144A16 16 0 0 0 152 174L148 196L172 192L168 172A16 16 0 0 0 160 144Z"/>
+<circle cx="116" cy="112" r="30" fill="#fff"/><circle cx="196" cy="92" r="30" fill="#fff"/>
+<circle cx="124" cy="108" r="18" fill="#171717"/><circle cx="204" cy="88" r="18" fill="#171717"/>
+</svg>

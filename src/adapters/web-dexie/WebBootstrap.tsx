@@ -9,6 +9,7 @@ import { useReconcileCommand } from "../../state/queries";
 import { restoreQueryCache, setupQueryCachePersistence } from "./queryCachePersistence";
 import { ScreenSkeleton } from "../../ui/components/skeletons";
 import { useUIStore } from "../../state/useUIStore";
+import { markFirstBoot } from "../../state/onboarding";
 
 const db = new KromaLedgerDB();
 const repo = new DexieStorageRepo(db);
@@ -73,7 +74,7 @@ export function WebBootstrap({ children }: PropsWithChildren) {
       const today = format(new Date(), "yyyy-MM-dd");
       await repo.initialize(today);
       try {
-        localStorage.setItem("kromaledger_booted", "1");
+        markFirstBoot(localStorage);
       } catch {}
       if (!cancelled) setReady(true);
       void repo.reconcile(today).catch(() => {});

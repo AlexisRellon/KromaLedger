@@ -41,6 +41,7 @@ coverage/
 # Cache directories
 .cache/
 .vite/
+vitest.config.mjs
 .eslintcache
 .stylelintcache
 .prettiercache

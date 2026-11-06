@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
-import { type Category, type Invoice } from "../../core/models";
+import { useMemo, useState } from "react";
+import { formatWalletLabel, type Category, type Invoice } from "../../core/models";
+import { format } from "date-fns";
+import { useWallets } from "../../state/queries";
+import { obligationDueDate } from "../../core/engine/obligationSchedule";
 import { blockInvalidNumberKeys, parseMinorInput, sanitizeMoneyInput } from "../../core/engine/moneyInput";
-import { VoltButton } from "../primitives";
+import { Button, FormField, Input, ModalShell, Select } from "../primitives";
 
 export function EditInvoiceModal({
   invoice,
@@ -18,20 +20,23 @@ export function EditInvoiceModal({
   onDelete?: (id: string) => void;
 }) {
   const [title, setTitle] = useState(invoice.title);
-  const [dueDate, setDueDate] = useState(invoice.dueDate);
+  const [dueDate, setDueDate] = useState(invoice.obligation?.firstDueDate ?? invoice.dueDate);
   const [direction, setDirection] = useState(invoice.direction);
   const [totalStr, setTotalStr] = useState((invoice.totalMinor / 100).toFixed(2));
   const [categoryId, setCategoryId] = useState(invoice.categoryId ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const wallets = useWallets().data ?? [];
+  const [paymentAmount, setPaymentAmount] = useState(((invoice.obligation?.paymentMinor ?? 0) / 100).toFixed(2));
+  const [cycle, setCycle] = useState(invoice.obligation?.cycle ?? "MONTHLY");
+  const [walletId, setWalletId] = useState(invoice.obligation?.walletId ?? "");
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !busy) onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, busy]);
+  const modalTitle = useMemo(() => {
+    if (invoice.obligation) {
+      return invoice.obligation.kind === "LOAN" ? "Edit Loan" : "Edit Installment";
+    }
+    return "Edit Invoice";
+  }, [invoice.obligation]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,6 +77,14 @@ export function EditInvoiceModal({
         categoryId: categoryId || undefined,
         status: minor === invoice.paidMinor ? "PAID" : invoice.status,
       };
+      if (invoice.obligation) {
+        const paymentMinor = parseMinorInput(paymentAmount);
+        if (paymentMinor > minor) throw new Error("Scheduled payment cannot exceed the total obligation.");
+        updated.direction = "PAYABLE";
+        updated.obligation = { ...invoice.obligation, paymentMinor, cycle, firstDueDate: dueDate, walletId: walletId || undefined };
+        updated.dueDate = obligationDueDate(updated, updated.paidMinor);
+        updated.status = minor === updated.paidMinor ? "PAID" : updated.dueDate < format(new Date(), "yyyy-MM-dd") ? "OVERDUE" : updated.paidMinor > 0 ? "PARTIAL" : "PENDING";
+      }
       await onSave(updated);
       onClose();
     } catch (err) {
@@ -81,127 +94,192 @@ export function EditInvoiceModal({
     }
   };
 
-  return createPortal(
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget && !busy) onClose();
-      }}
-    >
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-label="Edit invoice"
-        className="flex max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#11120f] shadow-2xl animate-entrance"
-      >
-        {/* Modal Header (Fixed) */}
-        <div className="shrink-0 flex items-center justify-between border-b border-white/[0.08] px-5 py-4 sm:px-6 sm:py-4">
-          <div>
-            <h2 className="font-display text-xl font-bold text-white">Edit Invoice</h2>
-            <p className="font-mono text-xs text-neutral-400 mt-0.5">
-              {invoice.id} · Status: {invoice.status}
-            </p>
+  return (
+    <ModalShell
+      isOpen={true}
+      onClose={onClose}
+      title={modalTitle}
+      subtitle={`${invoice.id} · Status: ${invoice.status}`}
+      busy={busy}
+      footer={
+        <div className="flex items-center justify-between">
+          {onDelete ? (
+            <Button
+              type="button"
+              variant="danger"
+              size="sm"
+              disabled={busy}
+              onClick={() => onDelete(invoice.id)}
+            >
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                />
+              </svg>
+              <span>Remove</span>
+            </Button>
+          ) : <div />}
+
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={busy}
+              onClick={onClose}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              form="edit-invoice-modal-form"
+              variant="primary"
+              size="sm"
+              disabled={busy}
+            >
+              {busy ? "Saving…" : "Save Changes"}
+            </Button>
           </div>
+        </div>
+      }
+    >
+      <form id="edit-invoice-modal-form" onSubmit={handleSubmit} className="space-y-4">
+        {/* Direction toggle */}
+        <div className="flex rounded-2xl border-2 border-neutral-900 bg-[#F4F1EA] p-1 shadow-[2px_2px_0px_#18181B]">
           <button
             type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className="rounded-full bg-white/5 p-2 text-neutral-400 hover:text-white hover:bg-white/10 transition"
+            disabled={Boolean(invoice.obligation)}
+            onClick={() => setDirection("RECEIVABLE")}
+            className={`flex-1 rounded-xl py-2 text-xs font-bold transition cursor-pointer ${
+              direction === "RECEIVABLE"
+                ? "border-2 border-neutral-900 bg-[#D1FAE5] text-[#047857] shadow-[1px_1px_0px_#18181B]"
+                : "text-neutral-600 hover:text-neutral-900"
+            }`}
           >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-            </svg>
+            Receivable (Incoming)
+          </button>
+          <button
+            type="button"
+            onClick={() => setDirection("PAYABLE")}
+            className={`flex-1 rounded-xl py-2 text-xs font-bold transition cursor-pointer ${
+              direction === "PAYABLE"
+                ? "border-2 border-neutral-900 bg-[#FFE4E6] text-[#BE123C] shadow-[1px_1px_0px_#18181B]"
+                : "text-neutral-600 hover:text-neutral-900"
+            }`}
+          >
+            Payable (Outgoing)
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col overflow-hidden">
-          {/* Scrollable Body */}
-          <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
-          {/* Direction toggle */}
-          <div className="flex rounded-xl bg-black/40 p-1 border border-white/10">
-            <button
-              type="button"
-              onClick={() => setDirection("RECEIVABLE")}
-              className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition ${
-                direction === "RECEIVABLE"
-                  ? "bg-[#D9F938]/20 text-[#D9F938] border border-[#D9F938]/30"
-                  : "text-neutral-400 hover:text-white"
-              }`}
-            >
-              Receivable (Incoming)
-            </button>
-            <button
-              type="button"
-              onClick={() => setDirection("PAYABLE")}
-              className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition ${
-                direction === "PAYABLE"
-                  ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
-                  : "text-neutral-400 hover:text-white"
-              }`}
-            >
-              Payable (Outgoing)
-            </button>
-          </div>
-
-          {/* Title */}
-          <div>
-            <label className="block text-xs font-medium uppercase tracking-wider text-neutral-400">
-              Invoice Title
-            </label>
-            <input
+        {/* Title */}
+        <FormField label="Invoice Title" required>
+          {({ id }) => (
+            <Input
+              id={id}
               type="text"
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="mt-1.5 w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-sm text-white outline-none focus:border-[#D9F938]/60 transition"
             />
-          </div>
+          )}
+        </FormField>
 
-          {/* Total Amount & Due Date */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label className="block text-xs font-medium uppercase tracking-wider text-neutral-400">
-                Total Amount ({invoice.currency || "PHP"})
-              </label>
-              <div className="relative mt-1.5">
-                <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-sm text-neutral-400">
+        {/* Total Amount & Due Date */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <FormField label={`Total Amount (${invoice.currency || "PHP"})`} required>
+            {({ id }) => (
+              <div className="relative">
+                <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-sm font-bold text-neutral-500">
                   ₱
                 </span>
-                <input
+                <Input
+                  id={id}
                   type="text"
                   inputMode="decimal"
                   required
                   value={totalStr}
                   onKeyDown={(e) => blockInvalidNumberKeys(e, true)}
                   onChange={(e) => setTotalStr(sanitizeMoneyInput(e.target.value))}
-                  className="w-full rounded-xl border border-white/10 bg-black/40 pl-8 pr-3.5 py-2.5 font-mono text-sm text-white outline-none focus:border-[#D9F938]/60 transition"
+                  className="pl-8 font-mono text-sm font-bold"
                 />
               </div>
-            </div>
+            )}
+          </FormField>
 
-            <div>
-              <label className="block text-xs font-medium uppercase tracking-wider text-neutral-400">
-                Due Date
-              </label>
-              <input
+          <FormField label={invoice.obligation ? "First Payment Date" : "Due Date"} required>
+            {({ id }) => (
+              <Input
+                id={id}
                 type="date"
                 required
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-sm text-white outline-none focus:border-[#D9F938]/60 transition"
               />
+            )}
+          </FormField>
+        </div>
+
+        {/* Obligation fields if present */}
+        {invoice.obligation && (
+          <div className="space-y-3.5 rounded-2xl border-2 border-[var(--border-ink)] bg-[var(--bg-card)] p-4 shadow-[3px_3px_0px_var(--shadow-ink)]">
+            <FormField label="Scheduled payment (₱)">
+              {({ id }) => (
+                <Input
+                  id={id}
+                  inputMode="decimal"
+                  value={paymentAmount}
+                  onChange={(e) => setPaymentAmount(sanitizeMoneyInput(e.target.value))}
+                  className="font-mono font-bold"
+                />
+              )}
+            </FormField>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <FormField label="Payment frequency">
+                {({ id }) => (
+                  <Select
+                    id={id}
+                    value={cycle}
+                    onChange={(e) => setCycle(e.target.value as typeof cycle)}
+                  >
+                    <option value="WEEKLY">Weekly</option>
+                    <option value="MONTHLY">Monthly</option>
+                    <option value="YEARLY">Yearly</option>
+                  </Select>
+                )}
+              </FormField>
+
+              <FormField label="Repayment wallet">
+                {({ id }) => (
+                  <Select
+                    id={id}
+                    value={walletId}
+                    onChange={(e) => setWalletId(e.target.value)}
+                  >
+                    <option value="">Choose wallet</option>
+                    {wallets
+                      .filter((wallet) => wallet.currency === invoice.currency)
+                      .map((wallet) => (
+                        <option key={wallet.id} value={wallet.id}>
+                          {formatWalletLabel(wallet)}
+                        </option>
+                      ))}
+                  </Select>
+                )}
+              </FormField>
             </div>
           </div>
+        )}
 
-          {/* Category */}
-          <div>
-            <label className="block text-xs font-medium uppercase tracking-wider text-neutral-400">
-              Category
-            </label>
-            <select
+        {/* Category */}
+        <FormField label="Category">
+          {({ id }) => (
+            <Select
+              id={id}
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="mt-1.5 w-full rounded-xl border border-white/10 bg-[#161814] px-3.5 py-2.5 text-sm text-white outline-none focus:border-[#D9F938]/60 transition"
             >
               <option value="">No Category</option>
               {categories.map((c) => (
@@ -209,54 +287,16 @@ export function EditInvoiceModal({
                   {c.name}
                 </option>
               ))}
-            </select>
-          </div>
-
-          {error && (
-            <p role="alert" className="text-xs text-rose-400">
-              {error}
-            </p>
+            </Select>
           )}
+        </FormField>
 
-          </div>
-
-          {/* Footer Actions (Fixed) */}
-          <div className="shrink-0 flex items-center justify-between border-t border-white/[0.08] bg-[#11120f] px-5 py-3.5 sm:px-6 sm:py-4">
-            {onDelete ? (
-              <button
-                type="button"
-                onClick={() => onDelete(invoice.id)}
-                disabled={busy}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-2 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20 active:scale-95 disabled:opacity-50"
-              >
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                  />
-                </svg>
-                <span>Remove</span>
-              </button>
-            ) : <div />}
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={busy}
-                className="rounded-xl border border-white/10 px-4 py-2 text-xs font-medium text-neutral-300 transition hover:bg-white/5 hover:text-white"
-              >
-                Cancel
-              </button>
-              <VoltButton type="submit" disabled={busy}>
-                {busy ? "Saving…" : "Save Changes"}
-              </VoltButton>
-            </div>
-          </div>
-        </form>
-      </section>
-    </div>,
-    document.body
+        {error && (
+          <p role="alert" className="text-xs font-bold text-[#BE123C]">
+            {error}
+          </p>
+        )}
+      </form>
+    </ModalShell>
   );
 }

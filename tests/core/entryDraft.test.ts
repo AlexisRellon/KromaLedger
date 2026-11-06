@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { buildEntryDraft, parseMinorInput } from "../../src/state/entryDraft";
+import { ENTRY_FIELD_META, buildEntryDraft, parseMinorInput } from "../../src/state/entryDraft";
 import { blockInvalidNumberKeys, sanitizeMoneyInput, sanitizeQuantityInput } from "../../src/core/engine/moneyInput";
 
 const base = { id: (prefix: string) => `${prefix}-1`, today: "2026-10-20", date: "2026-10-20", title: "Lunch", amount: "123.45", currency: "PHP" as const, categoryId: "dining" };
@@ -64,5 +64,30 @@ describe("entry draft factory", () => {
 
   it("rejects malformed or inconsistent dates before persistence", () => {
     expect(() => buildEntryDraft({ ...base, mode: "INVOICE", direction: "RECEIVABLE", dueDate: "2026-02-30", lines: [{ description: "x", quantity: 1, unitPriceMinor: 10 }], taxRateBps: 0, discountMinor: 0 })).toThrow();
+  });
+
+  it("exposes ENTRY_FIELD_META for every entry kind, with aliases matching their base modes", () => {
+    const eightModes = ["EXPENSE", "INCOME", "TRANSFER", "CASH_IN", "SUBSCRIPTION", "INVOICE", "LOAN", "INSTALLMENT"] as const;
+    for (const mode of eightModes) {
+      const meta = ENTRY_FIELD_META[mode];
+      expect(meta.titleLabel).toBeTruthy();
+      expect(meta.titlePlaceholder).toBeTruthy();
+      expect(meta.dateLabel).toBeTruthy();
+    }
+    expect(ENTRY_FIELD_META.INCOMING_CASH).toEqual(ENTRY_FIELD_META.INCOME);
+    expect(ENTRY_FIELD_META.EWALLET_CASH_IN).toEqual(ENTRY_FIELD_META.CASH_IN);
+    expect(ENTRY_FIELD_META.EXPENSE.titleLabel).toBe("MERCHANT / NOTE");
+    expect(ENTRY_FIELD_META.SUBSCRIPTION.dateLabel).toBe("NEXT BILLING DATE");
+    expect(ENTRY_FIELD_META.INSTALLMENT.titlePlaceholder).toBe("e.g. Mechanical Keyboard (SPayLater 6m)");
+  });
+
+  it("preserves customLabels on transaction, transfer, subscription, obligation, and invoice drafts", () => {
+    const labels = ["#TaxDeductible", "#ClientWork"];
+    expect(buildEntryDraft({ ...base, mode: "EXPENSE", walletId: "w-1", customLabels: labels })).toMatchObject({ kind: "EXPENSE", transaction: { customLabels: labels } });
+    expect(buildEntryDraft({ ...base, mode: "TRANSFER", walletId: "w-mari", toWalletId: "w-gcash", feeMinor: 0, customLabels: labels })).toMatchObject({ kind: "TRANSFER", transaction: { customLabels: labels } });
+    expect(buildEntryDraft({ ...base, mode: "SUBSCRIPTION", cycle: "MONTHLY", autoLog: false, walletId: "w-2", customLabels: labels })).toMatchObject({ kind: "SUBSCRIPTION", subscription: { customLabels: labels } });
+    expect(buildEntryDraft({ ...base, mode: "LOAN", amount: "100.00", paymentAmount: "50.00", walletId: "w-3", cycle: "MONTHLY", customLabels: labels })).toMatchObject({ kind: "INVOICE", invoice: { customLabels: labels } });
+    expect(buildEntryDraft({ ...base, mode: "INSTALLMENT", amount: "100.00", paymentAmount: "50.00", walletId: "w-3", cycle: "MONTHLY", customLabels: labels })).toMatchObject({ kind: "INVOICE", invoice: { customLabels: labels } });
+    expect(buildEntryDraft({ ...base, mode: "INVOICE", direction: "RECEIVABLE", dueDate: "2026-10-24", lines: [], amount: "10.00", taxRateBps: 0, discountMinor: 0, customLabels: labels }));
   });
 });

@@ -4,7 +4,7 @@ export function isExactVersion(version) {
 
 export function verifyPackage(pkg, lock) {
   const errors = [];
-  if (pkg.name !== "kromaledger" || pkg.private !== true) errors.push("package must be private and named kromaledger");
+  if ((pkg.name !== "kaban" && pkg.name !== "kromaledger") || pkg.private !== true) errors.push("package must be private and named kaban");
   const dependencies = { ...pkg.dependencies, ...pkg.devDependencies };
   for (const [name, version] of Object.entries(dependencies)) if (!isExactVersion(version)) errors.push(`${name} has a non-exact version: ${version}`);
   for (const name of ["react", "react-dom"]) if (!/^19\.\d+\.\d+$/.test(dependencies[name] ?? "")) errors.push(`${name} must use a stable exact React 19 version`);

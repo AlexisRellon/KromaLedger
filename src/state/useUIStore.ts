@@ -1,24 +1,48 @@
 import { create } from "zustand";
 import { format } from "date-fns";
+import {
+  type ThemeMode,
+  type AppThemeId,
+  applyThemeToDom,
+  getStoredThemePreferences,
+  saveThemePreferences,
+} from "./theme";
 
+export type { ThemeMode, AppThemeId } from "./theme";
 export type NavTab = "HOME" | "WALLETS" | "PENDING" | "SETTINGS";
-export type QuickAddMode = "EXPENSE" | "TRANSFER" | "SUBSCRIPTION" | "INVOICE";
+export type QuickAddMode = "EXPENSE" | "INCOME" | "TRANSFER" | "CASH_IN" | "SUBSCRIPTION" | "INVOICE" | "LOAN" | "INSTALLMENT";
+
+export interface QuickAddPrefill {
+  amountPhp?: number;
+  toWalletId?: string;
+}
 
 interface UIState {
   selectedMonth: string;
   activeNavTab: NavTab;
   quickAddOpen: boolean;
   quickAddMode: QuickAddMode;
+  quickAddPrefill?: QuickAddPrefill;
   editProfileOpen: boolean;
   notificationsOpen: boolean;
+  themeMode: ThemeMode;
+  appTheme: AppThemeId;
+  highContrast: boolean;
+  reducedMotion: boolean;
+  largeText: boolean;
   setMonth(value: string): void;
   setTab(value: NavTab): void;
-  openQuickAdd(mode?: QuickAddMode): void;
+  openQuickAdd(mode?: QuickAddMode, prefill?: QuickAddPrefill): void;
   closeQuickAdd(): void;
   openEditProfile(): void;
   closeEditProfile(): void;
   openNotifications(): void;
   closeNotifications(): void;
+  setThemeMode(mode: ThemeMode): void;
+  setAppTheme(theme: AppThemeId): void;
+  setHighContrast(enabled: boolean): void;
+  setReducedMotion(enabled: boolean): void;
+  setLargeText(enabled: boolean): void;
 }
 
 function parseNavTab(value: string | null | undefined): NavTab | null {
@@ -43,14 +67,25 @@ function getInitialTab(): NavTab {
 }
 
 const currentMonth = format(new Date(), "yyyy-MM");
+const initialThemePrefs = getStoredThemePreferences();
+
+if (typeof window !== "undefined") {
+  applyThemeToDom(initialThemePrefs);
+}
 
 export const useUIStore = create<UIState>((set) => ({
   selectedMonth: currentMonth,
   activeNavTab: getInitialTab(),
   quickAddOpen: false,
   quickAddMode: "EXPENSE",
+  quickAddPrefill: undefined,
   editProfileOpen: false,
   notificationsOpen: false,
+  themeMode: initialThemePrefs.themeMode,
+  appTheme: initialThemePrefs.appTheme,
+  highContrast: initialThemePrefs.highContrast,
+  reducedMotion: initialThemePrefs.reducedMotion,
+  largeText: initialThemePrefs.largeText,
   setMonth: (selectedMonth) => set({ selectedMonth }),
   setTab: (activeNavTab) => {
     if (typeof window !== "undefined") {
@@ -68,12 +103,52 @@ export const useUIStore = create<UIState>((set) => ({
     }
     set({ activeNavTab });
   },
-  openQuickAdd: (quickAddMode = "EXPENSE") => set({ quickAddOpen: true, quickAddMode }),
-  closeQuickAdd: () => set({ quickAddOpen: false }),
+  openQuickAdd: (quickAddMode = "EXPENSE", quickAddPrefill) => set({ quickAddOpen: true, quickAddMode, quickAddPrefill }),
+  closeQuickAdd: () => set({ quickAddOpen: false, quickAddPrefill: undefined }),
   openEditProfile: () => set({ editProfileOpen: true }),
   closeEditProfile: () => set({ editProfileOpen: false }),
   openNotifications: () => set({ notificationsOpen: true }),
   closeNotifications: () => set({ notificationsOpen: false }),
+  setThemeMode: (themeMode) => {
+    saveThemePreferences({ themeMode });
+    set((state) => {
+      const next = { ...state, themeMode };
+      applyThemeToDom(next);
+      return { themeMode };
+    });
+  },
+  setAppTheme: (appTheme) => {
+    saveThemePreferences({ appTheme });
+    set((state) => {
+      const next = { ...state, appTheme };
+      applyThemeToDom(next);
+      return { appTheme };
+    });
+  },
+  setHighContrast: (highContrast) => {
+    saveThemePreferences({ highContrast });
+    set((state) => {
+      const next = { ...state, highContrast };
+      applyThemeToDom(next);
+      return { highContrast };
+    });
+  },
+  setReducedMotion: (reducedMotion) => {
+    saveThemePreferences({ reducedMotion });
+    set((state) => {
+      const next = { ...state, reducedMotion };
+      applyThemeToDom(next);
+      return { reducedMotion };
+    });
+  },
+  setLargeText: (largeText) => {
+    saveThemePreferences({ largeText });
+    set((state) => {
+      const next = { ...state, largeText };
+      applyThemeToDom(next);
+      return { largeText };
+    });
+  },
 }));
 
 if (typeof window !== "undefined") {
@@ -83,4 +158,14 @@ if (typeof window !== "undefined") {
       useUIStore.setState({ activeNavTab: tab });
     }
   });
+
+  if (window.matchMedia) {
+    const mql = window.matchMedia("(prefers-color-scheme: dark)");
+    mql.addEventListener("change", () => {
+      const s = useUIStore.getState();
+      if (s.themeMode === "system") {
+        applyThemeToDom(s);
+      }
+    });
+  }
 }

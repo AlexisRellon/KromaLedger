@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
 import { format } from "date-fns";
 import { useStorage } from "../../state/StorageContext";
-import { VoltButton } from "../primitives";
+import { Button, ModalShell, KabanMascot } from "../primitives";
 
 const today = () => format(new Date(), "yyyy-MM-dd");
 const formatBytes = (value: number | null) =>
@@ -33,17 +32,6 @@ export function VaultBackupModal({ onClose }: { onClose: () => void }) {
       active = false;
     };
   }, [storageStatus]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !busy) {
-        if (pendingFile) setPendingFile(null);
-        else onClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [busy, onClose, pendingFile]);
 
   const backup = async () => {
     setBusy(true);
@@ -92,93 +80,96 @@ export function VaultBackupModal({ onClose }: { onClose: () => void }) {
     }
   };
 
-  return createPortal(
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget && !busy) onClose();
-      }}
+  return (
+    <ModalShell
+      isOpen={true}
+      onClose={onClose}
+      title="Local Vault Backup"
+      subtitle="Offline Snapshot & Restoration"
+      busy={busy}
+      maxWidth="md"
+      // relative anchors .tnalak-band to the card, independent of the entrance animation's transform
+      className="relative"
     >
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-label="Local vault backup"
-        className="flex max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)] w-full max-w-md flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#11120f] shadow-2xl animate-entrance"
+      {/* Tnalak texture, modal header band only; no-op until shared defs exist */}
+      <svg
+        aria-hidden="true"
+        className="tnalak-band pointer-events-none text-current"
       >
-        {/* Modal Header (Fixed) */}
-        <div className="shrink-0 flex items-start justify-between border-b border-white/[0.08] px-5 py-4 sm:px-6 sm:py-5">
-          <h2 className="font-display text-xl sm:text-2xl font-semibold text-white">Local Vault Backup</h2>
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            disabled={busy}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/5 text-neutral-400 hover:text-white transition hover:bg-white/10"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-            </svg>
-          </button>
+        <rect width="100%" height="100%" fill="url(#pattern-tnalak-circuit)" />
+      </svg>
+      <div className="space-y-4">
+        <p className="text-sm font-medium leading-relaxed text-neutral-700">
+          Your financial data stays securely on this device. Export a standalone ZIP archive or restore a previous Kaban vault snapshot.
+        </p>
+
+        <div className="rounded-2xl border-2 border-[var(--border-ink)] bg-[var(--status-warning-bg,#FEF3C7)] p-3 text-xs leading-relaxed text-[var(--text-primary)] shadow-[2px_2px_0px_var(--shadow-ink)]">
+          <span className="font-bold text-[var(--status-warning-text,#92400E)]">Privacy Notice:</span> Backups are unencrypted ZIP archives holding your raw ledger records and attachments. Store exported copies in a secure, private location.
         </div>
 
-        {/* Scrollable Body */}
-        <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
-          <p className="text-sm leading-relaxed text-neutral-400">
-            Your ledger lives strictly on this device. Export a standalone ZIP archive or restore an existing KromaLedger vault.
-          </p>
-
-          <p className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5 text-xs leading-relaxed text-neutral-400">
-            <span className="font-semibold text-neutral-300">Privacy Notice:</span> Backups are unencrypted ZIP archives holding your raw ledger records and attachments. Store exported copies in a secure, private location.
-          </p>
-
-          <div className="rounded-xl border border-white/[0.06] bg-black/30 p-3">
-            <p className="text-xs font-medium tracking-wider text-neutral-400">Local device storage</p>
-            <p className="mt-1 font-mono text-xs text-neutral-200">
+        <div className="rounded-2xl border-2 border-[var(--border-ink)] bg-[var(--bg-card)] p-3.5 shadow-[2px_2px_0px_var(--shadow-ink)] flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Local device storage</p>
+            <p className="mt-1 font-mono text-xs font-bold text-[var(--text-primary)]">
               {formatBytes(usage?.usage ?? null)} used of {formatBytes(usage?.quota ?? null)}
             </p>
           </div>
+          <KabanMascot pose="vault-locked" size={88} />
+        </div>
 
         {/* Destructive restore confirmation step */}
         {pendingFile ? (
-          <div className="mt-5 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4">
-            <p className="text-xs font-semibold tracking-wider text-amber-400">WARNING: DESTRUCTIVE RESTORE</p>
-            <p className="mt-1.5 text-xs leading-relaxed text-neutral-300">
-              Restoring <span className="font-mono text-white">{pendingFile.name}</span> will permanently overwrite and replace all current transactions, subscriptions, and invoices on this device.
+          <div className="rounded-2xl border-2 border-[var(--border-ink)] bg-[var(--status-danger-bg,#FFE4E6)] p-4 shadow-[3px_3px_0px_var(--shadow-ink)]">
+            <p className="text-xs font-black tracking-wider text-[var(--status-danger-text,#BE123C)]">WARNING: DESTRUCTIVE RESTORE</p>
+            <p className="mt-1.5 text-xs font-medium leading-relaxed text-[var(--text-primary)]">
+              Restoring <span className="font-mono font-bold text-[var(--text-primary)]">{pendingFile.name}</span> will permanently overwrite and replace all current transactions, subscriptions, and accounts on this device.
             </p>
-            <label className="mt-3 flex items-center gap-2 cursor-pointer text-xs text-neutral-300 select-none">
+            <label className="mt-3 flex items-center gap-2 cursor-pointer text-xs font-bold text-[var(--text-secondary)] select-none">
               <input
                 type="checkbox"
                 checked={autoBackupBeforeRestore}
                 onChange={(e) => setAutoBackupBeforeRestore(e.target.checked)}
-                className="rounded border-white/20 bg-black/40 text-[#D9F938] focus:ring-0"
+                className="h-4 w-4 rounded accent-[var(--theme-primary)]"
               />
               <span>Download safety backup before overwriting</span>
             </label>
             <div className="mt-4 flex gap-2">
-              <button
+              <Button
                 type="button"
+                variant="secondary"
+                size="sm"
                 disabled={busy}
                 onClick={() => setPendingFile(null)}
-                className="flex-1 rounded-xl border border-white/10 py-2.5 text-xs font-medium text-neutral-300 hover:bg-white/5"
+                className="flex-1"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="danger"
+                size="sm"
                 disabled={busy}
                 onClick={() => void confirmRestore()}
-                className="flex-1 rounded-xl bg-amber-400 py-2.5 text-xs font-bold text-[#070806] shadow-md shadow-black/40 transition hover:brightness-105 disabled:opacity-50"
+                className="flex-1"
               >
                 {busy ? "Restoring…" : "Overwrite & Restore"}
-              </button>
+              </Button>
             </div>
           </div>
         ) : (
-          <div className="mt-5 grid gap-3">
-            <VoltButton disabled={busy} onClick={() => void backup()}>
+          <div className="grid gap-3 pt-2">
+            <Button
+              type="button"
+              variant="primary"
+              size="md"
+              disabled={busy}
+              onClick={() => void backup()}
+              className="w-full"
+            >
               {busy ? "Exporting…" : "Download ZIP backup"}
-            </VoltButton>
+            </Button>
 
-            <label className="cursor-pointer rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-3 text-center text-sm font-medium text-neutral-300 transition hover:border-white/20 hover:text-white">
+            <label className="inline-flex items-center justify-center cursor-pointer rounded-2xl border-2 border-[var(--border-ink)] bg-[var(--bg-card)] px-5 py-3 text-sm font-bold text-[var(--text-primary)] shadow-[3px_3px_0px_var(--shadow-ink)] neo-btn-interactive transition-all hover:bg-[var(--bg-muted)]">
               Restore a ZIP backup
               <input
                 type="file"
@@ -195,13 +186,11 @@ export function VaultBackupModal({ onClose }: { onClose: () => void }) {
         )}
 
         {message && (
-          <p role="status" className="mt-4 text-center text-xs text-neutral-300">
+          <p role="status" className="mt-2 text-center text-xs font-bold text-neutral-800">
             {message}
           </p>
         )}
-        </div>
-      </section>
-    </div>,
-    document.body
+      </div>
+    </ModalShell>
   );
 }

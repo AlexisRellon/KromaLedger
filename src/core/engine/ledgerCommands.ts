@@ -1,5 +1,6 @@
 import { invoiceItemSchema, invoiceSchema, subscriptionSchema, transactionSchema, type Invoice, type InvoiceItem, type Subscription, type Transaction, type Wallet } from "../models";
-import { reconcile } from "./reconciler";
+import { cycleDate } from "./reconciler";
+import { obligationDueDate } from "./obligationSchedule";
 
 export type LedgerTable = "invoices" | "invoiceItems" | "transactions" | "subscriptions" | "appMeta" | "categories" | "attachments" | "wallets";
 export interface LedgerCommandUnit {
@@ -53,7 +54,7 @@ export async function confirmSubscriptionCycle(gateway: LedgerCommandGateway, in
   }
   return gateway.atomic(["subscriptions", "transactions"], async (unit) => {
     const subscription = await unit.getSubscription(id);
-    if (!subscription || !subscription.active || subscription.autoLog ||
+    if (!subscription || !subscription.active ||
         payment.date !== subscription.nextBillingDate ||
         payment.id !== `sub:${subscription.id}:${payment.date}` ||
         payment.amountMinor !== -subscription.amountMinor ||
@@ -66,16 +67,19 @@ export async function confirmSubscriptionCycle(gateway: LedgerCommandGateway, in
         throw new RangeError("Subscription payment requires a linked wallet");
       }
       const wallet = await unit.getWallet(effectiveWalletId);
-      if (!wallet || wallet.balanceMinor < subscription.amountMinor) {
+      if (!wallet || wallet.currency !== subscription.currency || wallet.balanceMinor < subscription.amountMinor) {
         throw new RangeError("Insufficient balance in the selected wallet");
       }
     }
-    const result = reconcile({ subscriptions: [{ ...subscription, autoLog: true }], invoices: [], currentDate: payment.date });
-    const nextCycle = result.subscriptions[0];
-    if (!nextCycle || !result.transactions.some((row) => row.date === payment.date)) {
-      throw new RangeError("Subscription cycle is not due");
+    const billingAnchorDate = subscription.billingAnchorDate ?? subscription.nextBillingDate;
+    const anchor = new Date(`${billingAnchorDate}T00:00:00.000Z`);
+    let count = 0;
+    let nextBillingDate = cycleDate(anchor, subscription.billingCycle, count);
+    while (nextBillingDate <= payment.date) {
+      if (++count > 10000) throw new RangeError("Subscription has too many missed billing cycles");
+      nextBillingDate = cycleDate(anchor, subscription.billingCycle, count);
     }
-    const next = subscriptionSchema.parse({ ...nextCycle, autoLog: false });
+    const next = subscriptionSchema.parse({ ...subscription, billingAnchorDate, nextBillingDate });
     const ledgerPayment = payment.walletId || !subscription.walletId
       ? payment
       : transactionSchema.parse({ ...payment, walletId: subscription.walletId });
@@ -94,7 +98,13 @@ export async function commitInvoice(gateway: LedgerCommandGateway, value: Invoic
       invoice.itemIds.some((id) => !ids.includes(id))) {
     throw new RangeError("Invoice item references do not match invoice");
   }
-  await gateway.atomic(["invoices", "invoiceItems"], async (unit) => {
+  await gateway.atomic(invoice.obligation ? ["invoices", "invoiceItems", "wallets"] : ["invoices", "invoiceItems"], async (unit) => {
+    const existing = invoice.obligation ? await unit.getInvoice(invoice.id) : undefined;
+    if (existing && existing.paidMinor !== invoice.paidMinor) throw new RangeError("Obligation changed; reopen it before saving");
+    if (invoice.obligation && unit.getWallet) {
+      const wallet = invoice.obligation.walletId ? await unit.getWallet(invoice.obligation.walletId) : undefined;
+      if (!wallet || wallet.currency !== invoice.currency) throw new RangeError("Choose a repayment wallet in the obligation currency");
+    }
     await unit.replaceInvoiceItems(invoice.id, items);
     await unit.putInvoice(invoice);
   });
@@ -118,9 +128,16 @@ export async function settleInvoice(gateway: LedgerCommandGateway, invoiceId: st
       throw new RangeError("Payment must be positive and cannot exceed remaining balance");
     }
     const paidMinor = invoice.paidMinor + amount;
+    if (invoice.obligation && unit.getWallet) {
+      const wallet = payment.walletId ? await unit.getWallet(payment.walletId) : undefined;
+      if (!wallet || wallet.currency !== invoice.currency || (!incoming && wallet.balanceMinor < amount)) {
+        throw new RangeError("Select a wallet with matching currency and sufficient balance");
+      }
+    }
+    const dueDate = obligationDueDate(invoice, paidMinor);
     const status = paidMinor === invoice.totalMinor ? "PAID" :
-      invoice.status === "OVERDUE" || payment.date > invoice.dueDate ? "OVERDUE" : "PARTIAL";
-    const updated = invoiceSchema.parse({ ...invoice, paidMinor, status });
+      (invoice.obligation ? payment.date > dueDate : invoice.status === "OVERDUE" || payment.date > dueDate) ? "OVERDUE" : "PARTIAL";
+    const updated = invoiceSchema.parse({ ...invoice, paidMinor, dueDate, status });
     await unit.addTransaction(payment);
     await unit.putInvoice(updated);
     return updated;

@@ -1,0 +1,201 @@
+{
+  "url": "http://127.0.0.1:5173/",
+  "viewport": [
+    1440,
+    1000
+  ],
+  "checked": 19,
+  "failures": [],
+  "manualGradientCount": 9,
+  "manual": [
+    {
+      "tag": "SPAN",
+      "text": "KABAN",
+      "ratio": 15.1,
+      "required": 4.5,
+      "foreground": [
+        23,
+        23,
+        23,
+        1
+      ],
+      "background": [
+        237,
+        233,
+        254,
+        1
+      ],
+      "fontSize": 12,
+      "class": "font-display text-xs font-black tracking-wide text-neutral-900 line-clamp-1",
+      "placeholder": false
+    },
+    {
+      "tag": "SPAN",
+      "text": "Local Vault",
+      "ratio": 6.581,
+      "required": 4.5,
+      "foreground": [
+        82,
+        82,
+        82,
+        1
+      ],
+      "background": [
+        237,
+        233,
+        254,
+        1
+      ],
+      "fontSize": 10,
+      "class": "font-mono text-[10px] uppercase font-bold tracking-normal text-neutral-600",
+      "placeholder": false
+    },
+    {
+      "tag": "SPAN",
+      "text": "AVAILABLE",
+      "ratio": 6.581,
+      "required": 4.5,
+      "foreground": [
+        82,
+        82,
+        82,
+        1
+      ],
+      "background": [
+        237,
+        233,
+        254,
+        1
+      ],
+      "fontSize": 10,
+      "class": "font-mono text-[10px] uppercase font-bold tracking-normal text-neutral-600",
+      "placeholder": false
+    },
+    {
+      "tag": "P",
+      "text": "₱0.00",
+      "ratio": 15.1,
+      "required": 4.5,
+      "foreground": [
+        23,
+        23,
+        23,
+        1
+      ],
+      "background": [
+        237,
+        233,
+        254,
+        1
+      ],
+      "fontSize": 16,
+      "class": "mt-0.5 font-mono text-sm sm:text-base font-extrabold text-neutral-900 tabular-nums",
+      "placeholder": false
+    },
+    {
+      "tag": "SPAN",
+      "text": "ELECTRONIC USE ONLY",
+      "ratio": 6.581,
+      "required": 4.5,
+      "foreground": [
+        82,
+        82,
+        82,
+        1
+      ],
+      "background": [
+        237,
+        233,
+        254,
+        1
+      ],
+      "fontSize": 12,
+      "class": "font-mono text-xs font-bold tracking-wide uppercase text-neutral-600",
+      "placeholder": false
+    },
+    {
+      "tag": "P",
+      "text": "••••  ••••  ••••  4019",
+      "ratio": 15.1,
+      "required": 4.5,
+      "foreground": [
+        23,
+        23,
+        23,
+        1
+      ],
+      "background": [
+        237,
+        233,
+        254,
+        1
+      ],
+      "fontSize": 18,
+      "class": "font-mono text-sm sm:text-base md:text-lg font-black tracking-widest text-neutral-900 select-none",
+      "placeholder": false
+    },
+    {
+      "tag": "SPAN",
+      "text": "Wallet Holder",
+      "ratio": 6.581,
+      "required": 4.5,
+      "foreground": [
+        82,
+        82,
+        82,
+        1
+      ],
+      "background": [
+        237,
+        233,
+        254,
+        1
+      ],
+      "fontSize": 10,
+      "class": "block font-mono text-[10px] uppercase font-bold tracking-normal text-neutral-600",
+      "placeholder": false
+    },
+    {
+      "tag": "P",
+      "text": "YOUR NAME HERE",
+      "ratio": 15.1,
+      "required": 4.5,
+      "foreground": [
+        23,
+        23,
+        23,
+        1
+      ],
+      "background": [
+        237,
+        233,
+        254,
+        1
+      ],
+      "fontSize": 14,
+      "class": "font-mono text-xs sm:text-sm font-bold text-neutral-900 line-clamp-1 truncate uppercase",
+      "placeholder": false
+    },
+    {
+      "tag": "SPAN",
+      "text": "DEBIT",
+      "ratio": 15.1,
+      "required": 4.5,
+      "foreground": [
+        23,
+        23,
+        23,
+        1
+      ],
+      "background": [
+        237,
+        233,
+        254,
+        1
+      ],
+      "fontSize": 12,
+      "class": "mt-0.5 font-display text-xs font-black tracking-wide text-neutral-900 uppercase",
+      "placeholder": false
+    }
+  ]
+}

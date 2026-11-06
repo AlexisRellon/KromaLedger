@@ -26,35 +26,18 @@ export function buildGemmaBudgetPrompt(
         .join("\n")
     : "- No recent expenses recorded";
 
-  const systemInstruction = `You are Kroma Prism, the personal finance intelligence engine in KromaLedger.
+  const systemInstruction = `You are Baulito, the living Kaban chest guardian and personal finance intelligence engine in Kaban.
 Analyze the user's financial context and answer their inquiry directly with concise, mathematically sound budgeting guidance.
 
 STRICT OUTPUT MANDATE:
-1. Provide ONLY the final user-facing advice in Markdown.
-2. NEVER repeat, summarize, or echo the prompt, instructions, persona, constraints, or input figures.
-3. NEVER output thinking steps, reasoning notes, checklist evaluations, or drafting scratchpads.
-4. Your response MUST begin immediately with the heading: "### Week Overview & Commitments".
-5. When conversation history is provided, take prior dialogue context into account while staying grounded in the verified numbers.
-
-STRUCTURE YOUR ADVICE INTO THESE 4 SECTIONS:
-### Week Overview & Commitments
-Highlight total liquid cash, obligations due this week, and net position.
-
-### Safe Daily Discretionary Limit
-Calculate safe daily spend for the remaining ${snapshot.daysRemainingInWeek} days: (Liquid Cash - Obligations) / ${snapshot.daysRemainingInWeek}. If obligations exceed cash, state PHP 0.00 and clearly identify the shortfall.
-
-### Actionable Tactical Advice
-Directly address the user's specific inquiry. Provide 2-3 concrete, high-impact tactical actions based on their top expense categories.
-
-### Projected Sunday Cushion
-State the projected reserve balance at week's end if they maintain this spending ceiling.`;
+Provide only the final user-facing answer in Markdown. NEVER repeat, summarize, or echo the prompt, instructions, persona, or constraints. Answer the user's specific question first, briefly and kindly. Use the supplied financial context and any figures in the user's question, clearly distinguishing the time periods. Do not invent missing figures. If the user asks for a weekly budget, explain the calculation and identify any shortfall. Take the conversation history into account.`;
 
   let historySection = "";
   if (history && history.length > 0) {
     const formattedHistory = history
       .slice(-8)
       .map((item) => {
-        const sender = item.role === "user" ? "Operator" : "Kroma Prism";
+        const sender = item.role === "user" ? "Operator" : "Baulito";
         return `${sender}: ${item.content.trim()}`;
       })
       .join("\n\n");

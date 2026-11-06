@@ -17,7 +17,7 @@ export function Skeleton({
     <div
       aria-hidden="true"
       {...props}
-      className={`border border-white/[0.04] bg-white/[0.05] ${
+      className={`border border-neutral-900/20 bg-[#F4F1EA] ${
         animate ? "skeleton-shimmer" : ""
       } ${rounded} ${className}`}
     >
@@ -80,7 +80,7 @@ export function SkeletonBadge({
   className?: string;
   rounded?: string;
 }) {
-  return <Skeleton rounded={rounded} className={`border border-white/10 ${className}`} />;
+  return <Skeleton rounded={rounded} className={`border border-neutral-900/20 ${className}`} />;
 }
 
 export function SkeletonButton({
@@ -93,7 +93,7 @@ export function SkeletonButton({
   return (
     <Skeleton
       rounded={rounded}
-      className={`border border-[#D9F938]/20 bg-[#D9F938]/[0.08] ${className}`}
+      className={`border-2 border-neutral-900 bg-[#FEF3C7] shadow-[2px_2px_0px_#18181B] ${className}`}
     />
   );
 }
@@ -105,7 +105,7 @@ export function SkeletonCard({
   return (
     <section
       aria-hidden="true"
-      className={`rounded-3xl border border-white/[.08] bg-white/[.035] p-5.5 shadow-2xl shadow-black/40 backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] ${className}`}
+      className={`rounded-2xl sm:rounded-3xl border-2 border-neutral-900 bg-white p-5.5 shadow-[3px_3px_0px_#18181B] ${className}`}
     >
       {children}
     </section>

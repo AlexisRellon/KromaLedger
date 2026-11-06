@@ -56,33 +56,75 @@ export default defineConfig(({ mode }) => {
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["pwa-icon.svg", "fonts/*.woff2"],
+      includeAssets: [
+        "favicon.ico",
+        "favicon.svg",
+        "apple-touch-icon.png",
+        "pwa-icon.svg",
+        "kaban-horizontal-color.svg",
+        "kaban-horizontal-ivory.svg",
+        "fonts/*.woff2",
+      ],
       workbox: {
-        globPatterns: ["**/*.{js,css,html,svg,woff2}"],
+        globPatterns: ["**/*.{js,css,html,svg,woff2,png,ico}"],
         runtimeCaching: [
           {
             urlPattern: ({ url }) => url.pathname.startsWith("/fonts/"),
             handler: "CacheFirst",
             options: {
-              cacheName: "kromaledger-fonts",
+              cacheName: "kaban-fonts",
               expiration: {
                 maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 * 365,
               },
             },
           },
+          {
+            urlPattern: ({ url }) => url.hostname === "img.logo.dev",
+            handler: "CacheFirst",
+            options: {
+              cacheName: "kaban-logodev-brandmarks",
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+            },
+          },
         ],
       },
       manifest: {
-        name: "KromaLedger",
-        short_name: "KromaLedger",
-        description: "A private, offline-first personal ledger.",
+        name: "Kaban",
+        short_name: "Kaban",
+        description: "A private, local-first personal financial vault.",
         start_url: "/",
         scope: "/",
         display: "standalone",
-        background_color: "#070806",
-        theme_color: "#070806",
-        icons: [{ src: "/pwa-icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any maskable" }],
+        background_color: "#FAF8F5",
+        theme_color: "#FAF8F5",
+        icons: [
+          {
+            src: "/icon-192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "/icon-512.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+          {
+            src: "/maskable-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+          {
+            src: "/kaban-app-icon.svg",
+            sizes: "any",
+            type: "image/svg+xml",
+            purpose: "any",
+          },
+        ],
       },
     }),
   ],

@@ -171,12 +171,12 @@ export default async function handler(req: Request) {
         payload.contents = [
           {
             role: "user",
-            parts: [{ text: `${body.contents || body.userPrompt || ""}\n\nRespond directly as Kroma Prism starting with: ### Week Overview & Commitments` }],
+            parts: [{ text: `${body.contents || body.userPrompt || ""}\n\nRespond directly as Baulito starting with: ### Week Overview & Commitments` }],
           },
         ];
       } else {
         const fullPrompt = body.systemInstruction
-          ? `${body.systemInstruction}\n\n${body.contents || body.userPrompt || ""}\n\nRespond directly as Kroma Prism starting with: ### Week Overview & Commitments`
+          ? `${body.systemInstruction}\n\n${body.contents || body.userPrompt || ""}\n\nRespond directly as Baulito starting with: ### Week Overview & Commitments`
           : body.contents || body.userPrompt || "";
         payload.contents = [
           {

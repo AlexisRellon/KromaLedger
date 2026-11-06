@@ -4,8 +4,12 @@ import { WalletsSkeleton } from "./WalletsSkeleton";
 import { PendingSkeleton } from "./PendingSkeleton";
 import { SettingsSkeleton } from "./SettingsSkeleton";
 
-export function ScreenSkeleton({ tab }: { tab?: NavTab | "HOME" | "WALLETS" | "PENDING" | "SETTINGS" }) {
-  switch (tab) {
+export function ScreenSkeleton({
+  tab,
+}: {
+  tab?: NavTab | "HOME" | "WALLETS" | "PENDING" | "SETTINGS" | "dashboard" | "wallets" | "pending" | "settings";
+}) {
+  switch (tab?.toUpperCase()) {
     case "WALLETS":
       return <WalletsSkeleton />;
     case "PENDING":
@@ -13,6 +17,7 @@ export function ScreenSkeleton({ tab }: { tab?: NavTab | "HOME" | "WALLETS" | "P
     case "SETTINGS":
       return <SettingsSkeleton />;
     case "HOME":
+    case "DASHBOARD":
     default:
       return <DashboardSkeleton />;
   }

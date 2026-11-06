@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import type { AppNotification, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../../core/models";
+import type { AppNotification, Category, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../../core/models";
 import { useStorage } from "../StorageContext";
 import { useUIStore } from "../useUIStore";
 
@@ -78,6 +78,15 @@ export function useCategories() {
     queryFn: () => repo.listCategories(),
     staleTime: Infinity,
     gcTime: 24 * 60 * 60 * 1000,
+  });
+}
+
+export function useSaveCategory() {
+  const { repo } = useStorage();
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (value: Category) => repo.saveCategory(value),
+    onSuccess: () => client.invalidateQueries({ queryKey: queryKeys.categories }),
   });
 }
 
@@ -190,26 +199,36 @@ export function useSaveTransaction() {
     onMutate: async (newTx: Transaction) => {
       const txMonth = newTx.date.slice(0, 7);
       const monthKey = [...queryKeys.transactions, txMonth];
-      await client.cancelQueries({ queryKey: monthKey });
+      await client.cancelQueries({ queryKey: queryKeys.transactions });
       const previousMonthTx = client.getQueryData<Transaction[]>(monthKey);
+      const previousAllTx = client.getQueryData<Transaction[]>(queryKeys.transactions);
+      const upsert = (list: Transaction[]) => {
+        const index = list.findIndex((t) => t.id === newTx.id);
+        return index >= 0
+          ? list.map((t) => (t.id === newTx.id ? newTx : t))
+          : [newTx, ...list].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+      };
       if (previousMonthTx) {
-        const index = previousMonthTx.findIndex((t) => t.id === newTx.id);
-        const next = index >= 0
-          ? previousMonthTx.map((t) => (t.id === newTx.id ? newTx : t))
-          : [newTx, ...previousMonthTx].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
-        client.setQueryData<Transaction[]>(monthKey, next);
+        client.setQueryData<Transaction[]>(monthKey, upsert(previousMonthTx));
       }
-      return { previousMonthTx, monthKey };
+      if (previousAllTx) {
+        client.setQueryData<Transaction[]>(queryKeys.transactions, upsert(previousAllTx));
+      }
+      return { previousMonthTx, previousAllTx, monthKey };
     },
     onError: (_err, _newTx, context) => {
       if (context?.previousMonthTx && context?.monthKey) {
         client.setQueryData(context.monthKey, context.previousMonthTx);
+      }
+      if (context?.previousAllTx) {
+        client.setQueryData(queryKeys.transactions, context.previousAllTx);
       }
     },
     onSettled: (_data, _error, variables) => {
       const txMonth = variables.date.slice(0, 7);
       return Promise.all([
         client.invalidateQueries({ queryKey: [...queryKeys.transactions, txMonth] }),
+        client.invalidateQueries({ queryKey: queryKeys.transactions, exact: true }),
         client.invalidateQueries({ queryKey: queryKeys.transactionCount }),
         client.invalidateQueries({ queryKey: queryKeys.wallets }),
         client.invalidateQueries({ queryKey: queryKeys.invoices }),

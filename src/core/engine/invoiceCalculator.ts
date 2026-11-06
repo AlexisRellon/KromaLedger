@@ -50,3 +50,18 @@ export function calculateInvoice(input: InvoiceCalculationInput): InvoiceCalcula
   return { subtotalMinor, taxMinor, discountMinor, totalMinor, paidMinor, remainingMinor, status };
 }
 
+export function computeInvoiceTotals(
+  lines: Array<{ qty: number; unitPrice: number }>,
+  taxPercent: number,
+  discountPhp: number
+) {
+  const subtotal = lines.reduce((acc, item) => acc + item.qty * item.unitPrice, 0);
+  const taxAmount = subtotal * (Math.max(0, taxPercent) / 100);
+  const grandTotal = Math.max(0, subtotal + taxAmount - Math.max(0, discountPhp));
+  return {
+    subtotal: Number(subtotal.toFixed(2)),
+    taxAmount: Number(taxAmount.toFixed(2)),
+    grandTotal: Number(grandTotal.toFixed(2)),
+  };
+}
+

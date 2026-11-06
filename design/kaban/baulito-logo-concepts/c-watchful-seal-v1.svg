@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title"><title id="title">Baulito — Watchful Seal concept</title>
+<path fill="#171717" fill-rule="evenodd" d="M24 128C24 64 64 24 128 24S232 64 232 128V200Q232 224 208 224H160V200H200Q208 200 208 192V128C208 76 180 48 128 48S48 76 48 128V192Q48 200 56 200H96V224H48Q24 224 24 200Z"/>
+<circle cx="88" cy="120" r="28" fill="#171717"/><circle cx="168" cy="120" r="28" fill="#171717"/>
+<path fill="#171717" d="M128 152A20 20 0 0 0 116 188L108 224H148L140 188A20 20 0 0 0 128 152Z"/>
+</svg>

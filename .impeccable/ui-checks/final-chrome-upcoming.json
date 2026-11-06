@@ -1,0 +1,33 @@
+{
+  "url": "http://127.0.0.1:5173/#pending",
+  "viewport": [
+    1440,
+    1000
+  ],
+  "checked": 43,
+  "failures": [
+    {
+      "tag": "SPAN",
+      "text": "•",
+      "ratio": 2.584,
+      "required": 4.5,
+      "foreground": [
+        161,
+        161,
+        161,
+        1
+      ],
+      "background": [
+        255,
+        255,
+        255,
+        1
+      ],
+      "fontSize": 16,
+      "class": "hidden sm:inline mx-1 text-neutral-400",
+      "placeholder": false
+    }
+  ],
+  "manualGradientCount": 0,
+  "manual": []
+}

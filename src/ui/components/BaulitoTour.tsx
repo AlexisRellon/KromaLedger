@@ -1,0 +1,158 @@
+import { useEffect, useRef, useState } from "react";
+import { getBrowserNotificationPermission, requestBrowserNotificationPermission } from "../../adapters/notifications/notificationEngine";
+import { parseStartingBalance } from "../../state/onboarding";
+import { userProfileSchema, walletSchema, type UserProfile, type WalletType } from "../../core/models";
+import { useProfile, useSaveProfile, useSaveWallet } from "../../state/queries";
+import { KabanMascot, type BaulitoPose } from "../primitives/KabanMascot";
+import { OnboardingPractice } from "./OnboardingPractice";
+
+const practice = {
+  EXPENSE: { label: "Try an expense", guidance: "For example, enter 100 and Coffee, then choose a sample wallet." },
+  TRANSFER: { label: "Try a transfer", guidance: "For example, enter 100 and choose two different sample wallets." },
+  SUBSCRIPTION: { label: "Try a subscription", guidance: "For example, enter 100 and Music, then choose a billing cycle and date." },
+  INVOICE: { label: "Try an invoice", guidance: "Enter a title and amount, then choose a due date and direction." },
+} as const;
+type PracticeMode = keyof typeof practice;
+
+const walkthrough: { title: string; body: string; pose: BaulitoPose }[] = [
+  { title: "A place for every peso.", body: "Wallets bring your cash, banks, and e-wallets together. Add one to see where your money lives.", pose: "saving-up" },
+  { title: "Make every entry count.", body: "Tap the + button, choose an expense or income, enter the details, and save it to a wallet.", pose: "calculating" },
+  { title: "Keep what's ahead in view.", body: "See your activity on Home and find upcoming bills and subscriptions under Pending. Practice here uses sample data that won't be saved.", pose: "welcome" },
+];
+const inputClass = "mt-2 w-full rounded-xl border-2 border-[#352437] bg-white px-4 py-3 text-base text-[#241927] outline-none focus-visible:ring-4 focus-visible:ring-[#d8b5d8]";
+const buttonClass = "w-full rounded-xl border-2 border-[#241927] bg-[var(--theme-primary)] px-5 py-3.5 text-sm font-bold text-[var(--theme-text-on-primary)] shadow-[3px_3px_0px_#241927] hover:bg-[var(--theme-primary-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--theme-primary)] disabled:opacity-60";
+
+export function BaulitoTour({ onClose }: { onClose: () => void }) {
+  const [step, setStep] = useState(0);
+  const [walletSaved, setWalletSaved] = useState(false);
+  const [permission, setPermission] = useState(getBrowserNotificationPermission);
+  const [requesting, setRequesting] = useState(false);
+  const [showNotificationHelp, setShowNotificationHelp] = useState(false);
+  const [practiceMode, setPracticeMode] = useState<PracticeMode | null>(null);
+  const [practiceSaved, setPracticeSaved] = useState(false);
+  const heading = useRef<HTMLHeadingElement>(null);
+  const profile = useProfile();
+  const saveProfile = useSaveProfile();
+  const saveWallet = useSaveWallet();
+
+  useEffect(() => { heading.current?.focus(); }, [step]);
+  useEffect(() => {
+    if (step !== 6) return;
+    const refreshPermission = () => setPermission(getBrowserNotificationPermission());
+    refreshPermission();
+    window.addEventListener("focus", refreshPermission);
+    return () => window.removeEventListener("focus", refreshPermission);
+  }, [step]);
+  const next = () => { setPracticeMode(null); setPracticeSaved(false); setStep((value) => Math.min(value + 1, 7)); };
+  const previous = () => { setPracticeMode(null); setPracticeSaved(false); setStep((value) => Math.max(value - 1, 0)); };
+  const current = walkthrough[step - 1];
+  const title = step === 0 ? "Your money,\nwith a little more clarity." : current?.title ?? (step === 4 ? "Make it yours." : step === 5 ? "Add your first wallet." : step === 6 ? "A little heads-up?" : "You're all set.");
+  const pose: BaulitoPose = step === 0 ? "welcome" : current?.pose ?? (step === 5 ? "saving-up" : step === 6 ? "alert-peek" : step === 7 ? "celebrate-peso" : "standalone");
+  const openPractice = (mode: PracticeMode) => {
+    setPracticeSaved(false);
+    setPracticeMode(mode);
+  };
+
+  return (
+    <main className="min-h-[100dvh] bg-[#FAF8F5] text-[#241927]">
+      <div className="mx-auto flex min-h-[100dvh] max-w-6xl flex-col px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-10">
+        <header className="flex items-center justify-between gap-4">
+          <img src="/kaban-horizontal-color.svg" alt="Kaban" className="h-9 w-auto max-w-36 object-contain" />
+          <button type="button" onClick={onClose} className="rounded-lg px-2 py-2 text-sm font-bold text-[#5f4860] underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-[#4A154B]">Skip setup</button>
+        </header>
+        <div role="progressbar" aria-label="Setup progress" aria-valuemin={1} aria-valuemax={8} aria-valuenow={step + 1} aria-valuetext={`Step ${step + 1} of 8`} className="mt-3 h-2 overflow-hidden rounded-full bg-[#E6DED8]">
+          <div className="onboarding-progress h-full rounded-full bg-[var(--theme-primary)]" style={{ transform: `scaleX(${(step + 1) / 8})` }} />
+        </div>
+        <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center py-8">
+          <div className="grid items-center gap-7 md:grid-cols-[1fr_1fr] md:gap-16">
+            <div className="relative flex min-h-52 items-center justify-center py-5 sm:min-h-80">
+              <div aria-hidden="true" className="absolute inset-2 opacity-35 [background-image:linear-gradient(#ad9c86_1px,transparent_1px),linear-gradient(90deg,#ad9c86_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse,black,transparent_72%)]" />
+              <KabanMascot key={pose} pose={pose} size={320} className="onboarding-mascot relative h-56 w-56 sm:h-80 sm:w-80" />
+            </div>
+            <section key={step} className="onboarding-step mx-auto w-full max-w-md" aria-labelledby="onboarding-title">
+              <h1 ref={heading} tabIndex={-1} id="onboarding-title" className="whitespace-pre-line font-display text-3xl font-black leading-tight tracking-tight outline-none sm:text-4xl">{title}</h1>
+              {step === 0 && <><p className="mt-4 text-base leading-relaxed text-[#5f4860]">Meet Baulito, your companion for a calmer view of your finances. Let's get your local ledger ready.</p><p className="mt-3 text-sm font-semibold text-[#5f4860]">Your data stays on this device.</p><button type="button" onClick={next} className={`${buttonClass} mt-7`}>Get started</button></>}
+              {current && <><p className="mt-4 text-base leading-relaxed text-[#5f4860]">{current.body}</p>
+                {(step === 2 || step === 3) && <div className="mt-5 border-t-2 border-[#DFD4C8] pt-4">
+                  <p className="text-sm font-bold">Try it yourself <span className="font-normal text-[#5f4860]">(optional)</span></p>
+                  <p className="mt-1 text-sm leading-relaxed text-[#5f4860]">Choose an exercise below. This is just practice; nothing is saved to your ledger.</p>
+                  {!practiceMode && <div className="mt-3 flex flex-wrap gap-2">{(step === 2 ? ["EXPENSE", "TRANSFER"] as const : ["SUBSCRIPTION", "INVOICE"] as const).map((mode) => <button key={mode} type="button" onClick={() => openPractice(mode)} className="rounded-xl border-2 border-[var(--theme-primary)] bg-white px-3 py-2 text-sm font-bold text-[var(--theme-accent-text)] hover:bg-[var(--theme-subtle)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-primary)]">{practice[mode].label}</button>)}</div>}
+                  {practiceSaved && <p role="status" className="mt-3 text-sm font-bold text-[#276245]">Practice complete. Nothing was saved.</p>}
+                  {practiceMode && <OnboardingPractice key={practiceMode} mode={practiceMode} guidance={practice[practiceMode].guidance} onCancel={() => setPracticeMode(null)} onComplete={() => { setPracticeMode(null); setPracticeSaved(true); }} />}
+                </div>}
+                {!practiceMode && <button type="button" onClick={next} className={`${buttonClass} mt-6`}>{(step === 2 || step === 3) && !practiceSaved ? "Continue without trying" : "Continue"}</button>}</>}
+              {step === 4 && (profile.isPending ? <p className="mt-5" role="status">Loading your profile…</p> : profile.isError ? <div className="mt-5" role="alert">Could not load your profile. <button type="button" className="underline" onClick={() => void profile.refetch()}>Try again</button></div> : <ProfileSetup profile={profile.data ?? userProfileSchema.parse({})} onSave={async (value) => { await saveProfile.mutateAsync(value); next(); }} />)}
+              {step === 5 && <WalletSetup currency={profile.data?.defaultCurrency ?? "PHP"} saved={walletSaved} onSave={async (value) => { await saveWallet.mutateAsync(value); setWalletSaved(true); next(); }} onSkip={next} />}
+              {step === 6 && <>
+                <p className="mt-4 text-base leading-relaxed text-[#5f4860]">Notifications are optional. Choose whether you want browser reminders; you can change your choice later.</p>
+                <p className="mt-3 text-sm font-semibold text-[#5f4860]" role="status">{permission === "unsupported" ? "Notifications aren't available in this browser." : permission === "denied" ? "Notifications are blocked in your browser settings." : permission === "granted" ? "Notifications are enabled in your browser." : "Your browser will ask for permission only if you choose to enable notifications."}</p>
+                {(permission === "default" || permission === "denied") && <button type="button" disabled={requesting} onClick={async () => {
+                  if (permission === "denied") { setShowNotificationHelp(true); return; }
+                  setRequesting(true);
+                  try { setPermission(await requestBrowserNotificationPermission()); } finally { setRequesting(false); }
+                }} className={`${buttonClass} mt-7`}>{requesting ? "Waiting for permission…" : "Enable notifications"}</button>}
+                {permission === "denied" && showNotificationHelp && <div className="mt-4 rounded-xl border-2 border-[#D6C7B9] bg-white p-4 text-sm leading-relaxed text-[#4A154B]" role="status">
+                  Open your browser's site settings using the icon beside the address bar, allow notifications for this site, then return here. Your browser may require you to reload the page.
+                  <button type="button" onClick={() => setPermission(getBrowserNotificationPermission())} className="mt-3 block font-bold underline underline-offset-4">Check permission again</button>
+                </div>}
+                <button type="button" onClick={next} className={`mt-4 ${permission === "default" || permission === "denied" ? "w-full rounded-xl border-2 border-[var(--theme-primary)] px-4 py-3 text-sm font-bold text-[var(--theme-accent-text)]" : buttonClass}`}>{permission === "granted" ? "Continue" : "Continue without notifications"}</button>
+              </>}
+              {step === 7 && <><p className="mt-4 text-base leading-relaxed text-[#5f4860]">Your ledger is ready. Add your own entries and keep a backup from Settings.</p><button type="button" onClick={onClose} className={`${buttonClass} mt-7`}>Open my ledger</button></>}
+              {step > 0 && !practiceMode && <button type="button" onClick={previous} className="mt-5 rounded-lg px-1 py-2 text-sm font-bold text-[#5f4860] underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-[#4A154B]">Back</button>}
+            </section>
+          </div>
+        </div>
+        <p className="text-center text-xs font-semibold text-[#725b72]">A little help from Baulito, right on your device.</p>
+      </div>
+    </main>
+  );
+}
+
+function ProfileSetup({ profile, onSave }: { profile: UserProfile; onSave: (profile: UserProfile) => Promise<void> }) {
+  const [name, setName] = useState(profile.name === "Operator" || profile.name === "Anonymous Operator" ? "" : profile.name);
+  const [currency, setCurrency] = useState(profile.defaultCurrency);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  return <form className="mt-5 space-y-4" onSubmit={async (event) => {
+    event.preventDefault();
+    const trimmed = name.trim();
+    if (!trimmed) { setError("Enter a name for your profile."); return; }
+    setError(""); setBusy(true);
+    try { await onSave({ ...profile, name: trimmed, defaultCurrency: currency, initials: trimmed.split(/\s+/).map((part) => part[0]).join("").slice(0, 4).toUpperCase() }); }
+    catch { setError("Couldn't save your profile. Please try again."); }
+    finally { setBusy(false); }
+  }}>
+    <p className="text-sm leading-relaxed text-[#5f4860]">Choose a name and currency for your local profile. You can change them later in Settings.</p>
+    <label className="block text-sm font-bold">Your name<input className={inputClass} value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" maxLength={100} required /></label>
+    <label className="block text-sm font-bold">Default currency<select className={inputClass} value={currency} onChange={(event) => setCurrency(event.target.value)}>{["PHP", "USD", "EUR", "GBP", "JPY", "CAD", "AUD", "SGD"].map((item) => <option key={item}>{item}</option>)}</select></label>
+    {error && <p role="alert" className="text-sm font-semibold text-[#BE123C]">{error}</p>}
+    <button className={buttonClass} disabled={busy}>{busy ? "Saving…" : "Save profile"}</button>
+  </form>;
+}
+
+function WalletSetup({ currency, saved, onSave, onSkip }: { currency: string; saved: boolean; onSave: (wallet: ReturnType<typeof walletSchema.parse>) => Promise<void>; onSkip: () => void }) {
+  const [name, setName] = useState("");
+  const [type, setType] = useState<WalletType>("CASH");
+  const [balance, setBalance] = useState("0");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  if (saved) return <><p className="mt-4 text-[#5f4860]">Your wallet has been saved. You can add more from Wallets later.</p><button type="button" onClick={onSkip} className={`${buttonClass} mt-6`}>Continue</button></>;
+  return <form className="mt-5 space-y-4" onSubmit={async (event) => {
+    event.preventDefault(); setError("");
+    try {
+      if (!name.trim()) throw new Error("Enter a wallet name.");
+      const amount = parseStartingBalance(balance);
+      const wallet = walletSchema.parse({ id: `wallet-${crypto.randomUUID()}`, name: name.trim(), type, currency, balanceMinor: amount, color: "#4A154B", isDefault: false, createdAt: new Date().toISOString().slice(0, 10) });
+      setBusy(true); await onSave(wallet);
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "Couldn't save your wallet. Please try again."); }
+    finally { setBusy(false); }
+  }}>
+    <p className="text-sm leading-relaxed text-[#5f4860]">Optional: add your own cash or account to your ledger.</p>
+    <label className="block text-sm font-bold">Wallet name<input className={inputClass} value={name} onChange={(event) => setName(event.target.value)} placeholder="e.g. Everyday cash" maxLength={100} required /></label>
+    <label className="block text-sm font-bold">Type<select className={inputClass} value={type} onChange={(event) => setType(event.target.value as WalletType)}><option value="CASH">Cash</option><option value="BANK">Bank</option><option value="E_WALLET">E-wallet</option><option value="OTHER">Other</option></select></label>
+    <label className="block text-sm font-bold">Starting balance ({currency})<input className={inputClass} value={balance} onChange={(event) => setBalance(event.target.value)} inputMode="decimal" required /></label>
+    {error && <p role="alert" className="text-sm font-semibold text-[#BE123C]">{error}</p>}
+    <button className={buttonClass} disabled={busy}>{busy ? "Saving…" : "Add wallet"}</button>
+    <button type="button" onClick={onSkip} disabled={busy} className="w-full rounded-xl px-4 py-2 text-sm font-bold text-[var(--theme-accent-text)] underline underline-offset-4">Skip for now</button>
+  </form>;
+}

@@ -18,6 +18,7 @@ export { type AIChatMessage, type AIChatThread };
 
 interface AIState {
   isOpen: boolean;
+  initialQuestion: string;
   isLoading: boolean;
   error: string | null;
   rateLimit: RateLimitStatus | null;
@@ -28,6 +29,7 @@ interface AIState {
 
   // Modal & layout controls
   openModal: () => void;
+  openWithQuestion: (question: string) => void;
   closeModal: () => void;
   setSidebarOpen: (open: boolean) => void;
   toggleSidebar: () => void;
@@ -56,6 +58,7 @@ interface AIState {
 
 export const useAIStore = create<AIState>((set, get) => ({
   isOpen: false,
+  initialQuestion: "",
   isLoading: false,
   error: null,
   rateLimit: null,
@@ -69,10 +72,22 @@ export const useAIStore = create<AIState>((set, get) => ({
     if (get().threads.length === 0) {
       get().initStore();
     }
-    set({ isOpen: true, error: null });
+    set({ isOpen: true, error: null, initialQuestion: "" });
   },
 
-  closeModal: () => set({ isOpen: false }),
+  openWithQuestion: (question) => {
+    get().openModal();
+    const { threads } = get();
+    const draft = threads.find((thread) => thread.messages.length === 0) ?? createEmptyThread();
+    set({
+      threads: threads.some((thread) => thread.id === draft.id) ? threads : [draft, ...threads],
+      activeThreadId: draft.id,
+      messages: [],
+      initialQuestion: question,
+    });
+  },
+
+  closeModal: () => set({ isOpen: false, initialQuestion: "" }),
 
   setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),
 
@@ -208,6 +223,7 @@ export const useAIStore = create<AIState>((set, get) => ({
     );
 
     saveAllThreads(updatedThreadsWithUser);
+    setActiveThreadId(activeThreadId);
 
     set({
       threads: updatedThreadsWithUser,

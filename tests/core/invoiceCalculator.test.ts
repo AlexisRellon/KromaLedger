@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateInvoice } from "../../src/core/engine/invoiceCalculator";
+import { calculateInvoice, computeInvoiceTotals } from "../../src/core/engine/invoiceCalculator";
 
 describe("calculateInvoice", () => {
   const base = { items: [{ description: "Design", quantity: 2, unitPriceMinor: 1250 }], taxRateBps: 1000, discountMinor: 100, paidMinor: 0, dueDate: "2026-10-24", currentDate: "2026-10-20", draft: false };
@@ -25,5 +25,60 @@ describe("calculateInvoice", () => {
     expect(() => calculateInvoice({ ...base, items: [{ description: "bad", quantity: 0, unitPriceMinor: 20 }] })).toThrow();
     expect(() => calculateInvoice({ ...base, discountMinor: 2501 })).toThrow();
     expect(() => calculateInvoice({ ...base, dueDate: "2026-02-30" })).toThrow();
+  });
+});
+
+describe("computeInvoiceTotals", () => {
+  it("sums line items into a subtotal", () => {
+    expect(
+      computeInvoiceTotals(
+        [
+          { qty: 2, unitPrice: 1250 },
+          { qty: 1, unitPrice: 500 },
+        ],
+        0,
+        0
+      )
+    ).toEqual({ subtotal: 3000, taxAmount: 0, grandTotal: 3000 });
+  });
+
+  it("applies the tax percentage on top of the subtotal", () => {
+    expect(computeInvoiceTotals([{ qty: 1, unitPrice: 1000 }], 12, 0)).toEqual({
+      subtotal: 1000,
+      taxAmount: 120,
+      grandTotal: 1120,
+    });
+  });
+
+  it("deducts the discount from subtotal plus tax", () => {
+    expect(computeInvoiceTotals([{ qty: 2, unitPrice: 1000 }], 10, 250)).toEqual({
+      subtotal: 2000,
+      taxAmount: 200,
+      grandTotal: 1950,
+    });
+  });
+
+  it("floors the grand total at zero when the discount exceeds subtotal plus tax", () => {
+    expect(computeInvoiceTotals([{ qty: 1, unitPrice: 500 }], 10, 5000)).toEqual({
+      subtotal: 500,
+      taxAmount: 50,
+      grandTotal: 0,
+    });
+  });
+
+  it("ignores negative tax and discount inputs", () => {
+    expect(computeInvoiceTotals([{ qty: 1, unitPrice: 800 }], -15, -100)).toEqual({
+      subtotal: 800,
+      taxAmount: 0,
+      grandTotal: 800,
+    });
+  });
+
+  it("rounds each figure to centavos", () => {
+    expect(computeInvoiceTotals([{ qty: 1, unitPrice: 99.999 }], 8, 0)).toEqual({
+      subtotal: 100,
+      taxAmount: 8,
+      grandTotal: 108,
+    });
   });
 });

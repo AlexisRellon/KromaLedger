@@ -23,11 +23,11 @@ export function PendingSkeleton() {
           <SkeletonBadge className="h-7 w-24" />
         </div>
 
-        <div className="mt-4 divide-y divide-white/[0.06]">
+        <div className="mt-4 divide-y-2 divide-neutral-200">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="flex items-center justify-between py-3">
               <div className="flex items-center gap-3">
-                <SkeletonCircle size={32} className="rounded-lg" />
+                <SkeletonCircle size={36} className="rounded-xl border border-neutral-900" />
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2">
                     <Skeleton className="h-4 w-32 rounded" />
@@ -55,12 +55,12 @@ export function PendingSkeleton() {
                 <Skeleton className="h-7 w-48 rounded-md" />
                 <SkeletonText lines={2} className="w-44" lastLineWidth="75%" />
               </div>
-              <div className="relative flex h-24 w-24 shrink-0 items-center justify-center rounded-full border-[10px] border-white/[0.07] bg-transparent">
+              <div className="relative flex h-24 w-24 shrink-0 items-center justify-center rounded-full border-[10px] border-neutral-200 bg-transparent">
                 <Skeleton className="h-6 w-10 rounded" />
               </div>
             </div>
 
-            <div className="mt-5 border-t border-white/[0.06] pt-4">
+            <div className="mt-5 border-t-2 border-neutral-200 pt-4">
               <div className="mb-3 flex items-center justify-between">
                 <Skeleton className="h-3.5 w-36 rounded" />
               </div>
@@ -90,16 +90,16 @@ export function PendingSkeleton() {
             </div>
           </div>
 
-          <div className="mt-4 divide-y divide-white/[0.06]">
+          <div className="mt-4 divide-y-2 divide-neutral-200">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="py-3.5 space-y-2">
                 <div className="flex items-center justify-between">
                   <Skeleton className="h-4 w-36 rounded" />
                   <Skeleton className="h-3.5 w-24 rounded" />
                 </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-neutral-800">
+                <div className="h-2 overflow-hidden rounded-full border border-neutral-900 bg-neutral-200">
                   <Skeleton
-                    className="h-full rounded-full border-none bg-neutral-700/60"
+                    className="h-full rounded-full border-none bg-[#10B981]"
                     style={{ width: `${(i + 1) * 30}%` }}
                   />
                 </div>

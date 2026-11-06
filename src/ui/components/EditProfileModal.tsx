@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
 import type { UserProfile } from "../../core/models";
-import { VoltButton } from "../primitives";
+import { Button, FormField, Input, ModalShell, Select, getAvatarColors } from "../primitives";
 
 export const CURRENCIES = ["PHP", "USD", "EUR", "GBP", "JPY", "CAD", "AUD", "SGD"];
 
 export const THEME_COLORS = [
+  { name: "Kaban Plum", hex: "#4A154B" },
+  { name: "Treasure Amber", hex: "#F59E0B" },
+  { name: "Mint Sage", hex: "#10B981" },
+  { name: "Coral Rose", hex: "#F43F5E" },
+  { name: "Sky Azure", hex: "#0284C7" },
+  { name: "Obsidian", hex: "#18181B" },
   { name: "Electric Volt", hex: "#D9F938" },
-  { name: "Emerald", hex: "#10B981" },
-  { name: "Cyan", hex: "#06B6D4" },
-  { name: "Indigo", hex: "#6366F1" },
-  { name: "Purple", hex: "#A855F7" },
-  { name: "Amber", hex: "#F59E0B" },
-  { name: "Rose", hex: "#F43F5E" },
 ];
 
 export function EditProfileModal({
@@ -24,39 +23,24 @@ export function EditProfileModal({
   onClose: () => void;
   onSave: (val: UserProfile) => Promise<void>;
 }) {
-  const [mounted, setMounted] = useState(false);
   const [name, setName] = useState(profile.name);
   const [handle, setHandle] = useState(profile.handle);
   const [email, setEmail] = useState(profile.email || "");
   const [initials, setInitials] = useState(profile.initials);
-  const [themeColor, setThemeColor] = useState(profile.themeColor || "#D9F938");
+  const [themeColor, setThemeColor] = useState(profile.themeColor || "#4A154B");
   const [defaultCurrency, setDefaultCurrency] = useState(profile.defaultCurrency);
   const [bio, setBio] = useState(profile.bio || "");
   const [busy, setBusy] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     setName(profile.name);
     setHandle(profile.handle);
     setEmail(profile.email || "");
     setInitials(profile.initials);
-    setThemeColor(profile.themeColor || "#D9F938");
+    setThemeColor(profile.themeColor || "#4A154B");
     setDefaultCurrency(profile.defaultCurrency);
     setBio(profile.bio || "");
   }, [profile]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !busy) {
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [busy, onClose]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,155 +62,166 @@ export function EditProfileModal({
     }
   };
 
-  if (!mounted || typeof document === "undefined") return null;
-
-  return createPortal(
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-md"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget && !busy) onClose();
-      }}
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Edit Local Profile"
-        className="flex max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#11120f] shadow-2xl animate-entrance"
-      >
-        {/* Modal Header (Fixed) */}
-        <div className="shrink-0 flex items-center justify-between border-b border-white/5 px-5 py-4 sm:px-6 sm:py-4">
-          <h3 className="font-display text-xl font-bold text-white">Edit Local Profile</h3>
-          <button
-            onClick={onClose}
+  return (
+    <ModalShell
+      isOpen={true}
+      onClose={onClose}
+      title="Edit Local Profile"
+      subtitle="Vault Operator"
+      busy={busy}
+      footer={
+        <div className="flex items-center justify-end gap-3">
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
             disabled={busy}
-            aria-label="Close modal"
-            className="rounded-full p-1.5 text-neutral-400 hover:bg-white/5 hover:text-white transition"
+            onClick={onClose}
           >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-            </svg>
-          </button>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            form="edit-profile-modal-form"
+            variant="primary"
+            size="sm"
+            disabled={busy}
+          >
+            {busy ? "Saving…" : "Save Profile"}
+          </Button>
+        </div>
+      }
+    >
+      <form id="edit-profile-modal-form" onSubmit={handleSubmit} className="space-y-4">
+        {/* Avatar & Initials */}
+        <div className="flex items-center gap-4 rounded-2xl border-2 border-[var(--border-ink)] bg-[var(--bg-card)] p-3.5 shadow-[2px_2px_0px_var(--shadow-ink)]">
+          <div
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-2 border-[var(--border-ink)] text-lg font-black shadow-[2px_2px_0px_var(--shadow-ink)]"
+            style={getAvatarColors(themeColor)}
+          >
+            {initials || "KO"}
+          </div>
+          <div className="flex-1">
+            <FormField label="Avatar Initials">
+              {({ id }) => (
+                <Input
+                  id={id}
+                  type="text"
+                  maxLength={4}
+                  value={initials}
+                  onChange={(e) => setInitials(e.target.value.toUpperCase())}
+                  className="w-24 font-mono font-bold"
+                />
+              )}
+            </FormField>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col overflow-hidden">
-          {/* Scrollable Body */}
-          <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
-          <div className="flex items-center gap-4">
-            <div
-              className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-lg font-bold text-black"
-              style={{ backgroundColor: themeColor }}
-            >
-              {initials || "KO"}
-            </div>
-            <div className="flex-1">
-              <label className="block text-xs font-medium text-neutral-400">Avatar Initials</label>
-              <input
-                type="text"
-                maxLength={4}
-                value={initials}
-                onChange={(e) => setInitials(e.target.value.toUpperCase())}
-                className="mt-1 w-24 rounded-xl border border-white/10 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+        {/* Avatar background color */}
+        <div>
+          <p id="avatar-background-label" className="block text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+            Background Color
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-2.5" role="group" aria-labelledby="avatar-background-label">
+            {THEME_COLORS.map((c) => (
+              <button
+                type="button"
+                key={c.hex}
+                onClick={() => setThemeColor(c.hex)}
+                className={`h-8 w-8 rounded-full border-2 border-[var(--border-ink)] transition-all cursor-pointer ${
+                  themeColor.toLowerCase() === c.hex.toLowerCase()
+                    ? "scale-110 shadow-[2px_2px_0px_var(--shadow-ink)] ring-2 ring-[var(--border-ink)] ring-offset-2"
+                    : "opacity-80 hover:opacity-100 hover:scale-105"
+                }`}
+                style={{ backgroundColor: c.hex }}
+                title={c.name}
+                aria-label={`${c.name} background`}
+                aria-pressed={themeColor.toLowerCase() === c.hex.toLowerCase()}
               />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-neutral-400">Theme Color</label>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {THEME_COLORS.map((c) => (
-                <button
-                  type="button"
-                  key={c.hex}
-                  onClick={() => setThemeColor(c.hex)}
-                  className={`h-7 w-7 rounded-full transition-transform ${
-                    themeColor === c.hex ? "scale-110 ring-2 ring-white ring-offset-2 ring-offset-black" : "opacity-75 hover:opacity-100"
-                  }`}
-                  style={{ backgroundColor: c.hex }}
-                  title={c.name}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label className="block text-xs font-medium text-neutral-400">Display Name</label>
+            ))}
+            <label className="ml-1 flex items-center gap-2 text-xs font-bold text-[var(--text-secondary)]">
+              Custom
               <input
+                type="color"
+                aria-label="Custom avatar background color"
+                value={getAvatarColors(themeColor).backgroundColor}
+                onChange={(e) => setThemeColor(e.target.value)}
+                className="h-9 w-10 cursor-pointer rounded-lg border-2 border-[var(--border-ink)] p-0.5"
+              />
+            </label>
+          </div>
+        </div>
+
+        {/* Display Name & Handle */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <FormField label="Display Name" required>
+            {({ id }) => (
+              <Input
+                id={id}
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-[#D9F938] focus:outline-none"
               />
-            </div>
+            )}
+          </FormField>
 
-            <div>
-              <label className="block text-xs font-medium text-neutral-400">Handle / Tag</label>
-              <input
+          <FormField label="Handle / Tag">
+            {({ id }) => (
+              <Input
+                id={id}
                 type="text"
                 value={handle}
                 onChange={(e) => setHandle(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white font-mono focus:border-[#D9F938] focus:outline-none"
+                className="font-mono"
               />
-            </div>
-          </div>
+            )}
+          </FormField>
+        </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label className="block text-xs font-medium text-neutral-400">Email (Optional)</label>
-              <input
+        {/* Email & Currency */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <FormField label="Email (Optional)">
+            {({ id }) => (
+              <Input
+                id={id}
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-[#D9F938] focus:outline-none"
               />
-            </div>
+            )}
+          </FormField>
 
-            <div>
-              <label className="block text-xs font-medium text-neutral-400">Default Currency</label>
-              <select
+          <FormField label="Default Currency">
+            {({ id }) => (
+              <Select
+                id={id}
                 value={defaultCurrency}
                 onChange={(e) => setDefaultCurrency(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-white/10 bg-[#161714] px-3 py-2 text-sm text-white focus:border-[#D9F938] focus:outline-none"
               >
                 {CURRENCIES.map((cur) => (
                   <option key={cur} value={cur}>
                     {cur}
                   </option>
                 ))}
-              </select>
-            </div>
-          </div>
+              </Select>
+            )}
+          </FormField>
+        </div>
 
-          <div>
-            <label className="block text-xs font-medium text-neutral-400">Bio / Notes</label>
-            <input
+        {/* Bio */}
+        <FormField label="Bio / Vault Notes">
+          {({ id }) => (
+            <Input
+              id={id}
               type="text"
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-[#D9F938] focus:outline-none"
+              placeholder="e.g., Personal financial fortress"
             />
-          </div>
-
-          </div>
-
-          {/* Fixed Footer */}
-          <div className="shrink-0 flex items-center justify-end gap-3 border-t border-white/5 bg-[#11120f] px-5 py-3.5 sm:px-6 sm:py-4">
-            <button
-              type="button"
-              disabled={busy}
-              onClick={onClose}
-              className="rounded-xl border border-white/10 px-4 py-2 text-xs font-semibold text-neutral-300 hover:text-white transition hover:bg-white/5"
-            >
-              Cancel
-            </button>
-            <VoltButton type="submit" disabled={busy} className="px-5 py-2 text-xs">
-              {busy ? "Saving…" : "Save Profile"}
-            </VoltButton>
-          </div>
-        </form>
-      </div>
-    </div>,
-    document.body
+          )}
+        </FormField>
+      </form>
+    </ModalShell>
   );
 }

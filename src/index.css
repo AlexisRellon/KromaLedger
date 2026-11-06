@@ -1,18 +1,232 @@
 @import "tailwindcss";
-@font-face { font-family: "Satoshi"; src: url("/fonts/Satoshi-Variable.woff2") format("woff2"); font-style: normal; font-weight: 100 900; font-display: swap; }
-@font-face { font-family: "Cabinet Grotesk"; src: url("/fonts/CabinetGrotesk-Variable.woff2") format("woff2"); font-style: normal; font-weight: 100 900; font-display: swap; }
-@font-face { font-family: "JetBrains Mono"; src: url("/fonts/JetBrainsMono-Regular.woff2") format("woff2"); font-style: normal; font-weight: 400; font-display: swap; }
+
+/* Kaban heritage palette — Tailwind v4 color tokens (utilities like bg-kaban-ochre) */
+@theme {
+  --color-kaban-canvas: #FAF6F0;
+  --color-kaban-ink: #18181B;
+  --color-kaban-terracotta: #B85028;
+  --color-kaban-ochre: #F4C95D;
+  --color-kaban-indigo: #1D3557;
+  --color-kaban-mint: #E8F8F0;
+  --color-kaban-mint-text: #15803D;
+  --color-kaban-blush: #FDF2F2;
+  --color-kaban-blush-text: #B91C1C;
+}
+
+@font-face {
+  font-family: "Dangwa";
+  src: url("/fonts/Dangwa-Regular.otf") format("opentype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bantayog";
+  src: url("/fonts/Bantayog-Regular.woff2") format("woff2"),
+       url("/fonts/Bantayog-Regular.otf") format("opentype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bantayog";
+  src: url("/fonts/Bantayog-Semilight.woff2") format("woff2"),
+       url("/fonts/Bantayog-Semilight.otf") format("opentype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-Variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cabinet Grotesk";
+  src: url("/fonts/CabinetGrotesk-Variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/JetBrainsMono-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   Design Tokens (CSS Custom Properties)
+   ========================================================================== */
+
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   font-family: "Satoshi", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #070806;
+
+  /* --- Canvas & Surface Tokens --- */
+  --bg-canvas: var(--color-kaban-canvas);
+  --bg-card: #FFFFFF;
+  --bg-card-translucent: rgba(255, 255, 255, 0.95);
+  --bg-subtle: #FAF8F5;
+  --bg-muted: #F4F1EA;
+  --bg-elevated: #FFFFFF;
+
+  /* --- Text Hierarchy Tokens (WCAG 2.1 AA Calibrated >= 4.5:1) --- */
+  --text-primary: #18181B;     /* ~16.7:1 on #FAF8F5, ~17.7:1 on white */
+  --text-secondary: #3F3F46;   /* ~8.2:1 on #FAF8F5 */
+  --text-tertiary: #52525B;    /* ~5.6:1 on #FAF8F5 */
+  --text-muted: #71717A;       /* ~4.5:1 on #FFFFFF */
+  --text-on-accent: #FFFFFF;
+  --text-placeholder: #52525B;
+
+  /* --- Borders & Neobrutalist Hard Shadow Tokens --- */
+  --border-ink: #18181B;
+  --border-subtle: #D4D4D8;
+  --border-divider: #E4E4E7;
+  --shadow-ink: #18181B;
+
+  /* --- Semantic Status Tokens (Light Mode - all >= 4.5:1) --- */
+  --status-success-bg: #D1FAE5;
+  --status-success-text: #047857;   /* 5.48:1 on #FAF8F5, 5.17:1 on #D1FAE5 */
+  --status-success-border: #18181B;
+
+  --status-warning-bg: #FEF3C7;
+  --status-warning-text: #92400E;   /* 7.09:1 on #FAF8F5, 6.09:1 on #FEF3C7 */
+  --status-warning-border: #18181B;
+
+  --status-danger-bg: #FFE4E6;
+  --status-danger-text: #BE123C;    /* 5.97:1 on #FAF8F5, 5.24:1 on #FFE4E6 */
+  --status-danger-border: #18181B;
+
+  --status-info-bg: #E0F2FE;
+  --status-info-text: #0369A1;      /* 5.63:1 on #FAF8F5, 4.94:1 on #E0F2FE */
+  --status-info-border: #18181B;
+
+  --badge-brand-bg: #EDE9FE;
+  --badge-brand-text: #4A154B;
+
+  /* --- Active Brand Theme Tokens (defaults to Kaban Plum) --- */
+  --theme-primary: #4A154B;
+  --theme-primary-hover: #3B0764;
+  --theme-subtle: #EDE9FE;
+  --theme-subtle-text: #18181B;
+  --theme-text-on-primary: #FFFFFF;
+  --theme-accent-text: #4A154B;
+  --theme-border: #18181B;
+
+  /* --- Heritage palette aliases (consumers use var(--heritage-*); values live in @theme) --- */
+  --heritage-ink: var(--color-kaban-ink);
+  --heritage-terracotta: var(--color-kaban-terracotta);
+  --heritage-ochre: var(--color-kaban-ochre);
+  --heritage-indigo: var(--color-kaban-indigo);
+  --heritage-mint: var(--color-kaban-mint);
+  --heritage-mint-text: var(--color-kaban-mint-text);
+  --heritage-blush: var(--color-kaban-blush);
+  --heritage-blush-text: var(--color-kaban-blush-text);
+
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
+html.dark {
+  color-scheme: dark;
+
+  /* --- Canvas & Surface Tokens (Dark Mode) --- */
+  --bg-canvas: #121316;
+  --bg-card: #1C1D22;
+  --bg-card-translucent: rgba(28, 29, 34, 0.95);
+  --bg-subtle: #24252C;
+  --bg-muted: #2A2B33;
+  --bg-elevated: #24252C;
+
+  /* --- Text Hierarchy Tokens (Dark Mode >= 4.5:1 on dark surfaces) --- */
+  --text-primary: #F4F4F5;     /* 15.3:1 on #1C1D22, 13.5:1 on #24252C */
+  --text-secondary: #E4E4E7;   /* 12.8:1 on #1C1D22, 11.3:1 on #24252C */
+  --text-tertiary: #D4D4D8;    /* 10.3:1 on #1C1D22, 9.1:1 on #24252C */
+  --text-muted: #A1A1AA;       /* 5.95:1 on #24252C, 6.7:1 on #1C1D22 */
+  --text-on-accent: #18181B;
+  --text-placeholder: #A1A1AA;
+
+  /* --- Borders & Shadows (WCAG 1.4.11 Non-text contrast >= 3.0:1) --- */
+  --border-ink: #7E8294;       /* 4.41:1 on #1C1D22, 4.00:1 on #24252C */
+  --border-subtle: #4D505E;    /* 3.1:1 on #121316 */
+  --border-divider: #383A44;
+  --shadow-ink: #09090B;
+
+  /* --- Semantic Status Tokens (Dark Mode - all >= 4.5:1) --- */
+  --status-success-bg: #0A3324;
+  --status-success-text: #6EE7B7;   /* 10.6:1 on #1C1D22, 5.9:1 on #0A3324 */
+  --status-success-border: #7E8294;
+
+  --status-warning-bg: #38290E;
+  --status-warning-text: #FDE68A;   /* 12.8:1 on #1C1D22, 9.1:1 on #38290E */
+  --status-warning-border: #7E8294;
+
+  --status-danger-bg: #4C0519;
+  --status-danger-text: #FDA4AF;    /* 9.37:1 on #1C1D22, 7.05:1 on #4C0519 */
+  --status-danger-border: #7E8294;
+
+  --status-info-bg: #0E2A3E;
+  --status-info-text: #7DD3FC;      /* 10.9:1 on #1C1D22, 6.8:1 on #0E2A3E */
+  --status-info-border: #7E8294;
+
+  --badge-brand-bg: #2E2137;
+  --badge-brand-text: #DDD6FE;
+
+  /* --- Active Brand Theme Tokens (defaults to Kaban Plum dark) --- */
+  --theme-primary: #C084FC;
+  --theme-primary-hover: #A855F7;
+  --theme-subtle: #2E2137;
+  --theme-subtle-text: #E9D5FF;
+  --theme-text-on-primary: #18181B;
+  --theme-accent-text: #DDD6FE;
+  --theme-border: #7E8294;
+
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+}
+
+html.high-contrast {
+  --border-ink: #000000;
+  --border-subtle: #000000;
+  --border-divider: #000000;
+  --text-secondary: #000000;
+  --text-tertiary: #000000;
+  --text-muted: #000000;
+}
+
+html.dark.high-contrast {
+  --border-ink: #FFFFFF;
+  --border-subtle: #FFFFFF;
+  --border-divider: #FFFFFF;
+  --text-secondary: #FFFFFF;
+  --text-tertiary: #FFFFFF;
+  --text-muted: #FFFFFF;
+}
+
 * {
   box-sizing: border-box;
+}
+
+::selection {
+  background-color: #FDE68A;
+  color: #18181B;
+}
+
+html.dark ::selection {
+  background-color: #78350F;
+  color: #FEF3C7;
 }
 
 html,
@@ -20,30 +234,47 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #070806;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
   position: relative;
   overflow-x: hidden;
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    radial-gradient(ellipse 90% 48% at 50% -8%, rgba(58, 80, 22, 0.42), transparent 72%),
-    radial-gradient(circle at 10% 22%, rgba(35, 52, 14, 0.22), transparent 48%),
-    radial-gradient(circle at 90% 28%, rgba(42, 62, 16, 0.18), transparent 48%),
-    linear-gradient(180deg, #0d1109 0%, #070806 34rem);
+/* Solid parchment canvas; no repeating background pattern (deliberate) */
+
+/* Tnalak texture for modal header band only; renders shared defs `pattern-tnalak-circuit` at 0.04, no-op if defs absent */
+.tnalak-band {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5rem;
+  opacity: 0.04;
 }
 
-button, input, select {
-  font: inherit;
+@layer base {
+  button, input, select, textarea {
+    font-family: inherit;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--text-placeholder);
+    opacity: 1;
+  }
+}
+
+.font-brand {
+  font-family: "Dangwa", "Bantayog", "Cabinet Grotesk", sans-serif;
 }
 
 .font-display {
-  font-family: "Cabinet Grotesk", "Satoshi", sans-serif;
+  font-family: "Bantayog", "Cabinet Grotesk", "Satoshi", sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.font-sans {
+  font-family: "Satoshi", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .font-mono, .tabular-nums {
@@ -51,10 +282,38 @@ button, input, select {
   font-variant-numeric: tabular-nums;
 }
 
+/* ==========================================================================
+   Neobrutalist Hard Shadow Utilities (Backed by Design Tokens)
+   ========================================================================== */
+
+.neo-box {
+  border: 2px solid var(--border-ink);
+  box-shadow: 3px 3px 0px var(--shadow-ink);
+}
+
+.neo-box-sm {
+  border: 1.5px solid var(--border-ink);
+  box-shadow: 2px 2px 0px var(--shadow-ink);
+}
+
+.neo-box-lg {
+  border: 2px solid var(--border-ink);
+  box-shadow: 5px 5px 0px var(--shadow-ink);
+}
+
+.neo-btn-interactive {
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.1s ease;
+}
+
+.neo-btn-interactive:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--shadow-ink) !important;
+}
+
 @keyframes fadeInScale {
   from {
     opacity: 0;
-    transform: scale(0.97);
+    transform: scale(0.98);
   }
   to {
     opacity: 1;
@@ -65,7 +324,7 @@ button, input, select {
 @keyframes slideUpDrawer {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -74,11 +333,62 @@ button, input, select {
 }
 
 .animate-entrance {
-  animation: fadeInScale 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fadeInScale 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes growIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@keyframes growOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -10px) scale(0.85);
+  }
+}
+
+.animate-grow-in {
+  animation: growIn 240ms cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+.animate-grow-out {
+  animation: growOut 200ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+@keyframes activityEntryReveal {
+  from { grid-template-rows: 0fr; opacity: 0; }
+  to { grid-template-rows: 1fr; opacity: 1; }
+}
+
+.activity-entry-reveal {
+  display: grid;
+  animation: activityEntryReveal 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes activityEntryCollapse {
+  from { grid-template-rows: 1fr; opacity: 1; }
+  to { grid-template-rows: 0fr; opacity: 0; }
+}
+
+.activity-entry-collapse {
+  display: grid;
+  animation: activityEntryCollapse 200ms ease-in both;
+  pointer-events: none;
 }
 
 .animate-drawer {
-  animation: slideUpDrawer 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: slideUpDrawer 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes shimmerSweep {
@@ -93,7 +403,8 @@ button, input, select {
 .skeleton-shimmer {
   position: relative;
   overflow: hidden;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--bg-muted);
+  border: 1.5px solid var(--border-ink);
 }
 
 .skeleton-shimmer::after {
@@ -104,20 +415,22 @@ button, input, select {
   background-image: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.03) 25%,
-    rgba(255, 255, 255, 0.09) 50%,
-    rgba(217, 249, 56, 0.07) 56%,
-    rgba(255, 255, 255, 0.09) 62%,
-    rgba(255, 255, 255, 0.03) 75%,
+    rgba(255, 255, 255, 0.3) 25%,
+    rgba(254, 243, 199, 0.5) 50%,
+    rgba(255, 255, 255, 0.3) 75%,
     transparent 100%
   );
-  animation: shimmerSweep 1.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: shimmerSweep 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-entrance,
-  .animate-drawer {
+  .animate-drawer,
+  .activity-entry-reveal,
+  .activity-entry-collapse,
+  .animate-grow-in,
+  .animate-grow-out {
     animation: none !important;
   }
   .skeleton-shimmer::after {
@@ -126,19 +439,336 @@ button, input, select {
   }
 }
 
-/* Custom subtle scrollbars for dark mode modals and panels */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.16);
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+html.reduce-motion * {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
 }
 
+html.large-text {
+  font-size: 112.5%;
+}
+
+/* Neobrutalist tactile scrollbars backed by tokens */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-muted);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 4px;
+  border: 1px solid var(--border-ink);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* ==========================================================================
+   Semantic Utility Mappings (All backed by Design Tokens)
+   ========================================================================== */
+
+/* Backward-compatible class mappings routed strictly to tokens */
+html.dark .bg-white {
+  background-color: var(--bg-card) !important;
+}
+
+html.dark .bg-white\/95 {
+  background-color: var(--bg-card-translucent) !important;
+}
+
+html.dark .bg-\[\#FAF8F5\] {
+  background-color: var(--bg-subtle) !important;
+}
+
+html.dark .bg-neutral-50,
+html.dark .bg-neutral-100 {
+  background-color: var(--bg-subtle) !important;
+}
+
+html.dark .bg-neutral-200,
+html.dark .bg-neutral-200\/80,
+html.dark .bg-neutral-300 {
+  background-color: var(--bg-muted) !important;
+}
+
+html.dark .bg-\[\#F4F1EA\] {
+  background-color: var(--bg-muted) !important;
+}
+
+html.dark .bg-\[\#EDE9FE\],
+html.dark .bg-\[\#FAF5FF\],
+html.dark .bg-\[\#F3E8FF\],
+html.dark .bg-\[\#DDD6FE\] {
+  background-color: var(--theme-subtle) !important;
+  color: var(--theme-subtle-text) !important;
+}
+
+html.dark .bg-\[\#4A154B\] {
+  background-color: var(--theme-primary) !important;
+  color: var(--theme-text-on-primary) !important;
+}
+
+html.dark .bg-\[\#3B0764\] {
+  background-color: var(--theme-primary-hover) !important;
+  color: var(--theme-text-on-primary) !important;
+}
+
+html.dark .border-\[\#4A154B\] {
+  border-color: var(--theme-border) !important;
+}
+
+html.dark .bg-\[\#FEF3C7\],
+html.dark .bg-\[\#FEF08A\],
+html.dark .bg-\[\#FFFBEB\] {
+  background-color: var(--status-warning-bg) !important;
+  color: var(--status-warning-text) !important;
+}
+
+html.dark .bg-\[\#D1FAE5\],
+html.dark .bg-\[\#ECFDF5\],
+html.dark .bg-\[\#DCFCE7\],
+html.dark .bg-\[\#A7F3D0\] {
+  background-color: var(--status-success-bg) !important;
+  color: var(--status-success-text) !important;
+}
+
+html.dark .bg-\[\#FFE4E6\],
+html.dark .bg-\[\#FFF1F2\],
+html.dark .bg-\[\#FECDD3\] {
+  background-color: var(--status-danger-bg) !important;
+  color: var(--status-danger-text) !important;
+}
+
+html.dark .bg-\[\#E0F2FE\] {
+  background-color: var(--status-info-bg) !important;
+  color: var(--status-info-text) !important;
+}
+
+/* Border and shadow mappings in dark mode */
+html.dark .border-neutral-900,
+html.dark .border-neutral-800 {
+  border-color: var(--border-ink) !important;
+}
+
+html.dark .border-neutral-200,
+html.dark .border-neutral-300 {
+  border-color: var(--border-divider) !important;
+}
+
+html.dark .divide-neutral-900\/10 > * + *,
+html.dark .divide-neutral-900\/20 > * + * {
+  border-color: var(--border-divider) !important;
+}
+
+html.dark .shadow-\[3px_3px_0px_\#18181B\],
+html.dark .shadow-\[3px_3px_0px_var\(--shadow-ink\)\] {
+  border-color: var(--border-ink) !important;
+  box-shadow: 3px 3px 0px var(--shadow-ink) !important;
+}
+
+html.dark .shadow-\[2px_2px_0px_\#18181B\],
+html.dark .shadow-\[2px_2px_0px_var\(--shadow-ink\)\] {
+  border-color: var(--border-ink) !important;
+  box-shadow: 2px 2px 0px var(--shadow-ink) !important;
+}
+
+html.dark .shadow-\[5px_5px_0px_\#18181B\],
+html.dark .shadow-\[4px_4px_0px_\#18181B\],
+html.dark .shadow-\[6px_6px_0px_\#18181B\],
+html.dark .shadow-\[6px_6px_0px_var\(--shadow-ink\)\] {
+  border-color: var(--border-ink) !important;
+  box-shadow: 5px 5px 0px var(--shadow-ink) !important;
+}
+
+html.dark .shadow-\[1px_1px_0px_\#18181B\],
+html.dark .shadow-\[1px_1px_0px_var\(--shadow-ink\)\] {
+  border-color: var(--border-ink) !important;
+  box-shadow: 1px 1px 0px var(--shadow-ink) !important;
+}
+
+/* Text mappings in dark mode */
+html.dark .text-neutral-950,
+html.dark .text-neutral-900 {
+  color: var(--text-primary) !important;
+}
+
+html.dark .text-neutral-800 {
+  color: var(--text-secondary) !important;
+}
+
+html.dark .text-neutral-700,
+html.dark .text-neutral-600 {
+  color: var(--text-tertiary) !important;
+}
+
+html.dark .text-neutral-500 {
+  color: var(--text-muted) !important;
+}
+
+html.dark .text-\[\#4A154B\],
+html.dark .text-\[\#3B0764\],
+html.dark .text-\[\#6B21A8\] {
+  color: var(--theme-accent-text) !important;
+}
+
+html.dark .text-\[\#047857\],
+html.dark .text-\[\#065F46\],
+html.dark .text-\[\#059669\],
+html.dark .text-\[\#166534\] {
+  color: var(--status-success-text) !important;
+}
+
+html.dark .text-\[\#BE123C\],
+html.dark .text-\[\#9F1239\] {
+  color: var(--status-danger-text) !important;
+}
+
+html.dark .text-\[\#B45309\],
+html.dark .text-\[\#92400E\],
+html.dark .text-\[\#854D0E\],
+html.dark .text-\[\#D97706\] {
+  color: var(--status-warning-text) !important;
+}
+
+html.dark .text-\[\#0369A1\],
+html.dark .text-\[\#0284C7\],
+html.dark .text-\[\#1E3A8A\] {
+  color: var(--status-info-text) !important;
+}
+
+/* Hover states in dark mode avoid blinding light flash */
+html.dark .hover\:bg-\[\#FAF8F5\]:hover,
+html.dark .hover\:bg-\[\#F4F1EA\]:hover,
+html.dark .hover\:bg-white:hover,
+html.dark .hover\:bg-neutral-100:hover {
+  background-color: var(--bg-muted) !important;
+}
+
+html.dark .hover\:bg-neutral-200:hover,
+html.dark .hover\:bg-neutral-200\/60:hover,
+html.dark .hover\:bg-neutral-300:hover,
+html.dark .hover\:bg-neutral-400:hover {
+  background-color: var(--bg-elevated) !important;
+}
+
+html.dark .hover\:bg-rose-50:hover,
+html.dark .hover\:bg-rose-100:hover {
+  background-color: var(--status-danger-bg) !important;
+  color: var(--status-danger-text) !important;
+}
+
+html.dark .hover\:text-neutral-950:hover,
+html.dark .hover\:text-neutral-900:hover,
+html.dark .hover\:text-neutral-800:hover {
+  color: var(--text-primary) !important;
+}
+
+html.dark .hover\:text-\[\#BE123C\]:hover {
+  color: var(--status-danger-text) !important;
+}
+
+html.dark .hover\:bg-\[\#FEF3C7\]:hover {
+  background-color: var(--status-warning-bg) !important;
+}
+
+@keyframes card-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes currency-pop {
+  0% { opacity: 0.65; transform: translateY(3px) scale(0.98); }
+  65% { opacity: 1; transform: translateY(-1px) scale(1.01); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes onboarding-step-in {
+  from { opacity: .75; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes onboarding-mascot-in {
+  from { opacity: .8; transform: translateY(7px) scale(.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.onboarding-progress { transform-origin: left; transition: transform 400ms cubic-bezier(.23, 1, .32, 1); }
+.onboarding-step { animation: onboarding-step-in 280ms cubic-bezier(.23, 1, .32, 1); }
+.onboarding-mascot { animation: onboarding-mascot-in 350ms cubic-bezier(.23, 1, .32, 1); }
+@media (prefers-reduced-motion: reduce) {
+  .onboarding-progress { transition: none; }
+  .onboarding-step, .onboarding-mascot { animation: none; }
+}
+.reduce-motion .onboarding-progress { transition: none; }
+.reduce-motion .onboarding-step, .reduce-motion .onboarding-mascot { animation: none; }
+
+/* Form controls in dark mode */
+html.dark input:not([type="checkbox"]):not([type="radio"]),
+html.dark select,
+html.dark textarea {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-ink) !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: var(--text-placeholder) !important;
+}
+
+html.dark select option {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Ensure bright yellow/gold/volt surfaces ALWAYS preserve dark ink text in dark mode */
+html.dark .bg-\[\#FBBF24\],
+html.dark .bg-\[\#F59E0B\],
+html.dark .bg-\[\#FDE68A\],
+html.dark .bg-\[\#D9F938\],
+html.dark [style*="background-color: #D9F938"],
+html.dark [style*="background-color: #F59E0B"],
+html.dark [style*="background-color: #FBBF24"],
+html.dark [style*="background-color: rgb(217, 249, 56)"],
+html.dark [style*="background-color: rgb(245, 158, 11)"],
+html.dark [style*="background-color: rgb(251, 191, 36)"] {
+  color: #18181B !important;
+}
+
+html.dark .bg-\[\#FBBF24\] *,
+html.dark .bg-\[\#F59E0B\] *,
+html.dark .bg-\[\#FDE68A\] *,
+html.dark .bg-\[\#D9F938\] *,
+html.dark [style*="background-color: #D9F938"] *,
+html.dark [style*="background-color: #F59E0B"] *,
+html.dark [style*="background-color: #FBBF24"] *,
+html.dark [style*="background-color: rgb(217, 249, 56)"] *,
+html.dark [style*="background-color: rgb(245, 158, 11)"] *,
+html.dark [style*="background-color: rgb(251, 191, 36)"] * {
+  color: #18181B !important;
+}
+
+/* Wordmark toggles */
+.dark-block {
+  display: none !important;
+}
+.dark-hidden {
+  display: block !important;
+}
+html.dark .dark-block {
+  display: block !important;
+}
+html.dark .dark-hidden {
+  display: none !important;
+}

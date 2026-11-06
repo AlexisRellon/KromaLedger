@@ -35,17 +35,17 @@ export function DashboardSkeleton() {
 
             {/* Tier 2: Velocity Pill */}
             <div className="mt-2.5 flex items-center gap-2">
-              <Skeleton className="h-7 w-44 rounded-full border border-white/10" />
+              <Skeleton className="h-7 w-44 rounded-full border-2 border-neutral-900" />
             </div>
 
             {/* Tier 3: Subscription-Predicted Cash Box */}
-            <div className="mt-4 rounded-2xl border border-white/[0.06] bg-black/30 p-3.5">
+            <div className="mt-4 rounded-2xl border-2 border-neutral-900 bg-[#FAF8F5] p-3.5 shadow-[2px_2px_0px_#18181B]">
               <div className="flex items-center justify-between gap-3">
                 <Skeleton className="h-3.5 w-44 rounded-md" />
                 <Skeleton className="h-4 w-24 rounded-md" />
               </div>
-              <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-neutral-800/80">
-                <Skeleton className="h-full w-2/3 rounded-full border-none bg-neutral-700/60" />
+              <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-neutral-200 border border-neutral-900">
+                <Skeleton className="h-full w-2/3 rounded-full border-none bg-neutral-400" />
               </div>
               <div className="mt-2 flex items-center justify-between">
                 <Skeleton className="h-3 w-32 rounded-md" />
@@ -67,7 +67,7 @@ export function DashboardSkeleton() {
               <Skeleton className="h-3.5 w-32 rounded-md" />
             </div>
             {/* 5 Timeframe Pills: Day, Week, Month, Quarter, Year */}
-            <div className="flex items-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.02] p-1">
+            <div className="flex items-center gap-1 rounded-full border-2 border-neutral-900 bg-[#F4F1EA] p-1">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Skeleton
                   key={i}
@@ -78,7 +78,7 @@ export function DashboardSkeleton() {
           </div>
 
           {/* Metrics Summary Strip: Net, Inflow, Outflow */}
-          <div className="mt-4 grid grid-cols-3 gap-2 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3">
+          <div className="mt-4 grid grid-cols-3 gap-2 rounded-2xl border-2 border-neutral-900 bg-[#FAF8F5] p-3 shadow-[2px_2px_0px_#18181B]">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="space-y-1 text-center">
                 <Skeleton className="mx-auto h-3 w-12 rounded" />
@@ -88,7 +88,7 @@ export function DashboardSkeleton() {
           </div>
 
           {/* Bar Chart Slot Area */}
-          <div className="mt-6 flex h-40 items-end justify-between gap-2 border-b border-white/[0.08] pb-3 sm:gap-4">
+          <div className="mt-6 flex h-40 items-end justify-between gap-2 border-b-2 border-neutral-900 pb-3 sm:gap-4">
             {[
               { inH: "55%", outH: "40%" },
               { inH: "75%", outH: "65%" },
@@ -105,7 +105,7 @@ export function DashboardSkeleton() {
                     style={{ height: bar.inH }}
                   />
                   <Skeleton
-                    className="w-full max-w-[12px] rounded-t-sm border-[#D9F938]/20 bg-[#D9F938]/10"
+                    className="w-full max-w-[12px] rounded-t-sm border-neutral-900 bg-[#FEF3C7]"
                     style={{ height: bar.outH }}
                   />
                 </div>
@@ -128,7 +128,7 @@ export function DashboardSkeleton() {
           </div>
 
           {/* Activity Rows */}
-          <div className="divide-y divide-white/[0.06]">
+          <div className="divide-y-2 divide-neutral-200">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="flex items-center justify-between py-3.5">
                 <div className="flex items-center gap-3">
@@ -168,7 +168,7 @@ export function DashboardSkeleton() {
           </div>
 
           {/* Main Card */}
-          <div className="relative aspect-[85.6/53.98] w-full overflow-hidden rounded-[20px] sm:rounded-[22px] border border-white/10 bg-[#0d0f12] p-4.5 sm:p-5 shadow-2xl">
+          <div className="relative aspect-[85.6/53.98] w-full overflow-hidden rounded-[20px] sm:rounded-[22px] border-2 border-neutral-900 bg-white p-4.5 sm:p-5 shadow-[4px_4px_0px_#18181B]">
             {/* Card Content Skeleton */}
             <div className="flex h-full flex-col justify-between">
               {/* Top Row: Institution + Network Badge */}
@@ -182,7 +182,7 @@ export function DashboardSkeleton() {
 
               {/* Middle Row: EMV Chip + Masked Digits */}
               <div className="flex items-center justify-between">
-                <Skeleton className="h-7 w-9 rounded-md border-amber-400/20 bg-amber-400/10" />
+                <Skeleton className="h-7 w-9 rounded-md border-2 border-neutral-900 bg-[#FEF3C7]" />
                 <Skeleton className="h-3.5 w-36 rounded font-mono" />
               </div>
 
@@ -201,7 +201,7 @@ export function DashboardSkeleton() {
           </div>
 
           {/* Stacked Under-card Peek */}
-          <div className="-mt-3 mx-auto h-4 w-[92%] rounded-b-[18px] border border-white/[0.06] bg-white/[0.02]" />
+          <div className="-mt-3 mx-auto h-4 w-[92%] rounded-b-[18px] border-2 border-neutral-900 bg-[#F4F1EA]" />
         </div>
 
         {/* 2. Monthly Burn Donut Skeleton */}
@@ -212,7 +212,7 @@ export function DashboardSkeleton() {
               <SkeletonText lines={2} className="w-40 sm:w-48" lastLineWidth="80%" />
             </div>
             {/* Donut Ring Skeleton */}
-            <div className="relative flex h-24 w-24 shrink-0 items-center justify-center rounded-full border-[10px] border-white/[0.07] bg-transparent">
+            <div className="relative flex h-24 w-24 shrink-0 items-center justify-center rounded-full border-[10px] border-neutral-200 bg-transparent">
               <Skeleton className="h-6 w-10 rounded" />
             </div>
           </div>
@@ -237,9 +237,9 @@ export function DashboardSkeleton() {
                   <Skeleton className={`h-3.5 ${cat.labelW} rounded`} />
                   <Skeleton className={`h-3.5 ${cat.amountW} rounded`} />
                 </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-neutral-800">
+                <div className="h-2 overflow-hidden rounded-full border border-neutral-900 bg-neutral-200">
                   <Skeleton
-                    className="h-full rounded-full border-none bg-neutral-700/60"
+                    className="h-full rounded-full border-none bg-[#4A154B]"
                     style={{ width: cat.width }}
                   />
                 </div>

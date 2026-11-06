@@ -108,8 +108,8 @@ export function StackedWalletDeck({
         if (secondCardRef.current) {
           const dragInfluence = isHorizontal ? Math.abs(dX) : dY < 0 ? Math.abs(dY) : 0;
           const influenceCapped = Math.min(dragInfluence * 0.25, 14);
-          const translateY = 18 - influenceCapped;
-          const scale = 0.94 + (influenceCapped / 14) * 0.06;
+          const translateY = 14 - influenceCapped;
+          const scale = 0.95 + (influenceCapped / 14) * 0.05;
           secondCardRef.current.style.transform = `translate3d(0, ${translateY}px, 0) scale(${scale}) rotate(0deg)`;
         }
       });
@@ -166,7 +166,7 @@ export function StackedWalletDeck({
       }
       if (secondCardRef.current) {
         secondCardRef.current.style.transition = "transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)";
-        secondCardRef.current.style.transform = "translate3d(0, 18px, 0) scale(0.94) rotate(0deg)";
+        secondCardRef.current.style.transform = "translate3d(0, 14px, 0) scale(0.95) rotate(0deg)";
       }
     }
 
@@ -187,43 +187,47 @@ export function StackedWalletDeck({
   return (
     <section aria-label="Liquid Wallets Deck" className="space-y-4">
       {/* Header with Title, Total Balance, and Add Button */}
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h2 className="font-display text-xl font-bold text-white">Wallets & Accounts</h2>
-            <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-mono font-medium text-neutral-300">
+            <h2 className="font-display text-lg sm:text-xl font-extrabold text-neutral-900 whitespace-nowrap">
+              Wallets & Accounts
+            </h2>
+            <span className="shrink-0 rounded-full border-1.5 border-neutral-900 bg-[var(--theme-subtle)] px-2 py-0.5 text-xs font-mono font-bold text-[var(--theme-subtle-text)] shadow-[1.5px_1.5px_0px_#18181B]">
               {wallets.length}
             </span>
           </div>
-          <p className="mt-0.5 text-xs text-neutral-400">
+          <p className="mt-0.5 text-xs font-semibold text-neutral-600 truncate">
             Total Liquid:{" "}
-            <span className="font-mono font-semibold text-[#D9F938]">
+            <span className="font-mono font-extrabold text-[var(--theme-accent-text)] tabular-nums">
               {formatCurrency(totalBalanceMinor, defaultCurrency)}
             </span>
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {wallets.length > 1 && (
-            <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] p-0.5">
+            <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={handleCyclePrev}
                 aria-label="Previous card"
-                className="grid h-7 w-7 place-items-center rounded-full text-neutral-400 transition hover:bg-white/10 hover:text-white active:scale-95"
+                title="Previous card"
+                className="grid h-8 w-8 place-items-center rounded-full border-2 border-neutral-900 bg-white text-neutral-900 shadow-[2px_2px_0px_#18181B] neo-btn-interactive hover:bg-[#FEF3C7] cursor-pointer"
               >
                 <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                 </svg>
               </button>
               <button
                 type="button"
                 onClick={handleCycleNext}
                 aria-label="Next card"
-                className="grid h-7 w-7 place-items-center rounded-full text-neutral-400 transition hover:bg-white/10 hover:text-white active:scale-95"
+                title="Next card"
+                className="grid h-8 w-8 place-items-center rounded-full border-2 border-neutral-900 bg-white text-neutral-900 shadow-[2px_2px_0px_#18181B] neo-btn-interactive hover:bg-[#FEF3C7] cursor-pointer"
               >
                 <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                 </svg>
               </button>
             </div>
@@ -236,27 +240,27 @@ export function StackedWalletDeck({
               setWalletModalOpen(true);
             }}
             aria-label="Add new card or wallet"
-            className="flex items-center gap-1.5 rounded-xl bg-[#D9F938] px-3 py-1.5 text-xs font-bold text-[#070806] transition hover:brightness-110 active:scale-95"
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl border-2 border-neutral-900 bg-white px-3.5 py-1.5 text-xs font-bold text-neutral-900 shadow-[2px_2px_0px_#18181B] neo-btn-interactive hover:bg-[#FEF3C7] cursor-pointer"
           >
-            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
-            <span className="hidden sm:inline">Add Card</span>
+            <span>Add Card</span>
           </button>
         </div>
       </div>
 
       {/* Stacked Cards Canvas */}
       {wallets.length === 0 ? (
-        <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-8 text-center backdrop-blur-xl">
-          <p className="text-sm text-neutral-400">No custom wallets created yet.</p>
+        <div className="rounded-3xl border-2 border-neutral-900 bg-white p-8 text-center shadow-[3px_3px_0px_#18181B]">
+          <p className="text-sm font-semibold text-neutral-600">No custom wallets created yet.</p>
           <button
             type="button"
             onClick={() => {
               setEditingWallet(null);
               setWalletModalOpen(true);
             }}
-            className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[#D9F938]/40 bg-[#D9F938]/10 px-4 py-2 text-xs font-semibold text-[#D9F938] transition hover:bg-[#D9F938]/20"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-xl border-2 border-neutral-900 bg-[var(--theme-primary)] px-4 py-2 text-xs font-bold text-[var(--theme-text-on-primary)] shadow-[2px_2px_0px_#18181B] transition hover:bg-[var(--theme-primary-hover)] cursor-pointer"
           >
             + Create your first card
           </button>
@@ -267,7 +271,7 @@ export function StackedWalletDeck({
           <div
             className="relative mx-auto w-full max-w-[420px] aspect-[85.6/53.98] touch-pan-y cursor-grab active:cursor-grabbing"
             style={{
-              marginBottom: wallets.length > 2 ? "38px" : wallets.length > 1 ? "22px" : "8px",
+              marginBottom: wallets.length > 2 ? "34px" : wallets.length > 1 ? "20px" : "8px",
             }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
@@ -278,46 +282,26 @@ export function StackedWalletDeck({
               // Calculate stack offset relative to active card
               const offset = (idx - safeIndex + wallets.length) % wallets.length;
 
-              // Only render up to top 3 visible stacked cards for peak performance
-              if (offset > 2) {
-                return (
-                  <div
-                    key={wallet.id}
-                    className="pointer-events-none absolute inset-0 opacity-0"
-                    aria-hidden="true"
-                  />
-                );
-              }
-
               const isTop = offset === 0;
               const isSecond = offset === 1;
-              const isThird = offset === 2;
 
-              // Physical stack resting transformations
+              // Physical stack resting transformations (opaque neobrutalist layers)
               let translateY = 0;
               let scale = 1;
               let zIndex = 30;
-              let opacity = 1;
-              let overlayOpacity = 0;
 
               if (isTop) {
                 translateY = 0;
                 scale = 1;
                 zIndex = 30;
-                opacity = 1;
-                overlayOpacity = 0;
               } else if (isSecond) {
-                translateY = 18;
-                scale = 0.94;
+                translateY = 14;
+                scale = 0.95;
                 zIndex = 20;
-                opacity = 0.92;
-                overlayOpacity = 0.22;
-              } else if (isThird) {
-                translateY = 36;
-                scale = 0.88;
-                zIndex = 10;
-                opacity = 0.72;
-                overlayOpacity = 0.45;
+              } else {
+                translateY = 26;
+                scale = 0.9;
+                zIndex = offset === 2 ? 10 : 0;
               }
 
               return (
@@ -327,11 +311,11 @@ export function StackedWalletDeck({
                     if (isTop) topCardRef.current = el;
                     else if (isSecond) secondCardRef.current = el;
                   }}
-                  className="absolute inset-0"
+                  className={`absolute inset-0${offset > 2 ? " pointer-events-none" : ""}`}
+                  aria-hidden={offset > 2 ? true : undefined}
                   style={{
                     transform: `translate3d(0, ${translateY}px, 0) scale(${scale}) rotate(0deg)`,
                     zIndex,
-                    opacity,
                     transition:
                       "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease",
                     willChange: "transform",
@@ -352,15 +336,9 @@ export function StackedWalletDeck({
                     className={isTop ? "cursor-grab active:cursor-grabbing" : "cursor-pointer"}
                     style={{
                       boxShadow: isTop
-                        ? "0 20px 38px -10px rgba(0,0,0,0.85), inset 0 1px 1px 0 rgba(255,255,255,0.22)"
-                        : "0 10px 20px -8px rgba(0,0,0,0.65), inset 0 1px 1px 0 rgba(255,255,255,0.12)",
+                        ? "0px 5px 0px #18181B, 3px 5px 0px #18181B"
+                        : "0px 3px 0px #18181B, 2px 3px 0px #18181B",
                     }}
-                  />
-                  {/* Hardware-accelerated dimming overlay for stacked cards (replaces costly CSS filter: brightness) */}
-                  <div
-                    className="pointer-events-none absolute inset-0 z-30 rounded-[18px] sm:rounded-[22px] bg-black transition-opacity duration-300"
-                    style={{ opacity: overlayOpacity }}
-                    aria-hidden="true"
                   />
                 </div>
               );
@@ -369,13 +347,13 @@ export function StackedWalletDeck({
 
           {/* Drag instruction & pagination dots */}
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2 px-1">
-            <div className="flex items-center gap-1.5 text-xs text-neutral-400">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-neutral-600">
               {/* Mobile: horizontal swipe indicator */}
-              <svg className="h-3.5 w-3.5 text-[#D9F938] shrink-0 sm:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-3.5 w-3.5 text-[var(--theme-accent-text)] shrink-0 sm:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
               </svg>
               {/* Desktop: vertical/horizontal drag indicator */}
-              <svg className="h-3.5 w-3.5 text-[#D9F938] shrink-0 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-3.5 w-3.5 text-[var(--theme-accent-text)] shrink-0 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
               </svg>
               <span className="hidden sm:inline">Drag or swipe cards to cycle</span>
@@ -384,14 +362,14 @@ export function StackedWalletDeck({
 
             {/* Pagination dots & Edit Card Button */}
             <div className="flex items-center gap-3 shrink-0">
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 {wallets.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setActiveIndex(i)}
                     aria-label={`Jump to card ${i + 1}`}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      i === safeIndex ? "w-4 bg-[#D9F938]" : "w-1.5 bg-white/20 hover:bg-white/40"
+                    className={`h-2 rounded-full border border-neutral-900 transition-all duration-300 ${
+                      i === safeIndex ? "w-5 bg-[var(--theme-primary)]" : "w-2 bg-neutral-300 hover:bg-neutral-400"
                     }`}
                   />
                 ))}
@@ -404,7 +382,7 @@ export function StackedWalletDeck({
                     setEditingWallet(currentWallet);
                     setWalletModalOpen(true);
                   }}
-                  className="text-xs font-semibold text-neutral-400 hover:text-white transition shrink-0"
+                  className="text-xs font-bold text-[var(--theme-accent-text)] hover:underline transition shrink-0 cursor-pointer"
                 >
                   Edit Card
                 </button>

@@ -188,11 +188,11 @@ export function clearAllChatThreads(): { threads: AIChatThread[]; activeThreadId
 
 export function exportThreadAsMarkdown(thread: AIChatThread): string {
   const lines = [
-    `# KromaLedger // Kroma Prism Intelligence Report`,
+    `# Kaban // Baulito Intelligence Report`,
     `Session: ${thread.title}`,
     `Created: ${new Date(thread.createdAt).toLocaleString()}`,
     `Updated: ${new Date(thread.updatedAt).toLocaleString()}`,
-    `Engine: Kroma Prism`,
+    `Engine: Baulito`,
     `---`,
     "",
   ];
@@ -203,7 +203,7 @@ export function exportThreadAsMarkdown(thread: AIChatThread): string {
   }
 
   for (const m of thread.messages) {
-    const sender = m.role === "user" ? "### Operator" : "### Kroma Prism";
+    const sender = m.role === "user" ? "### Operator" : "### Baulito";
     const time = new Date(m.timestamp).toLocaleTimeString();
     lines.push(`${sender} (${time})`);
     lines.push("");

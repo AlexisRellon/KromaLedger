@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "logo-dev": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://mcp.logo.dev/mcp"
+      ]
+    }
+  }
+}

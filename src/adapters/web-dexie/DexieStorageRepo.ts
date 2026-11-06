@@ -7,6 +7,7 @@ import { createDemoSeed } from "../../core/engine/demoSeed";
 import { reconcile, type ReconcileResult } from "../../core/engine/reconciler";
 import { commitInvoice, confirmSubscriptionCycle, detachSubscriptionHistory, detachWalletReferences, settleInvoice, type LedgerCommandGateway, type LedgerCommandUnit, type LedgerTable } from "../../core/engine/ledgerCommands";
 import { KromaLedgerDB } from "./db";
+import { obligationDueDate } from "../../core/engine/obligationSchedule";
 
 const appDefaults = (): AppMeta => appMetaSchema.parse({ id: "app", currency: "PHP" });
 
@@ -95,6 +96,26 @@ export class DexieStorageRepo implements IStorageRepo {
     const parsed = transactionSchema.parse(value);
     await this.db.transaction("rw", this.db.transactions, this.db.wallets, this.db.invoices, async () => {
       const existing = await this.db.transactions.get(parsed.id);
+      if (parsed.cashIn) {
+        const source = parsed.walletId ? await this.db.wallets.get(parsed.walletId) : undefined;
+        const destination = parsed.toWalletId ? await this.db.wallets.get(parsed.toWalletId) : undefined;
+        if (parsed.type !== "TRANSFER" || parsed.amountMinor <= 0 || !source || source.type !== "CASH" ||
+            !destination || destination.type !== "E_WALLET" || source.id === destination.id ||
+            source.currency !== parsed.currency || destination.currency !== parsed.currency) {
+          throw new RangeError("Cash-in requires a cash source and an e-wallet in the same currency");
+        }
+      }
+      if (parsed.invoiceId) {
+        const invoice = await this.db.invoices.get(parsed.invoiceId);
+        if (invoice?.obligation) {
+          const wallet = parsed.walletId ? await this.db.wallets.get(parsed.walletId) : undefined;
+          const priorAmount = existing?.invoiceId === parsed.invoiceId ? Math.abs(existing.amountMinor) : 0;
+          if (!wallet || wallet.currency !== invoice.currency || parsed.currency !== invoice.currency || parsed.type !== "EXPENSE" || parsed.amountMinor >= 0 ||
+              invoice.paidMinor - priorAmount + Math.abs(parsed.amountMinor) > invoice.totalMinor) {
+            throw new RangeError("Payment must match the obligation and cannot exceed its remaining balance");
+          }
+        }
+      }
 
       const deltas = new Map<string, number>();
       const addDelta = (wid: string | undefined, delta: number) => {
@@ -126,10 +147,13 @@ export class DexieStorageRepo implements IStorageRepo {
         if (delta !== 0) {
           const wallet = await this.db.wallets.get(wid);
           if (wallet) {
-            await this.db.wallets.put({
+            if ((parsed.cashIn || parsed.invoiceId && (await this.db.invoices.get(parsed.invoiceId))?.obligation) && wallet.balanceMinor + delta < 0) {
+              throw new RangeError("Insufficient balance in the selected wallet");
+            }
+            await this.db.wallets.put(walletSchema.parse({
               ...wallet,
               balanceMinor: wallet.balanceMinor + delta,
-            });
+            }));
           }
         }
       }
@@ -141,13 +165,14 @@ export class DexieStorageRepo implements IStorageRepo {
             const invoice = await this.db.invoices.get(parsed.invoiceId);
             if (invoice) {
               const newPaid = Math.max(0, invoice.paidMinor + delta);
-              const isOverdue = invoice.dueDate < format(new Date(), "yyyy-MM-dd");
+              const dueDate = obligationDueDate(invoice, newPaid);
+              const isOverdue = dueDate < format(new Date(), "yyyy-MM-dd");
               const newStatus = newPaid >= invoice.totalMinor
                 ? "PAID"
                 : newPaid === 0
                   ? (isOverdue ? "OVERDUE" : "PENDING")
                   : (isOverdue ? "OVERDUE" : "PARTIAL");
-              await this.db.invoices.put({ ...invoice, paidMinor: newPaid, status: newStatus });
+              await this.db.invoices.put({ ...invoice, dueDate, paidMinor: newPaid, status: newStatus });
             }
           }
         } else {
@@ -155,18 +180,20 @@ export class DexieStorageRepo implements IStorageRepo {
             const oldInv = await this.db.invoices.get(existing.invoiceId);
             if (oldInv) {
               const newPaid = Math.max(0, oldInv.paidMinor - Math.abs(existing.amountMinor));
-              const isOverdue = oldInv.dueDate < format(new Date(), "yyyy-MM-dd");
+              const dueDate = obligationDueDate(oldInv, newPaid);
+              const isOverdue = dueDate < format(new Date(), "yyyy-MM-dd");
               const newStatus = newPaid === 0 ? (isOverdue ? "OVERDUE" : "PENDING") : (newPaid >= oldInv.totalMinor ? "PAID" : (isOverdue ? "OVERDUE" : "PARTIAL"));
-              await this.db.invoices.put({ ...oldInv, paidMinor: newPaid, status: newStatus });
+              await this.db.invoices.put({ ...oldInv, dueDate, paidMinor: newPaid, status: newStatus });
             }
           }
           if (parsed.invoiceId) {
             const newInv = await this.db.invoices.get(parsed.invoiceId);
             if (newInv) {
               const newPaid = Math.max(0, newInv.paidMinor + Math.abs(parsed.amountMinor));
-              const isOverdue = newInv.dueDate < format(new Date(), "yyyy-MM-dd");
+              const dueDate = obligationDueDate(newInv, newPaid);
+              const isOverdue = dueDate < format(new Date(), "yyyy-MM-dd");
               const newStatus = newPaid >= newInv.totalMinor ? "PAID" : (newPaid === 0 ? (isOverdue ? "OVERDUE" : "PENDING") : (isOverdue ? "OVERDUE" : "PARTIAL"));
-              await this.db.invoices.put({ ...newInv, paidMinor: newPaid, status: newStatus });
+              await this.db.invoices.put({ ...newInv, dueDate, paidMinor: newPaid, status: newStatus });
             }
           }
         }
@@ -211,12 +238,14 @@ export class DexieStorageRepo implements IStorageRepo {
         if (invoice) {
           const paymentAmount = Math.abs(existing.amountMinor);
           const newPaid = Math.max(0, invoice.paidMinor - paymentAmount);
-          const isOverdue = invoice.dueDate < format(new Date(), "yyyy-MM-dd");
+          const dueDate = obligationDueDate(invoice, newPaid);
+          const isOverdue = dueDate < format(new Date(), "yyyy-MM-dd");
           const newStatus = newPaid === 0
             ? (isOverdue ? "OVERDUE" : "PENDING")
             : (newPaid >= invoice.totalMinor ? "PAID" : (isOverdue ? "OVERDUE" : "PARTIAL"));
           await this.db.invoices.put({
             ...invoice,
+            dueDate,
             paidMinor: newPaid,
             status: newStatus,
           });
@@ -313,7 +342,7 @@ export class DexieStorageRepo implements IStorageRepo {
     });
   }
   async deleteWallet(id: string): Promise<void> {
-    await this.db.transaction("rw", this.db.wallets, this.db.transactions, this.db.subscriptions, async () => {
+    await this.db.transaction("rw", this.db.wallets, this.db.transactions, this.db.subscriptions, this.db.invoices, async () => {
       await this.db.wallets.delete(id);
       const affectedTransactions = await this.db.transactions
         .filter((tx) => tx.walletId === id || tx.toWalletId === id)
@@ -322,6 +351,10 @@ export class DexieStorageRepo implements IStorageRepo {
       const detached = detachWalletReferences(affectedTransactions, affectedSubscriptions, id);
       if (detached.transactions.length) await this.db.transactions.bulkPut(detached.transactions);
       if (detached.subscriptions.length) await this.db.subscriptions.bulkPut(detached.subscriptions);
+      const obligations = await this.db.invoices.filter((invoice) => invoice.obligation?.walletId === id).toArray();
+      for (const invoice of obligations) {
+        await this.db.invoices.put({ ...invoice, obligation: { ...invoice.obligation!, walletId: undefined } });
+      }
     });
   }
 

@@ -17,6 +17,8 @@ export const transactionSchema = z.object({
   currency: currencySchema, type: transactionTypeSchema, categoryId: idSchema.optional(), notes: z.string().optional(),
   subscriptionId: idSchema.optional(), invoiceId: idSchema.optional(), walletId: idSchema.optional(),
   toWalletId: idSchema.optional(), feeMinor: amountSchema.nonnegative().optional(), channel: transferChannelSchema.optional(),
+  cashIn: z.boolean().optional(), cashInProvider: z.string().optional(), cashInFeeBps: amountSchema.nonnegative().optional(),
+  customLabels: z.array(z.string()).optional(),
 });
 export type Transaction = z.infer<typeof transactionSchema>;
 
@@ -25,6 +27,7 @@ export const subscriptionSchema = z.object({
   id: idSchema, title: z.string().min(1), amountMinor: amountSchema.nonnegative(), currency: currencySchema,
   billingCycle: billingCycleSchema, nextBillingDate: dateOnlySchema, billingAnchorDate: dateOnlySchema.optional(), active: z.boolean(), autoLog: z.boolean(), categoryId: idSchema.optional(),
   walletId: idSchema.optional(),
+  customLabels: z.array(z.string()).optional(),
 });
 export type Subscription = z.infer<typeof subscriptionSchema>;
 
@@ -37,7 +40,12 @@ export const invoiceSchema = z.object({
   subtotalMinor: amountSchema.nonnegative(), taxMinor: amountSchema.nonnegative(), discountMinor: amountSchema.nonnegative(),
   totalMinor: amountSchema.nonnegative(), paidMinor: amountSchema.nonnegative(), currency: currencySchema, itemIds: z.array(idSchema),
   contact: z.string().optional(), categoryId: idSchema.optional(),
-});
+  customLabels: z.array(z.string()).optional(),
+  obligation: z.object({
+    kind: z.enum(["LOAN", "INSTALLMENT"]), paymentMinor: amountSchema.positive(),
+    cycle: billingCycleSchema, firstDueDate: dateOnlySchema, walletId: idSchema.optional(),
+  }).optional(),
+}).refine((invoice) => !invoice.obligation || (invoice.direction === "PAYABLE" && invoice.obligation.paymentMinor <= invoice.totalMinor && invoice.paidMinor <= invoice.totalMinor), "Invalid obligation amount or payment schedule");
 export type Invoice = z.infer<typeof invoiceSchema>;
 
 export const categorySchema = z.object({ id: idSchema, name: z.string().min(1), color: z.string().optional(), type: z.enum(["EXPENSE", "INCOME", "BOTH"]).default("BOTH") });
@@ -81,6 +89,22 @@ export type UserProfile = z.infer<typeof userProfileSchema>;
 export const walletTypeSchema = z.enum(["CASH", "BANK", "E_WALLET", "CRYPTO", "CREDIT", "OTHER"]);
 export type WalletType = z.infer<typeof walletTypeSchema>;
 
+export const walletPatternSchema = z.enum([
+  "LEDGER",
+  "SOLIHIYA",
+  "BAUHAUS",
+  "ISOMETRIC",
+  "YAKAN",
+  "IBALOI",
+  "ILOKANO",
+  "KALINGA",
+  "VISAYAN",
+]);
+export type WalletPattern = z.infer<typeof walletPatternSchema>;
+
+export const cardNetworkSchema = z.enum(["VISA", "MASTERCARD", "NONE"]);
+export type CardNetwork = z.infer<typeof cardNetworkSchema>;
+
 export const walletSchema = z.object({
   id: idSchema,
   name: z.string().min(1),
@@ -88,6 +112,8 @@ export const walletSchema = z.object({
   currency: currencySchema.default("PHP"),
   balanceMinor: amountSchema.default(0),
   color: z.string().default("#D9F938"),
+  pattern: walletPatternSchema.optional(),
+  cardNetwork: cardNetworkSchema.optional(),
   accountNumber: z.string().optional(),
   institution: z.string().optional(),
   isDefault: z.boolean().default(false),

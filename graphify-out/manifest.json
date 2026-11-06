@@ -1,15 +1,15 @@
 {
   "package.json": {
-    "mtime": 1792692735.107852,
-    "seen": 1792692954.629627,
-    "ast_hash": "2e24a1d6462e2bfdfcea1787ae401431",
+    "mtime": 1793620217.565161,
+    "seen": 1793620437.6877985,
+    "ast_hash": "71602ab21938b398bb4a49559b7a5fbc",
     "semantic_hash": ""
   },
   "scripts/lockPolicy.mjs": {
-    "mtime": 1792463490.0856178,
-    "seen": 1792551828.5832942,
-    "ast_hash": "f6e8dc52179f6b46186f426f0cdd6a4b",
-    "semantic_hash": "f6e8dc52179f6b46186f426f0cdd6a4b"
+    "mtime": 1793620243.2795734,
+    "seen": 1793620437.687806,
+    "ast_hash": "d4e1f2d1153e75ebe0396dc8d5100f8d",
+    "semantic_hash": ""
   },
   "scripts/verify-lock.mjs": {
     "mtime": 1792463505.0388505,
@@ -24,9 +24,9 @@
     "semantic_hash": ""
   },
   "src/App.tsx": {
-    "mtime": 1792756223.9934268,
-    "seen": 1792759979.6939592,
-    "ast_hash": "8fbb500034babb3e36315438a691d1a6",
+    "mtime": 1793956922.853192,
+    "seen": 1793956950.4369724,
+    "ast_hash": "b1a13cbbdb8c7d51107ba035b1f3e6ef",
     "semantic_hash": ""
   },
   "src/adapters/backup/zipVault.ts": {
@@ -42,15 +42,15 @@
     "semantic_hash": ""
   },
   "src/adapters/web-dexie/DexieStorageRepo.ts": {
-    "mtime": 1792745113.4684362,
-    "seen": 1792745404.5652895,
-    "ast_hash": "d7d0c2b2e15c2dba0f2129e8bb77f5f6",
+    "mtime": 1793515514.7563763,
+    "seen": 1793516985.643462,
+    "ast_hash": "49898aa0b95c6bf66ecc68b027dfa584",
     "semantic_hash": ""
   },
   "src/adapters/web-dexie/WebBootstrap.tsx": {
-    "mtime": 1792745136.0838206,
-    "seen": 1792745404.5652924,
-    "ast_hash": "dcfdcbc6cb6cce2f1bddacd7c415a635",
+    "mtime": 1793953091.8830452,
+    "seen": 1793953117.2193723,
+    "ast_hash": "e5bb962afff67b5d6ad6dd3de327b747",
     "semantic_hash": ""
   },
   "src/adapters/web-dexie/db.ts": {
@@ -60,27 +60,27 @@
     "semantic_hash": ""
   },
   "src/core/engine/cashflowAnalytics.ts": {
-    "mtime": 1792692668.8780835,
-    "seen": 1792692954.6296477,
-    "ast_hash": "e7c37d1c5651460c0cc31c73790cc760",
+    "mtime": 1793700925.2558768,
+    "seen": 1793701152.2201595,
+    "ast_hash": "6e5bddc9b4fca5f618e411539120332b",
     "semantic_hash": ""
   },
   "src/core/engine/demoSeed.ts": {
-    "mtime": 1792674185.0563393,
-    "seen": 1792674250.8777616,
-    "ast_hash": "aa6a23b044a78e24801703a1206f0cc1",
+    "mtime": 1793631591.3649745,
+    "seen": 1793631907.7098525,
+    "ast_hash": "f4d9bd4c3d48011af10b4def31ab6259",
     "semantic_hash": ""
   },
   "src/core/engine/invoiceCalculator.ts": {
-    "mtime": 1792463636.4715996,
-    "seen": 1792551828.5833237,
-    "ast_hash": "0bddf267e4e93a4978cb96e685dca987",
-    "semantic_hash": "0bddf267e4e93a4978cb96e685dca987"
+    "mtime": 1793693815.754631,
+    "seen": 1793694412.6717818,
+    "ast_hash": "01827523af8c129338eca08c5e94fd49",
+    "semantic_hash": ""
   },
   "src/core/engine/ledgerCommands.ts": {
-    "mtime": 1792677393.8452,
-    "seen": 1792678104.7353,
-    "ast_hash": "d8743972f845be72de9a51d1ffaba75b",
+    "mtime": 1793515713.8229723,
+    "seen": 1793516985.6434972,
+    "ast_hash": "bd158baafc0d2d5186cf68af3ad44271",
     "semantic_hash": ""
   },
   "src/core/engine/lineItemWorkflow.ts": {
@@ -95,12 +95,6 @@
     "ast_hash": "a9604b28c5bb5c56019da863e6880249",
     "semantic_hash": ""
   },
-  "src/core/engine/numpadEvaluator.ts": {
-    "mtime": 1792463392.05144,
-    "seen": 1792551828.5833342,
-    "ast_hash": "bf579102a4e97278c9cba230432015a6",
-    "semantic_hash": "bf579102a4e97278c9cba230432015a6"
-  },
   "src/core/engine/pendingAnalytics.ts": {
     "mtime": 1792527522.805805,
     "seen": 1792551828.583336,
@@ -108,15 +102,15 @@
     "semantic_hash": ""
   },
   "src/core/engine/reconciler.ts": {
-    "mtime": 1792677353.416289,
-    "seen": 1792678104.7353172,
-    "ast_hash": "d28ae9f4b9a7b121616c42a424158687",
+    "mtime": 1793515230.877728,
+    "seen": 1793516985.6435146,
+    "ast_hash": "b2279f953735392130e3a7dddfd74a40",
     "semantic_hash": ""
   },
   "src/core/models/index.ts": {
-    "mtime": 1792756045.3177886,
-    "seen": 1792759979.6940253,
-    "ast_hash": "729ed4ecb40ebb1080a6e0955f671d96",
+    "mtime": 1793722809.3800051,
+    "seen": 1793723053.4906235,
+    "ast_hash": "c8bafa85402a68e224b56d59d90f37a0",
     "semantic_hash": ""
   },
   "src/core/ports/IFileStore.ts": {
@@ -144,9 +138,9 @@
     "semantic_hash": "4ec4d5f1ba6683a999a7c7fd5c166705"
   },
   "src/state/entryDraft.ts": {
-    "mtime": 1792673718.5857134,
-    "seen": 1792674250.8777864,
-    "ast_hash": "9919f314ded96cd22ab833f434d8c2ab",
+    "mtime": 1793693932.521187,
+    "seen": 1793694412.671808,
+    "ast_hash": "d75736f93534c597733db6d32986a171",
     "semantic_hash": ""
   },
   "src/state/entrySaveWorkflow.ts": {
@@ -156,63 +150,63 @@
     "semantic_hash": "53bd11ef466ffea58129841ce3fc315a"
   },
   "src/state/queries/index.ts": {
-    "mtime": 1792744106.0059657,
-    "seen": 1792744348.6505103,
-    "ast_hash": "d82c09e374838120c16f9a83ba58ce8b",
+    "mtime": 1793517786.0060635,
+    "seen": 1793517941.6027982,
+    "ast_hash": "52d3949523e38efa08679b465586c979",
     "semantic_hash": ""
   },
   "src/state/useUIStore.ts": {
-    "mtime": 1792745086.1580734,
-    "seen": 1792745404.5653663,
-    "ast_hash": "e4a80c26259b1bf1bbc2b1df3233f361",
+    "mtime": 1793701634.137982,
+    "seen": 1793702460.8421073,
+    "ast_hash": "6b422b8634c7dbcf84440e618de2a35f",
     "semantic_hash": ""
   },
   "src/ui/components/FloatingNavPill.tsx": {
-    "mtime": 1792727121.3131666,
-    "seen": 1792727128.4331212,
-    "ast_hash": "e0797032c6e1e7322a8486974a084414",
+    "mtime": 1793958249.077762,
+    "seen": 1793958379.327868,
+    "ast_hash": "a2ddfc7c4c80a4f826046f11cfb6dc82",
     "semantic_hash": ""
   },
   "src/ui/components/LineItemBuilder.tsx": {
-    "mtime": 1792560183.4563286,
-    "seen": 1792560267.006033,
-    "ast_hash": "e05a83e01b08a03f22d02648995b788d",
+    "mtime": 1793619885.1397235,
+    "seen": 1793620170.5533984,
+    "ast_hash": "10d73e23555395c4a145cf77d0135502",
     "semantic_hash": ""
   },
   "src/ui/components/QuickAddDrawer.tsx": {
-    "mtime": 1792745203.2825532,
-    "seen": 1792745404.5654016,
-    "ast_hash": "6f98e4afe33757f0cd83f9c09a997da0",
+    "mtime": 1793965324.3392901,
+    "seen": 1793965371.9396815,
+    "ast_hash": "79c75ee372890aeef666ceb3e96ef51c",
     "semantic_hash": ""
   },
   "src/ui/components/TopStatusHeader.tsx": {
-    "mtime": 1792759618.7796063,
-    "seen": 1792759979.6941001,
-    "ast_hash": "cc87460a857b0c00aeb591418f9236ab",
+    "mtime": 1793975261.1606216,
+    "seen": 1793975315.0321147,
+    "ast_hash": "d474742cbcaaf6fa5c679347c875b986",
     "semantic_hash": ""
   },
   "src/ui/primitives/index.tsx": {
-    "mtime": 1792690886.442313,
-    "seen": 1792691189.1037228,
-    "ast_hash": "7ccf0980930f773f5328500ecc88d9b1",
+    "mtime": 1793884400.1147664,
+    "seen": 1793884710.8119934,
+    "ast_hash": "6e4d0c83c822041c263aa7e59816af70",
     "semantic_hash": ""
   },
   "src/ui/screens/HomeDashboard.tsx": {
-    "mtime": 1792757068.596478,
-    "seen": 1792759979.6941304,
-    "ast_hash": "7cdf916e64d30137e263ed4aeb7daba5",
+    "mtime": 1793960853.8028095,
+    "seen": 1793960870.5161674,
+    "ast_hash": "ec6b6486db082145cffe6402655b67b5",
     "semantic_hash": ""
   },
   "src/ui/screens/PendingAndSubsHub.tsx": {
-    "mtime": 1792745180.9902682,
-    "seen": 1792745404.5654433,
-    "ast_hash": "8bc50c22de1e918ce1f4ad22849810d2",
+    "mtime": 1793759969.9543364,
+    "seen": 1793770630.3561878,
+    "ast_hash": "e3b4c2dc1b9f352dfeb816af04f11529",
     "semantic_hash": ""
   },
   "src/ui/screens/VaultBackupModal.tsx": {
-    "mtime": 1792727121.321672,
-    "seen": 1792727128.4331517,
-    "ast_hash": "7baa1612d4f33d08bdff1994142bbf68",
+    "mtime": 1793780040.486144,
+    "seen": 1793780080.9323707,
+    "ast_hash": "3f40aec30d273e326f71f39d497f1438",
     "semantic_hash": ""
   },
   "src/vite-env.d.ts": {
@@ -222,9 +216,9 @@
     "semantic_hash": "0352474ba2918efe13895edbc3780d94"
   },
   "tests/adapters/storage.test.ts": {
-    "mtime": 1792744168.397727,
-    "seen": 1792744348.6506572,
-    "ast_hash": "81a21625c5d7404e9a9226fdcf7eae2e",
+    "mtime": 1793618272.4747102,
+    "seen": 1793618327.0159314,
+    "ast_hash": "d4b8491698c49d11e0cb01bfed2788f6",
     "semantic_hash": ""
   },
   "tests/adapters/vault.test.ts": {
@@ -234,9 +228,9 @@
     "semantic_hash": ""
   },
   "tests/core/cashflowAnalytics.test.ts": {
-    "mtime": 1792673665.7419832,
-    "seen": 1792674250.877837,
-    "ast_hash": "b5ce7dc4a237076a1e2e90df17bdac96",
+    "mtime": 1793701071.0796313,
+    "seen": 1793701152.2635286,
+    "ast_hash": "d0238562d83474f7f6393f4508836b04",
     "semantic_hash": ""
   },
   "tests/core/demoSeed.test.ts": {
@@ -246,9 +240,9 @@
     "semantic_hash": "9321a15b8759696387ab676c86a6cc0d"
   },
   "tests/core/entryDraft.test.ts": {
-    "mtime": 1792673730.0274093,
-    "seen": 1792674250.87784,
-    "ast_hash": "d246274916fcaf844a55b93533d0e8f8",
+    "mtime": 1793693977.1220632,
+    "seen": 1793694412.6719127,
+    "ast_hash": "19d6c49d5836cee18f6c689323cca8c7",
     "semantic_hash": ""
   },
   "tests/core/entrySaveWorkflow.test.ts": {
@@ -258,10 +252,10 @@
     "semantic_hash": "ee93d97081280f32a4fd4780e854f1bd"
   },
   "tests/core/invoiceCalculator.test.ts": {
-    "mtime": 1792463624.8326137,
-    "seen": 1792551828.5834498,
-    "ast_hash": "6514de4de6d1d3091cc96cb4cfe8e864",
-    "semantic_hash": "6514de4de6d1d3091cc96cb4cfe8e864"
+    "mtime": 1793694498.8293867,
+    "seen": 1793694612.7351146,
+    "ast_hash": "a2fab61acf3d823d5c2b0cbe1596b087",
+    "semantic_hash": ""
   },
   "tests/core/ledgerCommands.test.ts": {
     "mtime": 1792677985.0965686,
@@ -276,22 +270,16 @@
     "semantic_hash": "5cc02c5302ce551307fc064d423d49a2"
   },
   "tests/core/lockPolicy.test.mjs": {
-    "mtime": 1792463490.2627926,
-    "seen": 1792551828.5834596,
-    "ast_hash": "3d2a273651dedb263f2bf0d8891e1fa8",
-    "semantic_hash": "3d2a273651dedb263f2bf0d8891e1fa8"
+    "mtime": 1793620243.2809453,
+    "seen": 1793620437.6884322,
+    "ast_hash": "6a6db0d9b59b2c62639b5c84f322a8e4",
+    "semantic_hash": ""
   },
   "tests/core/models.test.ts": {
     "mtime": 1792673527.0279257,
     "seen": 1792674250.877852,
     "ast_hash": "f14160f0683764126d88a64b79aa3052",
     "semantic_hash": ""
-  },
-  "tests/core/numpadEvaluator.test.ts": {
-    "mtime": 1792463314.9978619,
-    "seen": 1792551828.583466,
-    "ast_hash": "3b262a3f60a9a4ee83d0fc6ffc76f93a",
-    "semantic_hash": "3b262a3f60a9a4ee83d0fc6ffc76f93a"
   },
   "tests/core/pendingAnalytics.test.ts": {
     "mtime": 1792483837.914987,
@@ -312,15 +300,15 @@
     "semantic_hash": "7e70be53d92a0bf9cfd1f2685cfdc4f0"
   },
   "vite.config.ts": {
-    "mtime": 1792757217.1142273,
-    "seen": 1792759979.694211,
-    "ast_hash": "44f25071d3b9e4490ff3976d903bf5fb",
+    "mtime": 1793632777.8719678,
+    "seen": 1793632822.1880403,
+    "ast_hash": "21ffa876c4dd3a0d04bcb0e40810283d",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792692587.0913458,
-    "seen": 1792692954.629761,
-    "ast_hash": "1521673c45e605a3f7cefe0b81fd7bef",
+    "mtime": 1793616245.869083,
+    "seen": 1793617232.3769798,
+    "ast_hash": "1449cc3dd8716b95b6b77cb8676d2bc6",
     "semantic_hash": ""
   },
   "docs/acceptance-checklist.md": {
@@ -330,10 +318,10 @@
     "semantic_hash": ""
   },
   "docs/codex_master_prompt.md": {
-    "mtime": 1792505607.4167159,
-    "seen": 1792551828.5834987,
-    "ast_hash": "1703d1e662a9fc75eb5c0724f76a34f4",
-    "semantic_hash": "1703d1e662a9fc75eb5c0724f76a34f4"
+    "mtime": 1793616290.751599,
+    "seen": 1793617232.3769984,
+    "ast_hash": "0aaa6f1a197b92a2e6b7c57e3f485b4b",
+    "semantic_hash": ""
   },
   "docs/implementation-plan.md": {
     "mtime": 1792558702.4901872,
@@ -342,9 +330,9 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1792767544.8083282,
-    "seen": 1792767821.5487175,
-    "ast_hash": "c7c15014f5abab2d715f281da19e7130",
+    "mtime": 1793884910.5974867,
+    "seen": 1793884927.903467,
+    "ast_hash": "8afe99d810decdfc6e997e18f07bf11d",
     "semantic_hash": ""
   },
   "public/fonts/CabinetGrotesk-LICENSE.txt": {
@@ -366,10 +354,10 @@
     "semantic_hash": "4f54907e48230de36ebc963f372c0daf"
   },
   "public/pwa-icon.svg": {
-    "mtime": 1792482165.0125403,
-    "seen": 1792551828.5835207,
-    "ast_hash": "bf963f87568fa73da15d689d2a269730",
-    "semantic_hash": "bf963f87568fa73da15d689d2a269730"
+    "mtime": 1793884416.6080668,
+    "seen": 1793884710.8124096,
+    "ast_hash": "837a7f107c490784aa0684aa3fd3a44e",
+    "semantic_hash": ""
   },
   ".codex/hooks.json": {
     "mtime": 1792563867.3528092,
@@ -402,51 +390,51 @@
     "semantic_hash": ""
   },
   "src/ui/components/CashflowBreakdownGraph.tsx": {
-    "mtime": 1792729926.7804523,
-    "seen": 1792731141.135263,
-    "ast_hash": "5de971abdc32c70dc85071d7f2223585",
+    "mtime": 1793958325.1070015,
+    "seen": 1793958379.327854,
+    "ast_hash": "a36c6f64a00be5189472c45ebcc2ffd7",
     "semantic_hash": ""
   },
   "src/ui/screens/SettingsScreen.tsx": {
-    "mtime": 1792744156.2566724,
-    "seen": 1792744348.650641,
-    "ast_hash": "fb68f7cad5a88d6572ae9cef77edbe29",
+    "mtime": 1793960246.4062257,
+    "seen": 1793960283.0024912,
+    "ast_hash": "ab84489a115d33068eaf708cacbfe960",
     "semantic_hash": ""
   },
   "DESIGN.md": {
-    "mtime": 1792510794.0558994,
-    "seen": 1792551828.5834863,
-    "ast_hash": "5e40eee47d8381bf89d62b883437f984",
+    "mtime": 1793621174.0730667,
+    "seen": 1793621258.785557,
+    "ast_hash": "e6bd71bae2184dd5da13b2f7339fb056",
     "semantic_hash": ""
   },
   "PRODUCT.md": {
-    "mtime": 1792563814.1862226,
-    "seen": 1792563984.9226432,
-    "ast_hash": "2cc1b62d8e5ba89042221f84a5984c20",
+    "mtime": 1793617864.3035774,
+    "seen": 1793618013.1532333,
+    "ast_hash": "7905776a0d6a25942188def661556bcb",
     "semantic_hash": ""
   },
   "src/ui/components/StackedWalletDeck.tsx": {
-    "mtime": 1792736047.2814958,
-    "seen": 1792736089.6433716,
-    "ast_hash": "84eef0fda4a49d098b91e363e5188d8b",
+    "mtime": 1793958313.616656,
+    "seen": 1793958379.3278825,
+    "ast_hash": "34a4467a0ac90281a3dec95fe0c7ab18",
     "semantic_hash": ""
   },
   "src/ui/components/WalletFormModal.tsx": {
-    "mtime": 1792603678.9431145,
-    "seen": 1792604111.5302532,
-    "ast_hash": "f77ec747d298a1a53626a95854c4e011",
+    "mtime": 1793714500.2379396,
+    "seen": 1793714845.0092294,
+    "ast_hash": "f81b318b944b37590d967a75d729c505",
     "semantic_hash": ""
   },
   "tests/core/wallets.test.ts": {
-    "mtime": 1792561172.7631738,
-    "seen": 1792561199.587618,
-    "ast_hash": "4184c1131d80c8fc78efb89adb265ee3",
+    "mtime": 1793717949.7835405,
+    "seen": 1793718055.4468653,
+    "ast_hash": "e321cd8d435a7a28c33662bccc51412d",
     "semantic_hash": ""
   },
   "src/ui/screens/WalletsScreen.tsx": {
-    "mtime": 1792690996.0725923,
-    "seen": 1792691189.1037307,
-    "ast_hash": "fdf24e6c7f608e759fc2260ca0db81fb",
+    "mtime": 1793953794.379714,
+    "seen": 1793953923.267702,
+    "ast_hash": "38e847df0845fb2ad122509661aaa77b",
     "semantic_hash": ""
   },
   "src/ui/components/WalletTypeIcon.tsx": {
@@ -456,33 +444,33 @@
     "semantic_hash": ""
   },
   "src/ui/components/PhysicalWalletCard.tsx": {
-    "mtime": 1792565469.83238,
-    "seen": 1792565589.9940603,
-    "ast_hash": "70716ec0342216d3707dbf033401b8c8",
+    "mtime": 1793722965.5462902,
+    "seen": 1793723053.490749,
+    "ast_hash": "e32012c11eb8e6ff3d48e2fcd18444d4",
     "semantic_hash": ""
   },
   "src/ui/components/ConfirmDeleteModal.tsx": {
-    "mtime": 1792727121.307988,
-    "seen": 1792727128.4331143,
-    "ast_hash": "e6e36a125ded0511cac437dc112c1e52",
+    "mtime": 1793759840.2563417,
+    "seen": 1793770630.3560412,
+    "ast_hash": "ef5d2455ed9df6fa404e2f1c5f233bbc",
     "semantic_hash": ""
   },
   "src/ui/components/EditEntryModal.tsx": {
-    "mtime": 1792727121.308996,
-    "seen": 1792727128.4331162,
-    "ast_hash": "94bbc394d4ea1cdb2a15b9fe00c6aa2d",
+    "mtime": 1793965326.00508,
+    "seen": 1793965371.9396174,
+    "ast_hash": "24a6369b5a36ddf58571d9f0a496a508",
     "semantic_hash": ""
   },
   "src/ui/components/EditInvoiceModal.tsx": {
-    "mtime": 1792727121.3111603,
-    "seen": 1792727128.4331172,
-    "ast_hash": "465b1426679f6bc4eb37392e408a4903",
+    "mtime": 1793643172.50341,
+    "seen": 1793643705.6355436,
+    "ast_hash": "b3a39ccb68cb425de005a7d6eb78a3d9",
     "semantic_hash": ""
   },
   "src/ui/components/EditSubscriptionModal.tsx": {
-    "mtime": 1792727121.312167,
-    "seen": 1792727128.43312,
-    "ast_hash": "81c95422b5eb97ad41055a3a3b287001",
+    "mtime": 1793643155.7517898,
+    "seen": 1793643705.6355467,
+    "ast_hash": "06d04726bfe2e0f1b2053bed6ee10f8c",
     "semantic_hash": ""
   },
   "tests/core/entryEditRemove.test.ts": {
@@ -492,9 +480,9 @@
     "semantic_hash": ""
   },
   "src/ui/components/EditProfileModal.tsx": {
-    "mtime": 1792743118.791161,
-    "seen": 1792744348.6505556,
-    "ast_hash": "7f3f8c6ee10b998790666bd453d9a9d1",
+    "mtime": 1793960248.1491919,
+    "seen": 1793960283.0023482,
+    "ast_hash": "c7b65be2d5dd77deb77b380dc0a0564f",
     "semantic_hash": ""
   },
   "src/state/presentation/PresentationContext.tsx": {
@@ -504,9 +492,9 @@
     "semantic_hash": ""
   },
   "src/state/presentation/WalletOverviewPanel.tsx": {
-    "mtime": 1792727121.3047402,
-    "seen": 1792727128.433107,
-    "ast_hash": "0a51c4f6b300c7bc89151f9c779be7e3",
+    "mtime": 1793619706.3569055,
+    "seen": 1793620170.5533469,
+    "ast_hash": "29844bfeb09e179ce0fb41c5cf958021",
     "semantic_hash": ""
   },
   "tests/core/walletPresentation.test.tsx": {
@@ -516,9 +504,9 @@
     "semantic_hash": ""
   },
   "src/ui/adapters/WebPresentationProvider.tsx": {
-    "mtime": 1792727121.3063226,
-    "seen": 1792727128.4331112,
-    "ast_hash": "583b3862195ecd7e631753323d8ccfce",
+    "mtime": 1793958228.9315782,
+    "seen": 1793958379.3278453,
+    "ast_hash": "bea004e9a6e74ea2dc73cc8d55ed78a8",
     "semantic_hash": ""
   },
   "src/core/engine/transferFees.ts": {
@@ -540,51 +528,51 @@
     "semantic_hash": ""
   },
   "src/ui/components/NotificationCenterModal.tsx": {
-    "mtime": 1792727121.315167,
-    "seen": 1792727128.4331243,
-    "ast_hash": "a1cf04fa5a507a35670ea02ccfdca139",
+    "mtime": 1793643675.6902547,
+    "seen": 1793643705.6355536,
+    "ast_hash": "526e2d80c8af14ca3a27970b084093ee",
     "semantic_hash": ""
   },
   "src/ui/components/skeletons/DashboardSkeleton.tsx": {
-    "mtime": 1792690919.3128254,
-    "seen": 1792691189.1037142,
-    "ast_hash": "0b2a459a30e96a555765208d1263f720",
+    "mtime": 1793616946.5070586,
+    "seen": 1793617232.3768191,
+    "ast_hash": "68ef1c758723f2f9146629c018b46c88",
     "semantic_hash": ""
   },
   "src/ui/components/skeletons/PendingSkeleton.tsx": {
-    "mtime": 1792691115.3307903,
-    "seen": 1792691189.1037157,
-    "ast_hash": "76dba60363ee148262714ca3351ef8ed",
+    "mtime": 1793616957.2253275,
+    "seen": 1793617232.3768215,
+    "ast_hash": "d756711659d8a4d7f75d8f73ad37fdc0",
     "semantic_hash": ""
   },
   "src/ui/components/skeletons/SettingsSkeleton.tsx": {
-    "mtime": 1792690960.605217,
-    "seen": 1792691189.1037169,
-    "ast_hash": "f4cca7d1c5069c73b29ae975e99f7279",
+    "mtime": 1793616965.963617,
+    "seen": 1793617232.3768272,
+    "ast_hash": "5eb5cde46fd46e6a07ddde86c6d41e0e",
     "semantic_hash": ""
   },
   "src/ui/components/skeletons/WalletsSkeleton.tsx": {
-    "mtime": 1792691120.560411,
-    "seen": 1792691189.103718,
-    "ast_hash": "3af9d2d90ff9fe3a337ab9de0458e9e7",
+    "mtime": 1793616992.6876597,
+    "seen": 1793617232.3768299,
+    "ast_hash": "ee0370a92653cee31846721b0a3476bc",
     "semantic_hash": ""
   },
   "src/ui/primitives/Skeleton.tsx": {
-    "mtime": 1792690790.6384609,
-    "seen": 1792691189.103721,
-    "ast_hash": "8fe44ceadb3d1dbb6bff1ae7d78bf88c",
+    "mtime": 1793614594.8598244,
+    "seen": 1793617232.3768423,
+    "ast_hash": "936c1b54ba4f0c09a638720847c6b822",
     "semantic_hash": ""
   },
   "tests/core/skeletons.test.tsx": {
-    "mtime": 1792691148.6709268,
-    "seen": 1792691189.103755,
-    "ast_hash": "f22a903170268972c4f074e2faa3c3b2",
+    "mtime": 1793617324.1601136,
+    "seen": 1793617411.2770426,
+    "ast_hash": "af505ce5e3eceabf2008c8d53901d68d",
     "semantic_hash": ""
   },
   "src/ui/components/skeletons/ScreenSkeleton.tsx": {
-    "mtime": 1792691687.371646,
-    "seen": 1792691757.0677936,
-    "ast_hash": "5fdcf32adbd28dcd12f1c125a3d52455",
+    "mtime": 1793617319.5667026,
+    "seen": 1793617411.2769105,
+    "ast_hash": "2116c54986dd9a95f31c22da56d8e60e",
     "semantic_hash": ""
   },
   "src/ui/components/skeletons/index.ts": {
@@ -618,9 +606,9 @@
     "semantic_hash": ""
   },
   "netlify/functions/gemma.ts": {
-    "mtime": 1792762484.683635,
-    "seen": 1792762730.074134,
-    "ast_hash": "3644270bd65ca8702dbe42396e576448",
+    "mtime": 1793791991.4775212,
+    "seen": 1793792031.6838477,
+    "ast_hash": "ea66311139df04d3fc3a88b371fd9ae1",
     "semantic_hash": ""
   },
   "src/adapters/ai/NetlifyGemmaAdapter.ts": {
@@ -630,9 +618,9 @@
     "semantic_hash": ""
   },
   "src/adapters/ai/chatHistoryStorage.ts": {
-    "mtime": 1792763516.3989954,
-    "seen": 1792763889.5663583,
-    "ast_hash": "30beb9b6ebb1706771b3d4753cd25f98",
+    "mtime": 1793791989.979527,
+    "seen": 1793792031.6838648,
+    "ast_hash": "516313bab6c8e6cc9cd4124c8075c311",
     "semantic_hash": ""
   },
   "src/core/engine/aiBudgetSnapshot.ts": {
@@ -642,9 +630,9 @@
     "semantic_hash": ""
   },
   "src/core/engine/aiPrompts.ts": {
-    "mtime": 1792763089.3924718,
-    "seen": 1792763504.2462442,
-    "ast_hash": "ef94988af9df6a344ad7be4277536bee",
+    "mtime": 1793903100.5499897,
+    "seen": 1793903170.5979848,
+    "ast_hash": "e793bcb20ac2e90afb734ce1d97f2a01",
     "semantic_hash": ""
   },
   "src/core/models/ai.ts": {
@@ -660,21 +648,21 @@
     "semantic_hash": ""
   },
   "src/state/useAIStore.ts": {
-    "mtime": 1792763133.801584,
-    "seen": 1792763504.2463086,
-    "ast_hash": "ccc9df519eb6104f65b4d51d3ac104de",
+    "mtime": 1793904196.1383545,
+    "seen": 1793904231.6381264,
+    "ast_hash": "49425fc0c14f39fa54d846ada836125c",
     "semantic_hash": ""
   },
   "src/ui/components/AIAssistantModal.tsx": {
-    "mtime": 1792767725.1114295,
-    "seen": 1792767821.5484965,
-    "ast_hash": "39f0e72bc8ee5442a162bed876c88d26",
+    "mtime": 1793904197.8228674,
+    "seen": 1793904231.638142,
+    "ast_hash": "8be2aadbfc9c4a80a2faa15dcb04e119",
     "semantic_hash": ""
   },
   "src/ui/components/MarkdownRenderer.tsx": {
-    "mtime": 1792767592.8653662,
-    "seen": 1792767821.5485253,
-    "ast_hash": "4721612fb7d55a72c5bf55e2939ff904",
+    "mtime": 1793643391.9318957,
+    "seen": 1793643705.6355517,
+    "ast_hash": "dd64a2468d8a278dc09999d1ceb56680",
     "semantic_hash": ""
   },
   "tests/adapters/netlifyGemma.test.ts": {
@@ -690,9 +678,9 @@
     "semantic_hash": ""
   },
   "tests/core/aiPrompts.test.ts": {
-    "mtime": 1792763253.5953083,
-    "seen": 1792763504.2464137,
-    "ast_hash": "43285b6581c8d288c71d4b4207994d5e",
+    "mtime": 1793791996.7827976,
+    "seen": 1793792031.6840458,
+    "ast_hash": "cf6c56a885c394fc5fee76f5c3ce1cf2",
     "semantic_hash": ""
   },
   "tests/core/markdownRenderer.test.tsx": {
@@ -702,15 +690,1791 @@
     "semantic_hash": ""
   },
   "tests/adapters/chatHistoryStorage.test.ts": {
-    "mtime": 1792763427.8528526,
-    "seen": 1792763504.246399,
-    "ast_hash": "364d87f07da8b35607dd2d7ed7d29bcf",
+    "mtime": 1793791998.7108574,
+    "seen": 1793792031.684035,
+    "ast_hash": "069fb9f5d1a7554157a4510deedddd82",
     "semantic_hash": ""
   },
   "tests/state/useAIStore.test.ts": {
-    "mtime": 1792763435.0421727,
-    "seen": 1792763504.2464676,
-    "ast_hash": "74946568853a0577a07cd402d4cdd8e4",
+    "mtime": 1793904219.8251245,
+    "seen": 1793904231.638472,
+    "ast_hash": "1d00ad9c808940a08d0a78b181deceb6",
+    "semantic_hash": ""
+  },
+  "src/core/engine/convenienceFee.ts": {
+    "mtime": 1793515230.879295,
+    "seen": 1793516985.6434877,
+    "ast_hash": "07564753adc9a4557e6649fde790d38e",
+    "semantic_hash": ""
+  },
+  "src/core/engine/obligationSchedule.ts": {
+    "mtime": 1793515230.878287,
+    "seen": 1793516985.6435084,
+    "ast_hash": "49e7d07c18fe39ea4d3ddf9f3884a2bc",
+    "semantic_hash": ""
+  },
+  "tests/adapters/paymentWorkflows.test.ts": {
+    "mtime": 1793517833.47007,
+    "seen": 1793517941.6028597,
+    "ast_hash": "57307fa2eba6c7de022beb9a80cc607c",
+    "semantic_hash": ""
+  },
+  "tests/core/dashboardAndHookOrder.test.tsx": {
+    "mtime": 1793958355.8558755,
+    "seen": 1793958379.3279693,
+    "ast_hash": "1b918342b5a948680df04705f742a0db",
+    "semantic_hash": ""
+  },
+  "tests/core/paymentEntries.test.ts": {
+    "mtime": 1793515602.071993,
+    "seen": 1793516985.6440835,
+    "ast_hash": "32ba88e6683ae10b25ed177ed8b4813f",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/build.py": {
+    "mtime": 1793617204.73546,
+    "seen": 1793617232.376624,
+    "ast_hash": "7d69a9a6aee61542455754b8815dbed9",
+    "semantic_hash": ""
+  },
+  "src/ui/primitives/ChartFrame.tsx": {
+    "mtime": 1793706603.092611,
+    "seen": 1793711289.3039744,
+    "ast_hash": "ed3a49460a9c46042cc2a1a2f8f3519e",
+    "semantic_hash": ""
+  },
+  "src/ui/primitives/Modal.tsx": {
+    "mtime": 1793641052.4562538,
+    "seen": 1793641282.2014074,
+    "ast_hash": "4da339ab3316da0c2094e8ce24fa1c56",
+    "semantic_hash": ""
+  },
+  "src/ui/primitives/controls.tsx": {
+    "mtime": 1793640992.0353968,
+    "seen": 1793641282.201417,
+    "ast_hash": "9218fad5cae1de2a358310f45e9773b0",
+    "semantic_hash": ""
+  },
+  "src/ui/primitives/forms.tsx": {
+    "mtime": 1793952544.3398993,
+    "seen": 1793952560.099046,
+    "ast_hash": "c1d14fb411da99157afcb31500a0397d",
+    "semantic_hash": ""
+  },
+  "tests/core/uiControls.test.tsx": {
+    "mtime": 1793884401.7010999,
+    "seen": 1793884710.812054,
+    "ast_hash": "0b9d5731365d1e921cc0e57489f4b46d",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/brief.md": {
+    "mtime": 1793616795.772299,
+    "seen": 1793617232.3769825,
+    "ast_hash": "c31bdbc84a3095fd7f00a55331c82c9c",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/tests-v1.html": {
+    "mtime": 1793616676.3768535,
+    "seen": 1793617232.376985,
+    "ast_hash": "e235513d804c0ca238eb0aed6c57f43e",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/tests-v2.html": {
+    "mtime": 1793616738.9053094,
+    "seen": 1793617232.376988,
+    "ast_hash": "7a817025a1a08780e4c052aebf5c9c05",
+    "semantic_hash": ""
+  },
+  "docs/ui-components.md": {
+    "mtime": 1793884743.7081788,
+    "seen": 1793884927.9034624,
+    "ast_hash": "6c621680ba5847304e59c9fa81d65aff",
+    "semantic_hash": ""
+  },
+  "public/fonts/Bantayog-LICENSE.txt": {
+    "mtime": 1793615571.147457,
+    "seen": 1793617232.3770087,
+    "ast_hash": "e56b670c1db2d826d62880f6f8f3cae9",
+    "semantic_hash": ""
+  },
+  "public/fonts/Dangwa-LICENSE.txt": {
+    "mtime": 1793614510.0133834,
+    "seen": 1793617232.3770142,
+    "ast_hash": "a2b8c6f225bb8b8a000677d33697cb9f",
+    "semantic_hash": ""
+  },
+  "public/fonts/Licensing - Bantayog [FREE].txt": {
+    "mtime": 1709965726.0,
+    "seen": 1793617232.3770194,
+    "ast_hash": "9a106bab92c19205e38b1f33007ab0c5",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/a-keepsake-lockup-v1.svg": {
+    "mtime": 1793616657.7610245,
+    "seen": 1793617232.3770242,
+    "ast_hash": "500b1d063427ff54f2ea3776c4323b8c",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/a-keepsake-lockup-v2.svg": {
+    "mtime": 1793616751.7230158,
+    "seen": 1793617232.377028,
+    "ast_hash": "128b3720defd00540f375f5871be8dcf",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/a-keepsake-v1.svg": {
+    "mtime": 1793616621.30206,
+    "seen": 1793617232.3770304,
+    "ast_hash": "d0a94752a86e20454e21cfc1cfaae62e",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/a-keepsake-v2.svg": {
+    "mtime": 1793616705.5275433,
+    "seen": 1793617232.3770328,
+    "ast_hash": "d0da009696da120bf5ff4227539a5627",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/b-within-lockup-v1.svg": {
+    "mtime": 1793616659.7885096,
+    "seen": 1793617232.3770354,
+    "ast_hash": "c8d0960ca5e75a500bf0a0f26bb655c1",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/b-within-v1.svg": {
+    "mtime": 1793616623.0906699,
+    "seen": 1793617232.3770373,
+    "ast_hash": "4e0fcc7cf7f20c679ccc139d209a18ca",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/c-hinged-lockup-v1.svg": {
+    "mtime": 1793616661.5174816,
+    "seen": 1793617232.3770392,
+    "ast_hash": "eb0f7ebf2bec0b543616aeaec5ae5286",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/c-hinged-lockup-v2.svg": {
+    "mtime": 1793616753.6144583,
+    "seen": 1793617232.377041,
+    "ast_hash": "2e4e595024e7d8ca3ddc1c397318b1ee",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/c-hinged-v1.svg": {
+    "mtime": 1793616624.824039,
+    "seen": 1793617232.3770432,
+    "ast_hash": "5583302882633db48bb539d9d25590a0",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/c-hinged-v2.svg": {
+    "mtime": 1793616707.3188014,
+    "seen": 1793617232.3770452,
+    "ast_hash": "3d56ea5fc286536e201c3ce56f722337",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/kaban-concepts.png": {
+    "mtime": 1793616756.353239,
+    "seen": 1793617232.3770473,
+    "ast_hash": "709b6a938036c1be0667e92f44dec738",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/kaban-concepts.svg": {
+    "mtime": 1793616755.3149762,
+    "seen": 1793617232.3770494,
+    "ast_hash": "96a87ba572bd59082f1ad19cef4fae3d",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/round-1.png": {
+    "mtime": 1793616666.2407193,
+    "seen": 1793617232.3770516,
+    "ast_hash": "e9941d7b58a19941d11a008e4e6ec5e3",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/round-1.svg": {
+    "mtime": 1793616665.1581917,
+    "seen": 1793617232.3770542,
+    "ast_hash": "8bec08a75062dff6d4afe506d0fe7ad3",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/tests-v1.png": {
+    "mtime": 1793616710.037239,
+    "seen": 1793617232.3770566,
+    "ast_hash": "451336cce92baf9941e6d9fed98c828c",
+    "semantic_hash": ""
+  },
+  "design/kaban/concepts/tests-v2.png": {
+    "mtime": 1793616759.7300076,
+    "seen": 1793617232.3770592,
+    "ast_hash": "e5c652c801b5b023098efd77e81c57eb",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/a-keepsake-v2-bantayog.svg": {
+    "mtime": 1793617206.9160419,
+    "seen": 1793617232.3770611,
+    "ast_hash": "a410d516f46e3d6d8624bc56684d6892",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/a-keepsake-v2-cabinet-grotesk.svg": {
+    "mtime": 1793617207.2523825,
+    "seen": 1793617232.3770635,
+    "ast_hash": "bddde6bd999c640a6b1fd2ca1be46407",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/a-keepsake-v2-dangwa.svg": {
+    "mtime": 1793617206.8924856,
+    "seen": 1793617232.377065,
+    "ast_hash": "709c845f1b52ef5b069e9e36044fecc9",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/a-keepsake-v2-jetbrains-mono.svg": {
+    "mtime": 1793617207.465465,
+    "seen": 1793617232.3770673,
+    "ast_hash": "c8011cd35461f382c68e1f7bceca95d6",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/a-keepsake-v2-satoshi.svg": {
+    "mtime": 1793617207.3156,
+    "seen": 1793617232.3770692,
+    "ast_hash": "b0f53e0550994a53b9db55254c137a29",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/b-within-v1-bantayog.svg": {
+    "mtime": 1793617206.9185565,
+    "seen": 1793617232.3770716,
+    "ast_hash": "487e63c3914637ed86c18f2ba53d44c1",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/b-within-v1-cabinet-grotesk.svg": {
+    "mtime": 1793617207.2523825,
+    "seen": 1793617232.3770738,
+    "ast_hash": "bea0b8708f5eff51413d5424069e96f9",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/b-within-v1-dangwa.svg": {
+    "mtime": 1793617206.8934867,
+    "seen": 1793617232.377076,
+    "ast_hash": "39fdff88b0197551fe87129d4a362a93",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/b-within-v1-jetbrains-mono.svg": {
+    "mtime": 1793617207.4664662,
+    "seen": 1793617232.377078,
+    "ast_hash": "bc62b173564f5c3ec8ea34b4a772fe67",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/b-within-v1-satoshi.svg": {
+    "mtime": 1793617207.3166018,
+    "seen": 1793617232.3770802,
+    "ast_hash": "ec07747ca589dc7d1709cdb06f75dd3c",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/c-hinged-v2-bantayog.svg": {
+    "mtime": 1793617206.9220624,
+    "seen": 1793617232.3770828,
+    "ast_hash": "68036fef1f5dd48e2ca87f457a83bf7f",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/c-hinged-v2-cabinet-grotesk.svg": {
+    "mtime": 1793617207.253381,
+    "seen": 1793617232.377085,
+    "ast_hash": "523a1776c5be1bec7134c5a02b465e0e",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/c-hinged-v2-dangwa.svg": {
+    "mtime": 1793617206.8949952,
+    "seen": 1793617232.3770866,
+    "ast_hash": "fc5273151a513da6177897246d963dfe",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/c-hinged-v2-jetbrains-mono.svg": {
+    "mtime": 1793617207.4685726,
+    "seen": 1793617232.377089,
+    "ast_hash": "d9539733c2084d58efc78ee5cf36afed",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/c-hinged-v2-satoshi.svg": {
+    "mtime": 1793617207.3176029,
+    "seen": 1793617232.377091,
+    "ast_hash": "02f81c5401f3f87816e39e3aa525dcd4",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/kaban-font-comparison.png": {
+    "mtime": 1793617210.5245247,
+    "seen": 1793617232.3770928,
+    "ast_hash": "3cc4dfe6feb668b9f4e69bd532fdddcc",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/kaban-font-comparison.svg": {
+    "mtime": 1793617207.469582,
+    "seen": 1793617232.3770945,
+    "ast_hash": "3c64e98675f25e946f812a38fa4b24ac",
+    "semantic_hash": ""
+  },
+  "design/kaban/font-study/README.md": {
+    "mtime": 1793617277.531846,
+    "seen": 1793617411.2770967,
+    "ast_hash": "b0cf50dbabdae26dd3d0943bc0e85d32",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/build.py": {
+    "mtime": 1793618330.8481283,
+    "seen": 1793618370.5535157,
+    "ast_hash": "c815b8f64f4e38ccc139ee0961d466b6",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/brief.md": {
+    "mtime": 1793618389.954698,
+    "seen": 1793619103.4519858,
+    "ast_hash": "bd78d92c4e4bfc03eedbcd867981918e",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/checks-v1.html": {
+    "mtime": 1793618284.4188905,
+    "seen": 1793618327.0160306,
+    "ast_hash": "f1d453094c510998523323218dc2abcb",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/carved-seal-bantayog-v1.svg": {
+    "mtime": 1793618332.7582562,
+    "seen": 1793618370.5537512,
+    "ast_hash": "fd9a983c9588efdd0c858dd9c3436d1b",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/carved-seal-v1.svg": {
+    "mtime": 1793618259.5387812,
+    "seen": 1793618327.0160773,
+    "ast_hash": "e2648aeb7dd345a6dd3edae7041622df",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/folded-guardian-bantayog-v1.svg": {
+    "mtime": 1793618266.7024217,
+    "seen": 1793618327.0160797,
+    "ast_hash": "dd60a5bdb504be584b1480342de678df",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/folded-guardian-v1.svg": {
+    "mtime": 1793618261.5248723,
+    "seen": 1793618327.0160813,
+    "ast_hash": "ac297bae8b04324ef4f41369daad1d45",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/round-1.png": {
+    "mtime": 1793618269.5316126,
+    "seen": 1793618327.0160832,
+    "ast_hash": "99ea211896a4a0490ddfcdf881b631f2",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/round-1.svg": {
+    "mtime": 1793618268.4725683,
+    "seen": 1793618327.016085,
+    "ast_hash": "facb22ef24253052c3fb176aeb3a4269",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/seed-keeper-bantayog-v1.svg": {
+    "mtime": 1793618266.7014222,
+    "seen": 1793618327.016087,
+    "ast_hash": "129922624fe0ae7fed9639d5466f3cfb",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/seed-keeper-v1.svg": {
+    "mtime": 1793618257.66933,
+    "seen": 1793618327.0160887,
+    "ast_hash": "7cb93c6133963a0e608e57aac04c9200",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/checks-v2.html": {
+    "mtime": 1793618346.0206285,
+    "seen": 1793618370.553723,
+    "ast_hash": "e40045688e020d2fb9c79e5fa6cfc66a",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/checks-v1.png": {
+    "mtime": 1793618349.0478406,
+    "seen": 1793618370.553754,
+    "ast_hash": "5856f05bb0c442355bb3111590c5678a",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/checks-v2.png": {
+    "mtime": 1793618361.6407762,
+    "seen": 1793618370.5537553,
+    "ast_hash": "6fb3f3b0934de6be6d3856698b0c517e",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/folded-guardian-bantayog-v2.svg": {
+    "mtime": 1793618332.7582562,
+    "seen": 1793618370.5537584,
+    "ast_hash": "e1ffcd09ea6ad825d4be79175dcc1226",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/folded-guardian-v2.svg": {
+    "mtime": 1793618328.845759,
+    "seen": 1793618370.553761,
+    "ast_hash": "623d5dcf3808322e231ea3f62d51ade1",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/kaban-bantayog-concepts.png": {
+    "mtime": 1793618336.0873368,
+    "seen": 1793618370.5537627,
+    "ast_hash": "4e5d0ce8f38d8cc7124cc673452c7988",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/kaban-bantayog-concepts.svg": {
+    "mtime": 1793618334.8201766,
+    "seen": 1793618370.5537636,
+    "ast_hash": "0782e82d095b826763f6e59474e4868b",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/seed-keeper-bantayog-v2.svg": {
+    "mtime": 1793618332.7572558,
+    "seen": 1793618370.5537696,
+    "ast_hash": "d4822568009a6716895dedcd363684f9",
+    "semantic_hash": ""
+  },
+  "design/kaban/chest-round/seed-keeper-v2.svg": {
+    "mtime": 1793618326.2028008,
+    "seen": 1793618370.553772,
+    "ast_hash": "2a658ce0b876ac5e692b30f713162749",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/build.py": {
+    "mtime": 1793884398.4979434,
+    "seen": 1793884710.8118432,
+    "ast_hash": "8d0ce37408c02ec4ac712e26fb50c791",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/contrast-checks.json": {
+    "mtime": 1793884403.0676575,
+    "seen": 1793884710.8118453,
+    "ast_hash": "fb22653db2b8e694933a36a393ea2b70",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/presentation-spec.json": {
+    "mtime": 1793884403.06866,
+    "seen": 1793884710.811847,
+    "ast_hash": "e9482e7b0d5a00d13585d39c2595c5cc",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/verify.py": {
+    "mtime": 1793885094.1570714,
+    "seen": 1793885112.3081748,
+    "ast_hash": "dcede5e21c2d9d9150524bb690da8122",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/README.md": {
+    "mtime": 1793885095.8620253,
+    "seen": 1793885112.3086193,
+    "ast_hash": "28cd67d8bce5d1cf8465e44011b0ae24",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/presentation.html": {
+    "mtime": 1793884428.2073808,
+    "seen": 1793884710.8120866,
+    "ast_hash": "31cba47510b77be6ae6084d3d3b018a5",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/usage-guide.html": {
+    "mtime": 1793884403.0696597,
+    "seen": 1793884710.8120878,
+    "ast_hash": "7ea6cfcc321906fadca5a1e5022f314b",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/usage-guide.md": {
+    "mtime": 1793884541.630161,
+    "seen": 1793884710.8120894,
+    "ast_hash": "3c029a7f0896a8230a748daf49bf04fd",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/validation.html": {
+    "mtime": 1793884486.824104,
+    "seen": 1793884710.8120909,
+    "ast_hash": "67fb0f478d9b7e385a3e8b9f3c31c277",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/web/head-snippet.html": {
+    "mtime": 1793884423.9948545,
+    "seen": 1793884710.8120923,
+    "ast_hash": "d089129ea62371bcb5c1cd914969c575",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/desktop-home.png": {
+    "mtime": 1793618661.24561,
+    "seen": 1793619103.4520612,
+    "ast_hash": "00c7e47e894116a2220dd14c51725537",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/desktop-wallet-form.png": {
+    "mtime": 1793618703.901292,
+    "seen": 1793619103.4520638,
+    "ast_hash": "bcbfe1bd19ba9a0093c2a6590896b71e",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/mobile-home.png": {
+    "mtime": 1793618941.6843724,
+    "seen": 1793619103.4520664,
+    "ast_hash": "e769e163d8d0676f80543e9de9f2dddc",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/mobile-quick-add.png": {
+    "mtime": 1793619048.3590658,
+    "seen": 1793619103.4520693,
+    "ast_hash": "99cc5b8f8f1a38cfb173789e5a9cb3e8",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/kaban-logo.png": {
+    "mtime": 1793884455.7154727,
+    "seen": 1793884710.8122456,
+    "ast_hash": "f1ed07b85f52cb8cdd8aacb0108b782e",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/kaban-preview.png": {
+    "mtime": 1793884426.379704,
+    "seen": 1793884710.8122547,
+    "ast_hash": "cdd4e8e5f2beb5f50cc23841e0ed7105",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/kaban-preview.svg": {
+    "mtime": 1793884403.0696597,
+    "seen": 1793884710.8122568,
+    "ast_hash": "e298b6050bc87720c1f458e1bd20d6a2",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/masters/kaban-symbol-master.svg": {
+    "mtime": 1793884403.0666597,
+    "seen": 1793884710.8122582,
+    "ast_hash": "3e9f509e16290caa6cec2556cfc8d547",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/masters/kaban-symbol-small.svg": {
+    "mtime": 1793884403.0656586,
+    "seen": 1793884710.8122597,
+    "ast_hash": "4f27589cb5602a077eb94869100a74f1",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/png/kaban-app-icon-1024.png": {
+    "mtime": 1793884473.5105002,
+    "seen": 1793884710.8122609,
+    "ast_hash": "554de611f7c39c4cd85bc352859a859f",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/png/kaban-horizontal-black.png": {
+    "mtime": 1793884457.052861,
+    "seen": 1793884710.8122623,
+    "ast_hash": "f0924c7bcbda2993469783fa5739788c",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/png/kaban-horizontal-color.png": {
+    "mtime": 1793884455.7154727,
+    "seen": 1793884710.8122637,
+    "ast_hash": "f1ed07b85f52cb8cdd8aacb0108b782e",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/png/kaban-horizontal-ivory.png": {
+    "mtime": 1793884459.8574822,
+    "seen": 1793884710.8122647,
+    "ast_hash": "5c07f7238406504ccd1558e5f564caaf",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/png/kaban-horizontal-white.png": {
+    "mtime": 1793884458.3690362,
+    "seen": 1793884710.8122659,
+    "ast_hash": "e2a023b8a8b395f030298cf3733e1d0c",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/png/kaban-stacked-black.png": {
+    "mtime": 1793884462.703834,
+    "seen": 1793884710.8122673,
+    "ast_hash": "8ffd2b5f269631056b5e57443b0811d6",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/png/kaban-stacked-color.png": {
+    "mtime": 1793884461.321551,
+    "seen": 1793884710.8122685,
+    "ast_hash": "81efb5ccbe7f4d185b50133c26e543a3",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/png/kaban-stacked-ivory.png": {
+    "mtime": 1793884465.3753724,
+    "seen": 1793884710.81227,
+    "ast_hash": "3a67b81a07b44f9448587e67bb3ad99e",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/png/kaban-stacked-white.png": {
+    "mtime": 1793884464.0124936,
+    "seen": 1793884710.812271,
+    "ast_hash": "5bb44dcc0d09db73431c888eb2d690c8",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/png/kaban-symbol-black.png": {
+    "mtime": 1793884451.6742046,
+    "seen": 1793884710.8122723,
+    "ast_hash": "17d3c67370d21b4d2fc006a31f76fb80",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/png/kaban-symbol-color.png": {
+    "mtime": 1793884450.3037877,
+    "seen": 1793884710.8122735,
+    "ast_hash": "fa44f74a3fd5ef06e56f6e3c9206c9bd",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/png/kaban-symbol-ivory.png": {
+    "mtime": 1793884454.4055393,
+    "seen": 1793884710.8122747,
+    "ast_hash": "c83fc742c1152845d84bd40ae122e6a8",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/png/kaban-symbol-white.png": {
+    "mtime": 1793884453.0251367,
+    "seen": 1793884710.812276,
+    "ast_hash": "2d8da69ef802be7c9d49c1755ca979b2",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/png/kaban-wordmark-black.png": {
+    "mtime": 1793884468.0531402,
+    "seen": 1793884710.8122776,
+    "ast_hash": "0d4bd1d28f60a7792b8734c733a062e5",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/png/kaban-wordmark-color.png": {
+    "mtime": 1793884466.6895883,
+    "seen": 1793884710.8122787,
+    "ast_hash": "284d94d316dca378a181b3a8a685bd35",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/png/kaban-wordmark-ivory.png": {
+    "mtime": 1793884470.7604117,
+    "seen": 1793884710.8122804,
+    "ast_hash": "3845b3593597d50037d208e62b3e9d2a",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/png/kaban-wordmark-white.png": {
+    "mtime": 1793884469.3795042,
+    "seen": 1793884710.8122816,
+    "ast_hash": "4f5d2b5c8707aca49d10cf8f36d18be7",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/presentation/slide-01.png": {
+    "mtime": 1793884428.8205764,
+    "seen": 1793884710.8122828,
+    "ast_hash": "475592f763a16f6ccca3c9ad9faee23d",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/presentation/slide-02.png": {
+    "mtime": 1793884429.7873206,
+    "seen": 1793884710.812284,
+    "ast_hash": "ad09c22027f61afbbf59141a0d90904d",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/presentation/slide-03.png": {
+    "mtime": 1793884430.7684221,
+    "seen": 1793884710.8122854,
+    "ast_hash": "5503ac5db267bb830d955c4f63f873be",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/presentation/slide-04.png": {
+    "mtime": 1793884431.6355038,
+    "seen": 1793884710.8122866,
+    "ast_hash": "a30be970ab856982dbde6b7e6053258e",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/presentation/slide-05.png": {
+    "mtime": 1793884432.5188637,
+    "seen": 1793884710.812288,
+    "ast_hash": "47befa5a9812872297a72bd4a81d4106",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-horizontal-black.svg": {
+    "mtime": 1793884403.0583754,
+    "seen": 1793884710.8122892,
+    "ast_hash": "970d48f3dba980c558836886740f5bed",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-horizontal-color.svg": {
+    "mtime": 1793884403.0563781,
+    "seen": 1793884710.8122902,
+    "ast_hash": "22e0375e6b19eae5a83f1d1ccb04ba00",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-horizontal-ivory.svg": {
+    "mtime": 1793884403.0636578,
+    "seen": 1793884710.8122916,
+    "ast_hash": "6e7463d23ed0bbf69746eda55f483396",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-horizontal-white.svg": {
+    "mtime": 1793884403.0606606,
+    "seen": 1793884710.812293,
+    "ast_hash": "652fd203e63a415d76a76ef7d3d7d86a",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-stacked-black.svg": {
+    "mtime": 1793884403.0583754,
+    "seen": 1793884710.8122945,
+    "ast_hash": "29b613cbe93d43997d164a0f74185a80",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-stacked-color.svg": {
+    "mtime": 1793884403.0563781,
+    "seen": 1793884710.8122957,
+    "ast_hash": "1100a1d0745f32c703fb5463e2b8eef5",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-stacked-ivory.svg": {
+    "mtime": 1793884403.064659,
+    "seen": 1793884710.8122969,
+    "ast_hash": "0d289a6ca8cbbf4d22497d7872a9f6e8",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-stacked-white.svg": {
+    "mtime": 1793884403.061661,
+    "seen": 1793884710.812298,
+    "ast_hash": "1f1d4b8e404fc6a5d239f7fa5d3f31d1",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-symbol-black.svg": {
+    "mtime": 1793884403.0573795,
+    "seen": 1793884710.8122993,
+    "ast_hash": "cb552c203ca268db800cb39ce249f71b",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-symbol-color.svg": {
+    "mtime": 1793884403.0543768,
+    "seen": 1793884710.8123002,
+    "ast_hash": "1c358744a4c01886ced6482c9a60133e",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-symbol-ivory.svg": {
+    "mtime": 1793884403.0626588,
+    "seen": 1793884710.8123016,
+    "ast_hash": "474d7636d3286898efd2448430c7b655",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-symbol-small-black.svg": {
+    "mtime": 1793884403.0676575,
+    "seen": 1793884710.8123026,
+    "ast_hash": "cc56103f5427b5e0738a5631bf4f14f5",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-symbol-small-white.svg": {
+    "mtime": 1793884403.0676575,
+    "seen": 1793884710.8123038,
+    "ast_hash": "bdec6416742a5ab2e40603cb3ec60b82",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-symbol-white.svg": {
+    "mtime": 1793884403.0593774,
+    "seen": 1793884710.812305,
+    "ast_hash": "ed60633f22e6e38aa4a6fb09af87dff9",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-wordmark-black.svg": {
+    "mtime": 1793884403.0593774,
+    "seen": 1793884710.8123062,
+    "ast_hash": "40e2dabd0d04f8178bac555e6e35d764",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-wordmark-color.svg": {
+    "mtime": 1793884403.0573795,
+    "seen": 1793884710.8123076,
+    "ast_hash": "9f8cd0ccd18f08500098e60aa5ca1ac8",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-wordmark-ivory.svg": {
+    "mtime": 1793884403.0656586,
+    "seen": 1793884710.812309,
+    "ast_hash": "52214e1021adebb5981f0be516954d05",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/svg/kaban-wordmark-white.svg": {
+    "mtime": 1793884403.0626588,
+    "seen": 1793884710.8123102,
+    "ast_hash": "7093e89e201f4d4aff03dd2eebfd6e8d",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/usage-guide-preview.png": {
+    "mtime": 1793884577.5266535,
+    "seen": 1793884710.812312,
+    "ast_hash": "05efc63903ba4d12adecbd5877d783a8",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/validation.png": {
+    "mtime": 1793884580.1627202,
+    "seen": 1793884710.812313,
+    "ast_hash": "a474b453989516aabe4cba5b80e42f0b",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/web/apple-touch-icon.png": {
+    "mtime": 1793884420.5411146,
+    "seen": 1793884710.8123143,
+    "ast_hash": "3dd5563d980cc52d72996e3809dbb93e",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/web/favicon-16.png": {
+    "mtime": 1793885066.4657474,
+    "seen": 1793885112.3091042,
+    "ast_hash": "819e06887b4f86470585b555f25b4245",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/web/favicon-32.png": {
+    "mtime": 1793885067.803148,
+    "seen": 1793885112.309106,
+    "ast_hash": "f68251590487f4333ff9cc0a96d31b2b",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/web/favicon-48.png": {
+    "mtime": 1793885069.101144,
+    "seen": 1793885112.3091083,
+    "ast_hash": "3ab1a14d3c07c2723395a69c54136276",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/web/favicon.svg": {
+    "mtime": 1793884416.6080668,
+    "seen": 1793885112.3091102,
+    "ast_hash": "837a7f107c490784aa0684aa3fd3a44e",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/web/icon-192.png": {
+    "mtime": 1793884421.5549266,
+    "seen": 1793884710.8123207,
+    "ast_hash": "e11af2ba5035c9b157862fa5e01deba7",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/web/icon-512.png": {
+    "mtime": 1793884422.673903,
+    "seen": 1793884710.812322,
+    "ast_hash": "fe84ff3845711c6e5196f0ab5bba1fa1",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/web/kaban-app-icon.svg": {
+    "mtime": 1793884416.6080668,
+    "seen": 1793884710.8123233,
+    "ast_hash": "837a7f107c490784aa0684aa3fd3a44e",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/web/kaban-black.svg": {
+    "mtime": 1793618694.1675313,
+    "seen": 1793619103.4523904,
+    "ast_hash": "23b625494467b21fd1060a462cdc07f9",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/web/kaban-favicon.svg": {
+    "mtime": 1793884416.6080668,
+    "seen": 1793885112.30912,
+    "ast_hash": "837a7f107c490784aa0684aa3fd3a44e",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/web/kaban-mono-71452e.svg": {
+    "mtime": 1793618694.1690652,
+    "seen": 1793619103.4523952,
+    "ast_hash": "700df16e7cf7750d882638a103988a0f",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/web/kaban-square.svg": {
+    "mtime": 1793884416.6058614,
+    "seen": 1793884710.8123288,
+    "ast_hash": "e129f6fec94451a7eac2216f07059566",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/web/kaban-white.svg": {
+    "mtime": 1793618694.1675313,
+    "seen": 1793619103.4524,
+    "ast_hash": "8e287cd40061e71a24c602da52a5d6ba",
+    "semantic_hash": ""
+  },
+  "design/kaban/logo-kit/web/maskable-512.png": {
+    "mtime": 1793884423.676736,
+    "seen": 1793884710.8123312,
+    "ast_hash": "2c597cb83b304013cb3e4be0d50272bb",
+    "semantic_hash": ""
+  },
+  "public/apple-touch-icon.png": {
+    "mtime": 1793884420.5411146,
+    "seen": 1793884710.8123329,
+    "ast_hash": "3dd5563d980cc52d72996e3809dbb93e",
+    "semantic_hash": ""
+  },
+  "public/favicon-16.png": {
+    "mtime": 1793885066.4657474,
+    "seen": 1793885112.3091702,
+    "ast_hash": "819e06887b4f86470585b555f25b4245",
+    "semantic_hash": ""
+  },
+  "public/favicon-32.png": {
+    "mtime": 1793885067.803148,
+    "seen": 1793885112.3091722,
+    "ast_hash": "f68251590487f4333ff9cc0a96d31b2b",
+    "semantic_hash": ""
+  },
+  "public/favicon-48.png": {
+    "mtime": 1793885069.101144,
+    "seen": 1793885112.3091738,
+    "ast_hash": "3ab1a14d3c07c2723395a69c54136276",
+    "semantic_hash": ""
+  },
+  "public/favicon.svg": {
+    "mtime": 1793884416.6080668,
+    "seen": 1793885112.309178,
+    "ast_hash": "837a7f107c490784aa0684aa3fd3a44e",
+    "semantic_hash": ""
+  },
+  "public/icon-192.png": {
+    "mtime": 1793884421.5549266,
+    "seen": 1793884710.8123658,
+    "ast_hash": "e11af2ba5035c9b157862fa5e01deba7",
+    "semantic_hash": ""
+  },
+  "public/icon-512.png": {
+    "mtime": 1793884422.673903,
+    "seen": 1793884710.8123674,
+    "ast_hash": "fe84ff3845711c6e5196f0ab5bba1fa1",
+    "semantic_hash": ""
+  },
+  "public/kaban-app-icon.svg": {
+    "mtime": 1793884416.6080668,
+    "seen": 1793884710.8123689,
+    "ast_hash": "837a7f107c490784aa0684aa3fd3a44e",
+    "semantic_hash": ""
+  },
+  "public/kaban-horizontal-color.svg": {
+    "mtime": 1793884403.0563781,
+    "seen": 1793884710.8123715,
+    "ast_hash": "22e0375e6b19eae5a83f1d1ccb04ba00",
+    "semantic_hash": ""
+  },
+  "public/kaban-horizontal-ivory.svg": {
+    "mtime": 1793884403.0636578,
+    "seen": 1793884710.8123727,
+    "ast_hash": "6e7463d23ed0bbf69746eda55f483396",
+    "semantic_hash": ""
+  },
+  "public/kaban-symbol-color.svg": {
+    "mtime": 1793884403.0543768,
+    "seen": 1793884710.8123817,
+    "ast_hash": "1c358744a4c01886ced6482c9a60133e",
+    "semantic_hash": ""
+  },
+  "public/kaban-symbol-ivory.svg": {
+    "mtime": 1793884403.0626588,
+    "seen": 1793884710.812383,
+    "ast_hash": "474d7636d3286898efd2448430c7b655",
+    "semantic_hash": ""
+  },
+  "public/maskable-512.png": {
+    "mtime": 1793884423.676736,
+    "seen": 1793884710.8124082,
+    "ast_hash": "2c597cb83b304013cb3e4be0d50272bb",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/contrast-audit.js": {
+    "mtime": 1793620627.6902213,
+    "seen": 1793621258.7839046,
+    "ast_hash": "5a99929bd82e5e3e1d060d5979f7f97b",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-desktop-home.json": {
+    "mtime": 1793620636.3105452,
+    "seen": 1793621258.7839158,
+    "ast_hash": "d9fde53540e43b90e4d4cac4db9fdd1a",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-markdown.json": {
+    "mtime": 1793620790.2973814,
+    "seen": 1793621258.783947,
+    "ast_hash": "94f9017520d8544e632554c44c1e67fe",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-mobile-home.json": {
+    "mtime": 1793620636.8075912,
+    "seen": 1793621258.7844486,
+    "ast_hash": "b786efa3a0d5e43499d83b0c74034242",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-mobile-quick-add.json": {
+    "mtime": 1793620637.550342,
+    "seen": 1793621258.7844584,
+    "ast_hash": "dcb2772d2b7d8775d20f86d5647b2e29",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-profile-verified.json": {
+    "mtime": 1793621243.0946748,
+    "seen": 1793621258.7844636,
+    "ast_hash": "be5638b66812448b397ffa20f3faef87",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-settings-verified.json": {
+    "mtime": 1793621304.6761448,
+    "seen": 1793621329.7874327,
+    "ast_hash": "19ecc719087ae23b2216c657f0adce29",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-settings.json": {
+    "mtime": 1793620792.029775,
+    "seen": 1793621258.784473,
+    "ast_hash": "3ddca06ce60807b09d6bf08fef0347f6",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-upcoming.json": {
+    "mtime": 1793620791.5006375,
+    "seen": 1793621258.7844772,
+    "ast_hash": "d63dddbce11f724464f4615d22ddbe48",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-wallet-form.json": {
+    "mtime": 1793620789.3796363,
+    "seen": 1793621258.784481,
+    "ast_hash": "5f96fcaffe59dd719f8ff8caaeff595b",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-wallets.json": {
+    "mtime": 1793620790.9219706,
+    "seen": 1793621258.784485,
+    "ast_hash": "45eab20a501493630cb6ce1dad1916ae",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-desktop-home.json": {
+    "mtime": 1793620541.962144,
+    "seen": 1793621258.784488,
+    "ast_hash": "1e4c00496cb8eacf8aeb5f8f65a0968a",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/verify-browser.mjs": {
+    "mtime": 1793621375.532323,
+    "seen": 1793621609.181866,
+    "ast_hash": "0d28bfeef0d679b245c7e5e5985145a4",
+    "semantic_hash": ""
+  },
+  "src/ui/primitives/avatarColors.ts": {
+    "mtime": 1793621082.9436097,
+    "seen": 1793621258.7853174,
+    "ast_hash": "fe4469fd392e90e28b746e165c912051",
+    "semantic_hash": ""
+  },
+  "tests/core/avatarColors.test.ts": {
+    "mtime": 1793621085.914273,
+    "seen": 1793621258.7854085,
+    "ast_hash": "d0745f80397f093919d9fe675b6e7fd5",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-desktop-home.png": {
+    "mtime": 1793620636.5125234,
+    "seen": 1793621258.7856991,
+    "ast_hash": "9be2c9fea6f78970fafdf3115b780183",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-markdown.png": {
+    "mtime": 1793620790.4422598,
+    "seen": 1793621258.7857034,
+    "ast_hash": "a42d11b8bd66a51d5d3ed10b44c953f4",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-mobile-home.png": {
+    "mtime": 1793620636.8960505,
+    "seen": 1793621258.785706,
+    "ast_hash": "671aed6b7190860e336212d2b38a8021",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-mobile-quick-add.png": {
+    "mtime": 1793620637.6205437,
+    "seen": 1793621258.785709,
+    "ast_hash": "076279713c822f04465495f41d235e8a",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-profile-verified.png": {
+    "mtime": 1793621243.1687112,
+    "seen": 1793621258.7857132,
+    "ast_hash": "d1df3ac29ac34b7edd728147da6e6efb",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-settings-verified.png": {
+    "mtime": 1793621304.7142127,
+    "seen": 1793621329.7880757,
+    "ast_hash": "644759dbd5d535b026fa8139dcbadb7a",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-settings.png": {
+    "mtime": 1793620792.1019523,
+    "seen": 1793621258.7857182,
+    "ast_hash": "89fdd75c72b16c06f4976eb1f9f591ea",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-upcoming.png": {
+    "mtime": 1793620791.5982294,
+    "seen": 1793621258.785723,
+    "ast_hash": "17d2881e76c7aa597e5c31dd8c7e6fdf",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-wallet-form.png": {
+    "mtime": 1793620789.55335,
+    "seen": 1793621258.7857478,
+    "ast_hash": "7b5cbd7ba483f9a5548e1767e670f54c",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-chrome-wallets.png": {
+    "mtime": 1793620791.064589,
+    "seen": 1793621258.785753,
+    "ast_hash": "18ba7e00aa7d3d758866f76d8ce51710",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-mobile-chrome.png": {
+    "mtime": 1793620521.6204555,
+    "seen": 1793621258.7857566,
+    "ast_hash": "1acd9587f2e0958c528d28121d677c6b",
+    "semantic_hash": ""
+  },
+  "public/kaban-horizontal-black.svg": {
+    "mtime": 1793884403.0583754,
+    "seen": 1793884710.8123698,
+    "ast_hash": "970d48f3dba980c558836886740f5bed",
+    "semantic_hash": ""
+  },
+  "public/kaban-symbol-black.svg": {
+    "mtime": 1793884403.0573795,
+    "seen": 1793884710.8123803,
+    "ast_hash": "cb552c203ca268db800cb39ce249f71b",
+    "semantic_hash": ""
+  },
+  "public/kaban-symbol-small-black.svg": {
+    "mtime": 1793884403.0676575,
+    "seen": 1793884710.8123846,
+    "ast_hash": "cc56103f5427b5e0738a5631bf4f14f5",
+    "semantic_hash": ""
+  },
+  "public/kaban-symbol-small-white.svg": {
+    "mtime": 1793884403.0676575,
+    "seen": 1793884710.8123858,
+    "ast_hash": "bdec6416742a5ab2e40603cb3ec60b82",
+    "semantic_hash": ""
+  },
+  "public/kaban-symbol-small.svg": {
+    "mtime": 1793884403.0656586,
+    "seen": 1793884710.8123872,
+    "ast_hash": "4f27589cb5602a077eb94869100a74f1",
+    "semantic_hash": ""
+  },
+  "public/kaban-wordmark-black.svg": {
+    "mtime": 1793884403.0593774,
+    "seen": 1793884710.8123899,
+    "ast_hash": "40e2dabd0d04f8178bac555e6e35d764",
+    "semantic_hash": ""
+  },
+  "public/kaban-wordmark-color.svg": {
+    "mtime": 1793884403.0573795,
+    "seen": 1793884710.8123908,
+    "ast_hash": "9f8cd0ccd18f08500098e60aa5ca1ac8",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-header-320.png": {
+    "mtime": 1793621377.55974,
+    "seen": 1793621609.1858478,
+    "ast_hash": "e0efca8bfc33e2f52f57d49615897e3d",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/final-header-390.png": {
+    "mtime": 1793621377.4790022,
+    "seen": 1793621609.1858518,
+    "ast_hash": "30235758014fc6f5404b3bb79f1b8dd6",
+    "semantic_hash": ""
+  },
+  "public/kaban-wordmark-ivory.svg": {
+    "mtime": 1793884403.0656586,
+    "seen": 1793884710.8123922,
+    "ast_hash": "52214e1021adebb5981f0be516954d05",
+    "semantic_hash": ""
+  },
+  "public/kaban-wordmark-white.svg": {
+    "mtime": 1793884403.0626588,
+    "seen": 1793884710.8123932,
+    "ast_hash": "7093e89e201f4d4aff03dd2eebfd6e8d",
+    "semantic_hash": ""
+  },
+  "src/ui/components/phInstitutionLogos.tsx": {
+    "mtime": 1793635766.180582,
+    "seen": 1793635806.3293164,
+    "ast_hash": "1339384edb55c4ed37b3332981609d1b",
+    "semantic_hash": ""
+  },
+  ".agents/plugins/logo-dev/mcp_config.json": {
+    "mtime": 1793635000.22966,
+    "seen": 1793635806.3289115,
+    "ast_hash": "ffa7d81b279838419fb773dca5115a90",
+    "semantic_hash": ""
+  },
+  ".agents/plugins/logo-dev/plugin.json": {
+    "mtime": 1793632979.8302486,
+    "seen": 1793635806.3289323,
+    "ast_hash": "8c851c6308a14af7d474dab63c11dfb1",
+    "semantic_hash": ""
+  },
+  "scripts/downloadBrands.mjs": {
+    "mtime": 1793635698.8920596,
+    "seen": 1793635806.3290696,
+    "ast_hash": "e57550bd4e2341511de886e7782f8291",
+    "semantic_hash": ""
+  },
+  "public/brands/bdo.png": {
+    "mtime": 1793635721.4472747,
+    "seen": 1793635806.3301444,
+    "ast_hash": "21734bd75cd9277eba9048c69e0b5e24",
+    "semantic_hash": ""
+  },
+  "public/brands/bpi.png": {
+    "mtime": 1793635721.73973,
+    "seen": 1793635806.3301475,
+    "ast_hash": "765dee5005e601eefe997b1abe234db9",
+    "semantic_hash": ""
+  },
+  "public/brands/chinabank.png": {
+    "mtime": 1793635725.7302983,
+    "seen": 1793635806.3301506,
+    "ast_hash": "a79769771d944b5fc4775afaefbec926",
+    "semantic_hash": ""
+  },
+  "public/brands/cimb.png": {
+    "mtime": 1793635726.380428,
+    "seen": 1793635806.3301535,
+    "ast_hash": "2c1072a87c442b7990f3cb1e7cf690fb",
+    "semantic_hash": ""
+  },
+  "public/brands/coinsph.png": {
+    "mtime": 1793635724.7326858,
+    "seen": 1793635806.330156,
+    "ast_hash": "bb9286f39e3e9c20da3a7c4e6848b7a5",
+    "semantic_hash": ""
+  },
+  "public/brands/eastwest.png": {
+    "mtime": 1793635726.0461345,
+    "seen": 1793635806.3301592,
+    "ast_hash": "c17f7c62ca69ad15009b91799db41be7",
+    "semantic_hash": ""
+  },
+  "public/brands/gcash.png": {
+    "mtime": 1793635720.1068616,
+    "seen": 1793635806.3301735,
+    "ast_hash": "5672add052bd3b0fb8e25d20d4d0a694",
+    "semantic_hash": ""
+  },
+  "public/brands/gotyme.png": {
+    "mtime": 1793635721.1413982,
+    "seen": 1793635806.3301783,
+    "ast_hash": "f907f93f2ce1f6a5a52daa48baf527f7",
+    "semantic_hash": ""
+  },
+  "public/brands/grabpay.png": {
+    "mtime": 1793635725.0435946,
+    "seen": 1793635806.3301811,
+    "ast_hash": "c87dce0a96f45db2b7387eb07c0ca1b9",
+    "semantic_hash": ""
+  },
+  "public/brands/landbank.png": {
+    "mtime": 1793635723.5612447,
+    "seen": 1793635806.330184,
+    "ast_hash": "e030f75917f30bf9bf5ac5e984993ccb",
+    "semantic_hash": ""
+  },
+  "public/brands/maribank.png": {
+    "mtime": 1793635722.840593,
+    "seen": 1793635806.330187,
+    "ast_hash": "05feb796958cdebf82a8f2c21c959546",
+    "semantic_hash": ""
+  },
+  "public/brands/maya.png": {
+    "mtime": 1793635720.600168,
+    "seen": 1793635806.3301897,
+    "ast_hash": "b1f6fa82ed51422b871430b3929db0bf",
+    "semantic_hash": ""
+  },
+  "public/brands/metrobank.png": {
+    "mtime": 1793635723.2099707,
+    "seen": 1793635806.3301926,
+    "ast_hash": "72b703e15f7ae815b144f03bff5466c0",
+    "semantic_hash": ""
+  },
+  "public/brands/pnb.png": {
+    "mtime": 1793635726.6617954,
+    "seen": 1793635806.3301954,
+    "ast_hash": "b1ad7306fa30037466709a20001d61ed",
+    "semantic_hash": ""
+  },
+  "public/brands/rcbc.png": {
+    "mtime": 1793635723.896062,
+    "seen": 1793635806.330198,
+    "ast_hash": "7c6099c62045762c6b6d3a61a0e5e813",
+    "semantic_hash": ""
+  },
+  "public/brands/seabank.png": {
+    "mtime": 1793635722.5466952,
+    "seen": 1793635806.3302011,
+    "ast_hash": "411079dfd138e687e77b5b7fbe4855f2",
+    "semantic_hash": ""
+  },
+  "public/brands/shopeepay.png": {
+    "mtime": 1793635725.3494165,
+    "seen": 1793635806.3302033,
+    "ast_hash": "17de90c9aec903c3029328c9f5853b0b",
+    "semantic_hash": ""
+  },
+  "public/brands/tonik.png": {
+    "mtime": 1793635724.2686315,
+    "seen": 1793635806.3302064,
+    "ast_hash": "2387c4051d5ae5cb99ac5f4db2369b9a",
+    "semantic_hash": ""
+  },
+  "public/brands/unionbank.png": {
+    "mtime": 1793635722.232553,
+    "seen": 1793635806.3302095,
+    "ast_hash": "7c0e5d33bbd5118e079023e0477af98e",
+    "semantic_hash": ""
+  },
+  "src/state/theme.ts": {
+    "mtime": 1793695853.7249124,
+    "seen": 1793696095.0988462,
+    "ast_hash": "019907a9e85e522ac4b184e1aea32f1c",
+    "semantic_hash": ""
+  },
+  "tests/state/theme.test.ts": {
+    "mtime": 1793641227.9652314,
+    "seen": 1793641282.2015605,
+    "ast_hash": "b1dc3bf57fc0f89e4016a7f41a0cca3c",
+    "semantic_hash": ""
+  },
+  "src/ui/primitives/EmptyStateWatermark.tsx": {
+    "mtime": 1793678482.0917747,
+    "seen": 1793678533.292903,
+    "ast_hash": "002b52e4c526da13136e30968cc08455",
+    "semantic_hash": ""
+  },
+  "tests/core/dashboardEmptyStates.test.tsx": {
+    "mtime": 1793678365.8258295,
+    "seen": 1793678423.9501252,
+    "ast_hash": "a15e3c66fcdf1732ad08ce52ea084d95",
+    "semantic_hash": ""
+  },
+  "src/ui/primitives/FilipinoWeaveDefs.tsx": {
+    "mtime": 1793717268.074143,
+    "seen": 1793718055.4467847,
+    "ast_hash": "bb94eb7ad3b696562adf706b3cb63fc7",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/tactile-baul-vault.png": {
+    "mtime": 1793678755.3407643,
+    "seen": 1793678839.7362366,
+    "ast_hash": "35b0fda1d476d55e62d94e0f0c1866c6",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/tactile-baul.png": {
+    "mtime": 1793678907.61192,
+    "seen": 1793685639.1673195,
+    "ast_hash": "2ccb07f04351f34c1a17b78565f66863",
+    "semantic_hash": ""
+  },
+  "src/core/engine/installmentCalc.ts": {
+    "mtime": 1793693815.754631,
+    "seen": 1793694412.6717796,
+    "ast_hash": "392007c6b4a3eddd958856806cdfd805",
+    "semantic_hash": ""
+  },
+  "src/ui/components/CustomLabelPicker.tsx": {
+    "mtime": 1793958315.3049042,
+    "seen": 1793958379.3278582,
+    "ast_hash": "f6c1a8f1496c1810618107bed1038abc",
+    "semantic_hash": ""
+  },
+  "tests/core/installmentCalc.test.ts": {
+    "mtime": 1793694498.8293867,
+    "seen": 1793694612.7351122,
+    "ast_hash": "6cba21d805391d67abcdb32640671013",
+    "semantic_hash": ""
+  },
+  "docs/ux-refinement.md": {
+    "mtime": 1793692436.9306664,
+    "seen": 1793694412.6719816,
+    "ast_hash": "ea764b777147fbc6f423f4c2bcf5653d",
+    "semantic_hash": ""
+  },
+  "docs/kaban_analytics_insights_modules_prompt.md": {
+    "mtime": 1793700382.6654208,
+    "seen": 1793701152.2638495,
+    "ast_hash": "ad39fd4ae6c5ef831b4ea9e45f69f351",
+    "semantic_hash": ""
+  },
+  "src/ui/components/analytics/CommittedWaterfallCard.tsx": {
+    "mtime": 1793716204.8265,
+    "seen": 1793716323.5347447,
+    "ast_hash": "6f29f5290bd30647fb65d8ce0ced6bc8",
+    "semantic_hash": ""
+  },
+  "src/ui/components/analytics/FeeLeakageAndPayoffRow.tsx": {
+    "mtime": 1793780049.1997027,
+    "seen": 1793780080.932218,
+    "ast_hash": "fdf403d46286b7840203c41402351f9c",
+    "semantic_hash": ""
+  },
+  "src/ui/components/analytics/InvoiceAgingAndTaxCard.tsx": {
+    "mtime": 1793780044.2508836,
+    "seen": 1793780080.93222,
+    "ast_hash": "ef504ce4b84715b8e7d1dec1231466cc",
+    "semantic_hash": ""
+  },
+  "src/ui/components/analytics/WalletShortfallAlertCard.tsx": {
+    "mtime": 1793780042.7142415,
+    "seen": 1793780080.9322217,
+    "ast_hash": "ca31622523a7e2f804b4c8c15dd56946",
+    "semantic_hash": ""
+  },
+  "src/ui/screens/AnalyticsInsightsSection.tsx": {
+    "mtime": 1793705636.8446734,
+    "seen": 1793711289.303991,
+    "ast_hash": "09dfc45c42eeb536c385d324416c2b6a",
+    "semantic_hash": ""
+  },
+  "tests/core/analyticsInsightsUI.test.tsx": {
+    "mtime": 1793715092.772575,
+    "seen": 1793715614.2945838,
+    "ast_hash": "67e52fd15aa1c370036808b1c0203131",
+    "semantic_hash": ""
+  },
+  "src/ui/primitives/TactileEmptyState.tsx": {
+    "mtime": 1793780038.6608245,
+    "seen": 1793780080.932335,
+    "ast_hash": "8b24f8412ca39c17eb57e87ac1728154",
+    "semantic_hash": ""
+  },
+  "tests/core/dashboardViewModeSwitcher.test.tsx": {
+    "mtime": 1793711215.3162327,
+    "seen": 1793711289.304022,
+    "ast_hash": "1daf37288ad9f0fa9e2054e84c0232fe",
+    "semantic_hash": ""
+  },
+  "docs/kaban_ui_polish_layout_fixes_prompt.md": {
+    "mtime": 1793710490.4141438,
+    "seen": 1793711289.3040922,
+    "ast_hash": "f1b3374bcb02aa503174904be66a3e23",
+    "semantic_hash": ""
+  },
+  "src/ui/components/FrontPageHero.tsx": {
+    "mtime": 1793903507.8530252,
+    "seen": 1793903521.4758112,
+    "ast_hash": "7c92901b40a828f9bc1806d7ef6cd657",
+    "semantic_hash": ""
+  },
+  "src/ui/primitives/KabanMascot.tsx": {
+    "mtime": 1793791993.2382653,
+    "seen": 1793792031.684007,
+    "ast_hash": "18abd000129a0a66fab4f6c9db6867b7",
+    "semantic_hash": ""
+  },
+  "tests/core/kabanMascot.test.tsx": {
+    "mtime": 1793770193.6416378,
+    "seen": 1793770630.3562727,
+    "ast_hash": "f01a9c8155f5ca3c461d875067d6559a",
+    "semantic_hash": ""
+  },
+  "docs/kaban_mascot_integration_prompt.md": {
+    "mtime": 1793734073.6990418,
+    "seen": 1793770630.356402,
+    "ast_hash": "a1a2e7a262ff78db8b9fcdfdb5df02e3",
+    "semantic_hash": ""
+  },
+  "docs/kaban_mascot_suite_front_page_integration.md": {
+    "mtime": 1793766570.1461577,
+    "seen": 1793770630.3564034,
+    "ast_hash": "3ff30bab824ded85ef615bc7d18d7ad3",
+    "semantic_hash": ""
+  },
+  "public/mascot/baulito-alert-peek.svg": {
+    "mtime": 1793780015.1820583,
+    "seen": 1793780080.9328759,
+    "ast_hash": "d544f5f1e4083d8811424527e0296782",
+    "semantic_hash": ""
+  },
+  "public/mascot/baulito-calculating.svg": {
+    "mtime": 1793780015.1887386,
+    "seen": 1793780080.9328778,
+    "ast_hash": "7a98483c81592c53e0d9ee820390db16",
+    "semantic_hash": ""
+  },
+  "public/mascot/baulito-celebrate-peso.svg": {
+    "mtime": 1793780015.190871,
+    "seen": 1793780080.93288,
+    "ast_hash": "4b188d43391281e82cfd5825365e9528",
+    "semantic_hash": ""
+  },
+  "public/mascot/baulito-idle-sleep.svg": {
+    "mtime": 1793780015.1933875,
+    "seen": 1793780080.9328816,
+    "ast_hash": "6b402bca58cdfafe912a5dc6ffdc91d0",
+    "semantic_hash": ""
+  },
+  "public/mascot/baulito-saving-up.svg": {
+    "mtime": 1793780015.197428,
+    "seen": 1793780080.9328833,
+    "ast_hash": "487fb00da578952f71170df1dae053d0",
+    "semantic_hash": ""
+  },
+  "public/mascot/baulito-spent-stop.svg": {
+    "mtime": 1793780015.199623,
+    "seen": 1793780080.932885,
+    "ast_hash": "b595ee7b19871f675b3b8357de7a0a2d",
+    "semantic_hash": ""
+  },
+  "public/mascot/baulito-standalone.svg": {
+    "mtime": 1793780015.2031481,
+    "seen": 1793780080.9328866,
+    "ast_hash": "29369a41de20692a2e01f487258998d9",
+    "semantic_hash": ""
+  },
+  "public/mascot/baulito-vault-locked.svg": {
+    "mtime": 1793780015.205253,
+    "seen": 1793780080.9328883,
+    "ast_hash": "1b5be6a88b7e896dbda19178f6ded40c",
+    "semantic_hash": ""
+  },
+  "public/mascot/baulito-welcome.svg": {
+    "mtime": 1793780015.2087717,
+    "seen": 1793780080.93289,
+    "ast_hash": "edc5936f11f791e3f9f3f6dcb825c584",
+    "semantic_hash": ""
+  },
+  "design/kaban/baulito-logo-concepts/build_lockups.py": {
+    "mtime": 1793883625.9990096,
+    "seen": 1793883658.0946314,
+    "ast_hash": "f9cfcb82d8483be37b69e80f6f1eeb4d",
+    "semantic_hash": ""
+  },
+  "design/kaban/baulito-logo-concepts/brief.md": {
+    "mtime": 1793883536.4359286,
+    "seen": 1793883658.0948644,
+    "ast_hash": "3e1b91823ef4697f52d08fb5aab62280",
+    "semantic_hash": ""
+  },
+  "design/kaban/baulito-logo-concepts/preview.html": {
+    "mtime": 1793883641.267857,
+    "seen": 1793883658.094866,
+    "ast_hash": "c8dced6e8641243a3199293d64f6dd8b",
+    "semantic_hash": ""
+  },
+  "design/kaban/baulito-logo-concepts/a-little-keeper-v1.svg": {
+    "mtime": 1793883538.0353124,
+    "seen": 1793883658.094942,
+    "ast_hash": "58cb26b7e705c1c36b6082b7b7bbdfe5",
+    "semantic_hash": ""
+  },
+  "design/kaban/baulito-logo-concepts/a-little-keeper-v2-lockup.svg": {
+    "mtime": 1793883627.3247988,
+    "seen": 1793883658.0949435,
+    "ast_hash": "17da44d0805fdb5babe9bd5ab84ea905",
+    "semantic_hash": ""
+  },
+  "design/kaban/baulito-logo-concepts/a-little-keeper-v2.svg": {
+    "mtime": 1793883597.6546912,
+    "seen": 1793883658.0949445,
+    "ast_hash": "c7f9b65187faf9d4a081feffdeac3382",
+    "semantic_hash": ""
+  },
+  "design/kaban/baulito-logo-concepts/b-curious-chest-v1.svg": {
+    "mtime": 1793883539.6316926,
+    "seen": 1793883658.094946,
+    "ast_hash": "9006ab0f18b1c283207de33cd39d59a8",
+    "semantic_hash": ""
+  },
+  "design/kaban/baulito-logo-concepts/b-curious-chest-v2-lockup.svg": {
+    "mtime": 1793883627.3258028,
+    "seen": 1793883658.0949469,
+    "ast_hash": "e7b9d703a1b9be40c452ffdc097d5715",
+    "semantic_hash": ""
+  },
+  "design/kaban/baulito-logo-concepts/b-curious-chest-v2.svg": {
+    "mtime": 1793883599.2918634,
+    "seen": 1793883658.0949478,
+    "ast_hash": "6cf31625e8385f2992dd5fd03e01fa46",
+    "semantic_hash": ""
+  },
+  "design/kaban/baulito-logo-concepts/c-watchful-seal-v1.svg": {
+    "mtime": 1793883541.2804005,
+    "seen": 1793883658.0949488,
+    "ast_hash": "4cec0a93ef73320a643eb3838442a9eb",
+    "semantic_hash": ""
+  },
+  "design/kaban/baulito-logo-concepts/c-watchful-seal-v2-lockup.svg": {
+    "mtime": 1793883627.3267982,
+    "seen": 1793883658.09495,
+    "ast_hash": "6ce2021e1c773fc3b26f2e32e20dab42",
+    "semantic_hash": ""
+  },
+  "design/kaban/baulito-logo-concepts/c-watchful-seal-v2.svg": {
+    "mtime": 1793883600.9083805,
+    "seen": 1793883658.094951,
+    "ast_hash": "e2aab7823d48f9115827e04576627f8b",
+    "semantic_hash": ""
+  },
+  "design/kaban/baulito-logo-concepts/concepts.png": {
+    "mtime": 1793883631.3037925,
+    "seen": 1793883658.0949519,
+    "ast_hash": "242b536edc5a72682db1602b93582218",
+    "semantic_hash": ""
+  },
+  "design/kaban/baulito-logo-concepts/concepts.svg": {
+    "mtime": 1793883630.4270287,
+    "seen": 1793883658.0949535,
+    "ast_hash": "0acf005669189af353d71ac07cd64cb6",
+    "semantic_hash": ""
+  },
+  "design/kaban/baulito-logo-concepts/round-1.png": {
+    "mtime": 1793883552.5058587,
+    "seen": 1793883658.0949545,
+    "ast_hash": "c18fe219ba21685cecf2faa2cc8dbfad",
+    "semantic_hash": ""
+  },
+  "design/kaban/baulito-logo-concepts/round-1.svg": {
+    "mtime": 1793883551.4926095,
+    "seen": 1793883658.0949554,
+    "ast_hash": "f8ce63363cd79bb8fbe8cd1a0b8a03f2",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/verify-baulito.mjs": {
+    "mtime": 1793884691.0677986,
+    "seen": 1793884710.8118324,
+    "ast_hash": "14960d0b98840c1dd21a82ae08813117",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/baulito-desktop.png": {
+    "mtime": 1793884694.6759925,
+    "seen": 1793884710.8121212,
+    "ast_hash": "3b52a1de37fbea338b0bfee7f632f434",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/baulito-mobile.png": {
+    "mtime": 1793884695.0826156,
+    "seen": 1793884710.8121226,
+    "ast_hash": "8756a6d7bb5d90828a31c88c9dafdbb1",
+    "semantic_hash": ""
+  },
+  "public/kaban-horizontal-white.svg": {
+    "mtime": 1793884403.0606606,
+    "seen": 1793884710.812374,
+    "ast_hash": "652fd203e63a415d76a76ef7d3d7d86a",
+    "semantic_hash": ""
+  },
+  "public/kaban-stacked-black.svg": {
+    "mtime": 1793884403.0583754,
+    "seen": 1793884710.8123753,
+    "ast_hash": "29b613cbe93d43997d164a0f74185a80",
+    "semantic_hash": ""
+  },
+  "public/kaban-stacked-color.svg": {
+    "mtime": 1793884403.0563781,
+    "seen": 1793884710.8123767,
+    "ast_hash": "1100a1d0745f32c703fb5463e2b8eef5",
+    "semantic_hash": ""
+  },
+  "public/kaban-stacked-ivory.svg": {
+    "mtime": 1793884403.064659,
+    "seen": 1793884710.812378,
+    "ast_hash": "0d289a6ca8cbbf4d22497d7872a9f6e8",
+    "semantic_hash": ""
+  },
+  "public/kaban-stacked-white.svg": {
+    "mtime": 1793884403.061661,
+    "seen": 1793884710.812379,
+    "ast_hash": "1f1d4b8e404fc6a5d239f7fa5d3f31d1",
+    "semantic_hash": ""
+  },
+  "public/kaban-symbol-white.svg": {
+    "mtime": 1793884403.0593774,
+    "seen": 1793884710.8123884,
+    "ast_hash": "ed60633f22e6e38aa4a6fb09af87dff9",
+    "semantic_hash": ""
+  },
+  "public/favicon-baulito.svg": {
+    "mtime": 1793884416.6080668,
+    "seen": 1793885112.3091757,
+    "ast_hash": "837a7f107c490784aa0684aa3fd3a44e",
+    "semantic_hash": ""
+  },
+  ".impeccable/ui-checks/baulito-rounded-favicon.png": {
+    "mtime": 1793885071.9489684,
+    "seen": 1793885112.3086922,
+    "ast_hash": "87c56ae4f680d3028b6399ff2ea98e8d",
+    "semantic_hash": ""
+  },
+  "tests/core/customLabels.test.tsx": {
+    "mtime": 1793965386.7502408,
+    "seen": 1793965398.6923804,
+    "ast_hash": "1b35be841d349314a2f552e396cae9b4",
+    "semantic_hash": ""
+  },
+  "src/core/engine/walletActivity.ts": {
+    "mtime": 1793896893.0238128,
+    "seen": 1793897078.9481049,
+    "ast_hash": "5678a754ff6286d337793df2e36804e9",
+    "semantic_hash": ""
+  },
+  "src/ui/components/WalletActivity.tsx": {
+    "mtime": 1793975266.4100928,
+    "seen": 1793975315.03212,
+    "ast_hash": "f95e214e9fa5c8434c6305b6f3f28ba1",
+    "semantic_hash": ""
+  },
+  "tests/core/walletActivity.test.tsx": {
+    "mtime": 1793961023.4195158,
+    "seen": 1793961036.8915615,
+    "ast_hash": "56b016042fc57f0d53b95460c3f0cd30",
+    "semantic_hash": ""
+  },
+  "src/ui/components/ActivityFilters.tsx": {
+    "mtime": 1793896935.9122727,
+    "seen": 1793897078.948137,
+    "ast_hash": "dda5b7f7bf314e042425cb4b13893a2c",
+    "semantic_hash": ""
+  },
+  "src/ui/components/useActivityCollapse.ts": {
+    "mtime": 1793902006.9579096,
+    "seen": 1793902026.2349615,
+    "ast_hash": "28da388d74609c7d825552f4be779edf",
+    "semantic_hash": ""
+  },
+  "src/core/engine/dailyInsight.ts": {
+    "mtime": 1793903072.0428903,
+    "seen": 1793903170.5979922,
+    "ast_hash": "2424e3fbf99398c40dd13997b9e14857",
+    "semantic_hash": ""
+  },
+  "tests/core/dailyInsight.test.ts": {
+    "mtime": 1793904199.4916666,
+    "seen": 1793904231.6383803,
+    "ast_hash": "90c5e21256973f6af137e02f11378136",
+    "semantic_hash": ""
+  },
+  "src/state/onboarding.ts": {
+    "mtime": 1793956921.1456432,
+    "seen": 1793956950.4370883,
+    "ast_hash": "57c33ce60889a20d8f01ae1415878ee1",
+    "semantic_hash": ""
+  },
+  "src/ui/components/BaulitoTour.tsx": {
+    "mtime": 1793958274.4767506,
+    "seen": 1793958379.3278518,
+    "ast_hash": "456c7d0be6e74c2282702a72a5262457",
+    "semantic_hash": ""
+  },
+  "tests/state/onboarding.test.ts": {
+    "mtime": 1793956927.9184122,
+    "seen": 1793956950.4373956,
+    "ast_hash": "05b50704d9e79ee200457c6e24a54f39",
+    "semantic_hash": ""
+  },
+  "src/ui/components/OnboardingPractice.tsx": {
+    "mtime": 1793958276.205237,
+    "seen": 1793958379.327877,
+    "ast_hash": "26f3d141142dd024839c16990b1f1952",
+    "semantic_hash": ""
+  },
+  "tests/state/onboardingPractice.test.tsx": {
+    "mtime": 1793956105.9393258,
+    "seen": 1793956134.900104,
+    "ast_hash": "9ea1346acb5f031478d4325f9c2b5503",
+    "semantic_hash": ""
+  },
+  "tests/core/editProfileColors.test.tsx": {
+    "mtime": 1793960261.8578665,
+    "seen": 1793960283.0025628,
+    "ast_hash": "aed422582a114d3c3d92c7a3e959ec04",
     "semantic_hash": ""
   }
 }

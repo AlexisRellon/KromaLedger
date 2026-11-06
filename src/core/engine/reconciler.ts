@@ -43,7 +43,7 @@ function daysBetweenUtc(fromDate: string, toDate: string): number {
   return Math.round((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-function cycleDate(start: Date, cycle: Subscription["billingCycle"], count: number): string {
+export function cycleDate(start: Date, cycle: Subscription["billingCycle"], count: number): string {
   const year = start.getUTCFullYear();
   const month = start.getUTCMonth();
   const day = start.getUTCDate();

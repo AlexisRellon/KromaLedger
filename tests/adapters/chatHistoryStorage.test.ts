@@ -143,7 +143,7 @@ describe("chatHistoryStorage", () => {
     expect(res.threads[0]?.messages).toHaveLength(0);
   });
 
-  it("exports thread as clean Markdown with Operator and Kroma Prism headers", () => {
+  it("exports thread as clean Markdown with Operator and Baulito headers", () => {
     const thread: AIChatThread = {
       id: "export-test",
       title: "Weekly Planning",
@@ -156,11 +156,11 @@ describe("chatHistoryStorage", () => {
     };
 
     const md = exportThreadAsMarkdown(thread);
-    expect(md).toContain("# KromaLedger // Kroma Prism Intelligence Report");
+    expect(md).toContain("# Kaban // Baulito Intelligence Report");
     expect(md).toContain("Session: Weekly Planning");
     expect(md).toContain("### Operator");
     expect(md).toContain("What is my balance?");
-    expect(md).toContain("### Kroma Prism");
+    expect(md).toContain("### Baulito");
     expect(md).toContain("Your liquid balance is PHP 20,000.00.");
   });
 

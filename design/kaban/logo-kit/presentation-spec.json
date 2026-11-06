@@ -1,0 +1,48 @@
+{
+  "brand": "Kaban",
+  "tagline": "Kept for tomorrow.",
+  "brief": "Baulito, Kaban's watchful chest companion, becomes the logo. The approved angled chest keeps its expressive eyes and keyhole, paired with the existing Bantayog wordmark.",
+  "adjectives": [
+    "warm",
+    "watchful",
+    "dependable",
+    "personal"
+  ],
+  "industry": "consumer-app",
+  "mockups": [
+    "app-icon",
+    "website",
+    "social",
+    "favicon-tab",
+    "sticker",
+    "business-card"
+  ],
+  "nav": [
+    "Your vault",
+    "How it works",
+    "Privacy"
+  ],
+  "brand_color": "#71452E",
+  "tile_color": "#71452E",
+  "greyscale": false,
+  "final": true,
+  "concepts": [
+    {
+      "name": "Baulito / Curious Chest",
+      "symbol": "svg/kaban-symbol-color.svg",
+      "lockup": "svg/kaban-horizontal-color.svg",
+      "stacked": "svg/kaban-stacked-color.svg",
+      "symbol_on_tile": "svg/kaban-symbol-ivory.svg",
+      "symbol_on_dark": "svg/kaban-symbol-ivory.svg",
+      "lockup_on_dark": "svg/kaban-horizontal-ivory.svg",
+      "stacked_on_tile": "svg/kaban-stacked-ivory.svg",
+      "idea": "A little chest with a curious upward gaze, keeping watch over everyday money.",
+      "rationale": [
+        "The 15-degree tilt preserves the selected concept's playful stance.",
+        "Generous eye openings and a central keyhole connect the logo to Baulito.",
+        "The existing outlined Bantayog wordmark preserves Kaban's identity."
+      ]
+    }
+  ],
+  "recommendation": "Use the chestnut horizontal lockup on ivory as the primary signature. Use the dedicated small cut at 16\u201332 px and ivory artwork on dark surfaces."
+}

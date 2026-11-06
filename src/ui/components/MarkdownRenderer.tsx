@@ -9,7 +9,7 @@ export function MarkdownRenderer({ content, className = "" }: MarkdownRendererPr
   const blocks = parseMarkdownBlocks(content);
 
   return (
-    <div className={`space-y-3 leading-relaxed text-sm text-neutral-200 max-w-[65ch] ${className}`}>
+    <div className={`space-y-3 leading-relaxed text-sm text-neutral-900 max-w-[65ch] ${className}`}>
       {blocks.map((block, idx) => (
         <BlockComponent key={idx} block={block} />
       ))}
@@ -165,8 +165,8 @@ function parseTable(lines: string[]): Block | null {
 function BlockComponent({ block }: { block: Block }) {
   if (block.type === "h1") {
     return (
-      <h3 className="font-display text-base font-bold text-white tracking-tight pt-2 border-b border-white/[0.08] pb-1.5 flex items-center gap-2">
-        <span className="h-2 w-2 rounded-full bg-[#D9F938]" />
+      <h3 className="font-display text-base font-extrabold text-neutral-900 tracking-tight pt-2 border-b-2 border-neutral-900 pb-1.5 flex items-center gap-2">
+        <span className="h-2.5 w-2.5 rounded-full bg-[#4A154B] border border-neutral-900 shrink-0" />
         <InlineContent text={block.text} />
       </h3>
     );
@@ -174,7 +174,7 @@ function BlockComponent({ block }: { block: Block }) {
 
   if (block.type === "h2") {
     return (
-      <h3 className="font-display text-sm font-semibold text-white tracking-wide pt-2 pb-0.5 text-[#D9F938]">
+      <h3 className="font-display text-sm font-extrabold text-[#4A154B] tracking-wide pt-2 pb-0.5">
         <InlineContent text={block.text} />
       </h3>
     );
@@ -182,7 +182,7 @@ function BlockComponent({ block }: { block: Block }) {
 
   if (block.type === "h3") {
     return (
-      <h3 className="font-mono text-xs font-bold uppercase tracking-[0.15em] text-neutral-300 pt-1">
+      <h3 className="font-mono text-xs font-bold uppercase tracking-[0.15em] text-neutral-800 pt-1">
         <InlineContent text={block.text} />
       </h3>
     );
@@ -190,7 +190,7 @@ function BlockComponent({ block }: { block: Block }) {
 
   if (block.type === "blockquote") {
     return (
-      <blockquote className="border-l border-white/20 pl-3.5 py-1 text-sm text-neutral-300 italic">
+      <blockquote className="border-l-3 border-[#4A154B] bg-[#EDE9FE]/50 pl-3.5 py-1.5 text-sm text-neutral-800 italic rounded-r-xl">
         <InlineContent text={block.text} />
       </blockquote>
     );
@@ -202,22 +202,22 @@ function BlockComponent({ block }: { block: Block }) {
 
   if (block.type === "table") {
     return (
-      <div className="overflow-x-auto rounded-xl border border-white/[0.08] bg-black/40 my-2">
+      <div className="overflow-x-auto rounded-xl border-2 border-neutral-900 bg-white shadow-[2px_2px_0px_#18181B] my-2">
         <table className="w-full text-sm text-left">
-          <thead className="bg-white/[0.04] text-neutral-300 border-b border-white/[0.08]">
+          <thead className="bg-[#FAF8F5] text-neutral-900 border-b-2 border-neutral-900">
             <tr>
               {block.headers.map((h, idx) => (
-                <th key={idx} className="px-3 py-2 text-xs font-mono font-bold uppercase tracking-[0.15em] text-neutral-400">
+                <th key={idx} className="px-3 py-2 text-xs font-mono font-bold uppercase tracking-[0.15em] text-neutral-900">
                   <InlineContent text={h} />
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.04]">
+          <tbody className="divide-y divide-neutral-200">
             {block.rows.map((row, rIdx) => (
-              <tr key={rIdx} className="hover:bg-white/[0.02]">
+              <tr key={rIdx} className="hover:bg-[#FAF8F5]">
                 {row.map((cell, cIdx) => (
-                  <td key={cIdx} className="px-3 py-2 text-neutral-200 font-mono tabular-nums text-sm">
+                  <td key={cIdx} className="px-3 py-2 text-neutral-900 font-mono tabular-nums text-sm">
                     <InlineContent text={cell} />
                   </td>
                 ))}
@@ -233,8 +233,8 @@ function BlockComponent({ block }: { block: Block }) {
     return (
       <ul className="space-y-1.5 my-1.5">
         {block.items.map((item, idx) => (
-          <li key={idx} className="flex items-start gap-2.5 text-sm text-neutral-200">
-            <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#D9F938]" />
+          <li key={idx} className="flex items-start gap-2.5 text-sm text-neutral-900">
+            <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#4A154B]" />
             <div className="flex-1 leading-relaxed">
               <InlineContent text={item} />
             </div>
@@ -248,8 +248,8 @@ function BlockComponent({ block }: { block: Block }) {
     return (
       <ol className="space-y-1.5 my-1.5">
         {block.items.map((item, idx) => (
-          <li key={idx} className="flex items-start gap-2 text-sm text-neutral-200">
-            <span className="font-mono text-xs text-[#D9F938]/80 font-bold min-w-[1.2rem] pt-0.5">
+          <li key={idx} className="flex items-start gap-2 text-sm text-neutral-900">
+            <span className="font-mono text-xs text-[#4A154B] font-black min-w-[1.2rem] pt-0.5">
               {idx + 1}.
             </span>
             <div className="flex-1 leading-relaxed max-w-[65ch]">
@@ -262,7 +262,7 @@ function BlockComponent({ block }: { block: Block }) {
   }
 
   return (
-    <p className="text-sm leading-relaxed text-neutral-200 max-w-[65ch]">
+    <p className="text-sm leading-relaxed text-neutral-900 max-w-[65ch]">
       <InlineContent text={block.text} />
     </p>
   );
@@ -282,17 +282,17 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
   };
 
   return (
-    <div className="rounded-xl border border-white/[0.08] bg-black/60 overflow-hidden my-2">
-      <div className="flex items-center justify-between px-3 py-1.5 bg-white/[0.03] border-b border-white/[0.06] text-xs font-mono text-neutral-400">
-        <span>{language || "text"}</span>
+    <div className="rounded-xl border-2 border-[var(--border-ink)] bg-[var(--bg-muted)] shadow-[2px_2px_0px_var(--shadow-ink)] overflow-hidden my-2">
+      <div className="flex items-center justify-between px-3 py-1.5 bg-[var(--bg-card)] border-b-2 border-[var(--border-ink)] text-xs font-mono font-bold text-[var(--text-secondary)]">
+        <span className="uppercase tracking-wider">{language || "text"}</span>
         <button
           onClick={handleCopy}
-          className="hover:text-white transition px-1.5 py-0.5 rounded bg-white/[0.04]"
+          className="text-[var(--text-primary)] hover:text-[var(--text-primary)] font-bold transition px-2 py-0.5 rounded-lg border border-[var(--border-ink)] bg-[var(--bg-card)] hover:bg-[var(--bg-subtle)] shadow-[1px_1px_0px_var(--shadow-ink)] cursor-pointer"
         >
           {copied ? "Copied!" : "Copy"}
         </button>
       </div>
-      <pre className="p-3 font-mono text-xs text-[#D9F938] overflow-x-auto whitespace-pre">
+      <pre className="p-3 font-mono text-xs text-[var(--text-primary)] overflow-x-auto whitespace-pre">
         <code>{code}</code>
       </pre>
     </div>
@@ -316,7 +316,7 @@ function InlineContent({ text }: { text: string }) {
       parts.push(
         <code
           key={keyIndex++}
-          className="rounded-md bg-white/[0.08] px-1.5 py-0.5 font-mono text-xs text-[#D9F938] border border-white/10"
+          className="rounded-md bg-neutral-200/80 px-1.5 py-0.5 font-mono text-xs font-semibold text-neutral-900 border border-neutral-900/30"
         >
           {codeMatch[1]}
         </code>
@@ -329,7 +329,7 @@ function InlineContent({ text }: { text: string }) {
     const boldMatch = remaining.match(/^\*\*([^*]+)\*\*/);
     if (boldMatch && boldMatch[1]) {
       parts.push(
-        <strong key={keyIndex++} className="font-semibold text-white">
+        <strong key={keyIndex++} className="font-extrabold text-neutral-950">
           <InlineContent text={boldMatch[1]} />
         </strong>
       );
@@ -341,7 +341,7 @@ function InlineContent({ text }: { text: string }) {
     const italicMatch = remaining.match(/^\*([^*]+)\*/);
     if (italicMatch && italicMatch[1]) {
       parts.push(
-        <em key={keyIndex++} className="italic text-neutral-300">
+        <em key={keyIndex++} className="italic text-neutral-800">
           <InlineContent text={italicMatch[1]} />
         </em>
       );
@@ -355,7 +355,7 @@ function InlineContent({ text }: { text: string }) {
       parts.push(
         <span
           key={keyIndex++}
-          className="inline-flex items-center rounded bg-[#D9F938]/10 px-1 py-0.5 font-mono text-xs font-semibold text-[#D9F938] border border-[#D9F938]/20"
+          className="inline-flex items-center rounded-md bg-[#FEF3C7] px-1.5 py-0.5 font-mono text-xs font-bold text-neutral-950 border border-neutral-900/30 shadow-[1px_1px_0px_#18181B]"
         >
           {currencyMatch[0]}
         </span>

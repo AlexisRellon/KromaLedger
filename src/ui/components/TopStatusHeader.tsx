@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BrandLogo } from "../primitives";
+import { BrandLogo, getAvatarColors } from "../primitives";
 import { useStorage } from "../../state/StorageContext";
 import { useNotifications, useProfile } from "../../state/queries";
 import { useUIStore } from "../../state/useUIStore";
@@ -46,20 +46,23 @@ export function TopStatusHeader({
   const aiOpen = useAIStore((s) => s.isOpen);
 
   return (
-    <header className="flex items-center justify-between gap-3 py-2">
-      <BrandLogo />
-      <div className="flex items-center gap-2 sm:gap-2.5">
+    <header className="flex flex-wrap items-center justify-between gap-3 py-2">
+      <div className="flex items-center gap-2">
+        {/*<KabanMascot pose="standalone" size={44} />*/}
+        <BrandLogo />
+      </div>
+      <div className="ml-auto flex items-center gap-2 sm:gap-2.5">
         <button
           onClick={openAI}
-          aria-label="Kroma Prism"
-          title="Kroma Prism // Intelligence"
-          className={`relative flex h-8 w-8 items-center justify-center rounded-full border transition ${
+          aria-label="Kaban Intelligence"
+          title="Kaban Intelligence // Local Assistant"
+          className={`relative flex h-9 w-9 items-center justify-center rounded-xl border-2 border-[var(--border-ink)] transition-all ${
             aiOpen
-              ? "border-[#D9F938]/60 bg-[#D9F938]/10 text-[#D9F938]"
-              : "border-white/10 bg-white/[.04] text-neutral-300 hover:border-[#D9F938]/40 hover:text-[#D9F938]"
+              ? "bg-[var(--theme-subtle)] text-[var(--theme-subtle-text)] shadow-[1px_1px_0px_var(--shadow-ink)] translate-x-[1px] translate-y-[1px]"
+              : "bg-[var(--bg-card)] text-[var(--text-primary)] shadow-[2px_2px_0px_var(--shadow-ink)] hover:bg-[var(--bg-subtle)] neo-btn-interactive"
           }`}
         >
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -67,17 +70,18 @@ export function TopStatusHeader({
             />
           </svg>
         </button>
+
         <button
           onClick={openNotifications}
           aria-label="Notifications"
           title="Notifications & Reminders"
-          className={`relative flex h-8 w-8 items-center justify-center rounded-full border transition ${
+          className={`relative flex h-9 w-9 items-center justify-center rounded-xl border-2 border-[var(--border-ink)] transition-all ${
             notificationsOpen
-              ? "border-[#D9F938]/60 bg-[#D9F938]/10 text-[#D9F938]"
-              : "border-white/10 bg-white/[.04] text-neutral-300 hover:border-[#D9F938]/40 hover:text-white"
+              ? "bg-[var(--theme-subtle)] text-[var(--theme-subtle-text)] shadow-[1px_1px_0px_var(--shadow-ink)] translate-x-[1px] translate-y-[1px]"
+              : "bg-[var(--bg-card)] text-[var(--text-primary)] shadow-[2px_2px_0px_var(--shadow-ink)] hover:bg-[var(--bg-subtle)] neo-btn-interactive"
           }`}
         >
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -85,7 +89,7 @@ export function TopStatusHeader({
             />
           </svg>
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#D9F938] px-1 text-[10px] font-black text-black ring-2 ring-[#070806]">
+            <span className="absolute -top-1.5 -right-1.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full border border-[var(--border-ink)] bg-[var(--status-danger-text)] px-1 text-[10px] font-black text-white shadow-[1px_1px_0px_var(--shadow-ink)]">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
@@ -95,11 +99,11 @@ export function TopStatusHeader({
           onClick={onBackup}
           aria-label="Storage status and vault backup"
           title={`${status} • Tap to Backup`}
-          className="relative flex h-8 w-8 sm:w-auto items-center justify-center rounded-full border border-white/10 bg-white/[.04] sm:px-3 sm:py-1.5 text-xs text-neutral-300 transition hover:border-[#D9F938]/40 hover:text-white"
+          className="relative flex h-9 w-9 sm:w-auto items-center justify-center rounded-xl border-2 border-[var(--border-ink)] bg-[var(--bg-card)] sm:px-3 sm:py-1.5 text-xs font-bold text-[var(--text-primary)] shadow-[2px_2px_0px_var(--shadow-ink)] neo-btn-interactive hover:bg-[var(--bg-subtle)]"
         >
           <span
-            className={`hidden sm:inline-block h-1.5 w-1.5 rounded-full mr-2 shrink-0 ${
-              persistent ? "bg-[#D9F938]" : "bg-amber-400"
+            className={`hidden sm:inline-block h-2 w-2 rounded-full mr-2 shrink-0 border border-[var(--border-ink)] ${
+              persistent ? "bg-[var(--status-success-text)]" : "bg-[var(--status-warning-text)]"
             }`}
           />
           <svg className="h-4 w-4 shrink-0 sm:mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -110,33 +114,33 @@ export function TopStatusHeader({
             />
           </svg>
           <span
-            className={`sm:hidden absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full ring-2 ring-[#070806] ${
-              persistent ? "bg-[#D9F938]" : "bg-amber-400"
+            className={`sm:hidden absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full border border-[var(--border-ink)] ${
+              persistent ? "bg-[var(--status-success-text)]" : "bg-[var(--status-warning-text)]"
             }`}
           />
-          <span className="hidden sm:inline font-medium">
-            {persistent ? "Protected" : "Local Vault"}
+          <span className="hidden sm:inline font-bold">
+            {persistent ? "Vault Safe" : "Local Vault"}
           </span>
-          <span className="hidden sm:inline mx-1 text-neutral-600">•</span>
-          <span className="hidden sm:inline">Backup</span>
+          <span aria-hidden="true" className="hidden sm:inline mx-1 text-[var(--text-tertiary)]">•</span>
+          <span className="hidden sm:inline font-bold">Backup</span>
         </button>
 
         <button
           onClick={() => (onEditProfile ? onEditProfile() : openEditProfile())}
           aria-label="Edit local profile"
-          className={`group gap-2 flex h-8 items-center justify-center rounded-full border p-1 sm:px-3 sm:py-1.5 text-xs transition ${
+          className={`group gap-2 flex h-9 items-center justify-center rounded-xl border-2 border-[var(--border-ink)] p-1 sm:px-2.5 sm:py-1 text-xs font-bold ${
             editProfileOpen
-              ? "border-[#D9F938]/60 bg-[#D9F938]/10 text-white"
-              : "border-white/10 bg-white/[.04] text-neutral-300 hover:border-[#D9F938]/40 hover:text-white"
+              ? "bg-[var(--theme-subtle)] text-[var(--theme-subtle-text)] shadow-[1px_1px_0px_var(--shadow-ink)] translate-x-[1px] translate-y-[1px]"
+              : "bg-[var(--bg-card)] text-[var(--text-primary)] shadow-[2px_2px_0px_var(--shadow-ink)] hover:bg-[var(--bg-subtle)] neo-btn-interactive"
           }`}
         >
           <span
-            className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-black shrink-0"
-            style={{ backgroundColor: profile?.themeColor || "#D9F938" }}
+            className="flex h-6 w-6 items-center justify-center rounded-lg border border-[var(--border-ink)] text-xs font-black shrink-0 shadow-[1px_1px_0px_var(--shadow-ink)]"
+            style={getAvatarColors(profile?.themeColor || "#FBBF24")}
           >
             {profile?.initials || "KO"}
           </span>
-          <span className="hidden sm:inline text-xs font-semibold">{profile?.name || "Profile"}</span>
+          <span className="hidden sm:inline text-xs font-bold text-[var(--text-primary)]">{profile?.name || "Profile"}</span>
         </button>
       </div>
     </header>

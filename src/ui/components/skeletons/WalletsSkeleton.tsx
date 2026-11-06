@@ -34,7 +34,7 @@ export function WalletsSkeleton() {
         <div className="space-y-6">
           {/* Deck Skeleton */}
           <div className="relative">
-            <div className="relative aspect-[85.6/53.98] w-full overflow-hidden rounded-[22px] border border-white/10 bg-[#0d0f12] p-5 shadow-2xl">
+            <div className="relative aspect-[85.6/53.98] w-full overflow-hidden rounded-[22px] border-2 border-neutral-900 bg-white p-5 shadow-[4px_4px_0px_#18181B]">
               <div className="flex h-full flex-col justify-between">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -59,7 +59,7 @@ export function WalletsSkeleton() {
                 </div>
               </div>
             </div>
-            <div className="-mt-3 mx-auto h-4 w-[92%] rounded-b-[18px] border border-white/[0.06] bg-white/[0.02]" />
+            <div className="-mt-3 mx-auto h-4 w-[92%] rounded-b-[18px] border-2 border-neutral-900 bg-[#F4F1EA]" />
           </div>
 
           {/* All Accounts Grid Card */}
@@ -69,7 +69,7 @@ export function WalletsSkeleton() {
               <Skeleton className="h-3.5 w-24 rounded" />
             </div>
 
-            <div className="divide-y divide-white/[0.06]">
+            <div className="divide-y-2 divide-neutral-200">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="flex items-center justify-between py-3">
                   <div className="flex items-center gap-3">
@@ -99,7 +99,7 @@ export function WalletsSkeleton() {
 
             <div className="space-y-4">
               {/* Detailed specs table */}
-              <div className="rounded-2xl border border-white/[0.06] bg-black/25 p-4 space-y-3">
+              <div className="rounded-2xl border-2 border-neutral-900 bg-[#FAF8F5] p-4 space-y-3 shadow-[2px_2px_0px_#18181B]">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="flex items-center justify-between">
                     <Skeleton className="h-3.5 w-24 rounded" />

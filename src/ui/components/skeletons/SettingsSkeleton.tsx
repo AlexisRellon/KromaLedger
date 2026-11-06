@@ -42,7 +42,7 @@ export function SettingsSkeleton() {
           <SkeletonButton className="h-9 w-28 shrink-0" />
         </div>
 
-        <div className="divide-y divide-white/[0.06]">
+        <div className="divide-y-2 divide-neutral-200">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="flex items-center justify-between py-3">
               <div className="flex items-center gap-3">

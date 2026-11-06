@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title"><title id="title">Baulito — Little Keeper refined concept</title>
+<path fill="#171717" fill-rule="evenodd" d="M24 112C24 60 64 32 128 32S232 60 232 112V200Q232 224 208 224H48Q24 224 24 200Z M48 104A32 32 0 1 0 112 104A32 32 0 1 0 48 104Z M144 104A32 32 0 1 0 208 104A32 32 0 1 0 144 104Z M48 152H104V168H48Z M152 152H208V168H152Z M128 156A16 16 0 0 0 120 186L114.11 208H141.89L136 186A16 16 0 0 0 128 156Z"/>
+<circle cx="88" cy="100" r="20" fill="#171717"/><circle cx="184" cy="100" r="20" fill="#171717"/>
+</svg>
