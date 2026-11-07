@@ -1,17 +1,17 @@
 # Graph Report - KromaLedger  (2026-11-07)
 
 ## Corpus Check
-- 218 files · ~615,396 words
+- 218 files · ~615,401 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 21 file(s) not represented in the graph (top: .woff2 6, (none) 4, .otf 4)
 
 ## Summary
-- 1291 nodes · 3535 edges · 75 communities (62 shown, 13 thin omitted)
+- 1295 nodes · 3530 edges · 77 communities (64 shown, 13 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 101 edges (avg confidence: 0.89)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9c3324aa`
+- Built from commit: `eab166e7`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -41,7 +41,7 @@
 - AGY DIRECTIVE (PART 1): Kaban `NewEntryModal` 8-Mode UX Refinements
 - bank-transfer-fee-chart.md
 - devDependencies
-- queries/index.ts
+- WalletFormModal.tsx
 - Wrangler CLI
 - dependencies
 - NotificationCenterModal.tsx
@@ -55,15 +55,15 @@
 - AGY DIRECTIVE (PART 3): Surgical UI Polish, Anti-Truncation & Layout Hierarchy Fixes
 - usage-guide.md
 - zipVault.ts
-- react
-- reconciler.ts
+- PendingAndSubsHub.tsx
+- Invoice
 - customLabels.test.tsx
 - KromaLedger implementation plan
 - Wallet
 - workers-best-practices/SKILL.md
 - Kaban / chest-reference round
 - Configuration
-- QuickAddDrawer.tsx
+- entryDraft.ts
 - db.ts
 - Design System: Kaban
 - WebPresentationProvider.tsx
@@ -77,13 +77,15 @@
 - Skill feedback
 - BaulitoTour.tsx
 - baulito-logo-concepts/brief.md
-- MarkdownRenderer.tsx
+- Transaction
 - Request & Response Handling
 - qrStream.ts
 - LineItemBuilder.tsx
 - TopStatusHeader.tsx
 - DexieFileStore.ts
-- PendingAndSubsHub.tsx
+- queries/index.ts
+- QuickAddDrawer.tsx
+- WalletTypeIcon.tsx
 - imageOptimizer.test.ts
 - WebBootstrap.tsx
 - UIState
@@ -103,41 +105,41 @@
 10. `Wallet` - 42 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `5. MODULE 5: Invoice Aging, Tax & Discount Ledger (`Invoice`)` --references--> `Invoice`  [INFERRED]
+  docs/kaban_analytics_insights_modules_prompt.md → src/core/models/index.ts
 - `1. Overview & Brand Metaphor` --references--> `KromaLedgerDB`  [INFERRED]
   DESIGN.md → src/adapters/web-dexie/db.ts
 - `Capabilities and Constraints` --references--> `KromaLedgerDB`  [INFERRED]
   PRODUCT.md → src/adapters/web-dexie/db.ts
-- `6. Responsive Layout & Viewport Rules` --references--> `FloatingNavPill()`  [INFERRED]
-  DESIGN.md → src/ui/components/FloatingNavPill.tsx
-- `Legacy Compatibility` --references--> `VoltButton()`  [INFERRED]
-  docs/ui-components.md → src/ui/primitives/index.tsx
 - ``SmokedCard` (Neobrutalist Card)` --references--> `SmokedCard()`  [INFERRED]
   docs/ui-components.md → src/ui/primitives/index.tsx
+- `6. Responsive Layout & Viewport Rules` --references--> `FloatingNavPill()`  [INFERRED]
+  DESIGN.md → src/ui/components/FloatingNavPill.tsx
 
 ## Import Cycles
 - None detected.
 
-## Communities (75 total, 13 thin omitted)
+## Communities (77 total, 13 thin omitted)
 
 ### Community 0 - "Invoice"
-Cohesion: 0.17
-Nodes (5): commitInvoice(), confirmSubscriptionCycle(), LedgerCommandGateway, LedgerCommandUnit, settleInvoice()
+Cohesion: 0.16
+Nodes (4): commitInvoice(), confirmSubscriptionCycle(), LedgerCommandUnit, settleInvoice()
 
 ### Community 1 - "IStorageRepo"
-Cohesion: 0.07
-Nodes (6): CashflowInput, DemoSeed, AppMeta, InvoiceItem, Transaction, IStorageRepo
+Cohesion: 0.06
+Nodes (7): DemoSeed, ReconcileResult, AppMeta, AppNotification, InvoiceItem, UserProfile, IStorageRepo
 
 ### Community 2 - "Product: Kaban"
 Cohesion: 0.17
 Nodes (11): Accessibility & Inclusion, Brand Identity & Visual Language, Capabilities and Constraints, Evidence on Hand, Operating Context, Platform, Positioning, Product: Kaban (+3 more)
 
 ### Community 3 - "models/index.ts"
-Cohesion: 0.09
-Nodes (32): Offline Double-Entry Ledger, KromaLedger Master Specification, date-fns, detachSubscriptionHistory(), detachWalletReferences(), LedgerTable, amountSchema, appMetaSchema (+24 more)
+Cohesion: 0.10
+Nodes (32): Offline Double-Entry Ledger, KromaLedger Master Specification, detachSubscriptionHistory(), detachWalletReferences(), LedgerCommandGateway, LedgerTable, ALLOWED_ATTACHMENT_MIME_TYPES, amountSchema (+24 more)
 
 ### Community 4 - "3. Primitives API Reference"
-Cohesion: 0.09
-Nodes (21): 1. Overview & Architectural Principles, 2. Design Tokens & Neobrutalist Conventions, 3.1 Button (`src/ui/primitives/controls.tsx`), 3.2 Field & FormField (`src/ui/primitives/forms.tsx`), 3.3 Form Controls: Input, Select, Textarea (`src/ui/primitives/controls.tsx`), 3.4 ModalShell (`src/ui/primitives/Modal.tsx`), 3.5 ChartFrame & ChartLegend (`src/ui/primitives/ChartFrame.tsx`), 3. Primitives API Reference (+13 more)
+Cohesion: 0.07
+Nodes (26): 1. Overview & Architectural Principles, 2. Design Tokens & Neobrutalist Conventions, 3.1 Button (`src/ui/primitives/controls.tsx`), 3.2 Field & FormField (`src/ui/primitives/forms.tsx`), 3.3 Form Controls: Input, Select, Textarea (`src/ui/primitives/controls.tsx`), 3.4 ModalShell (`src/ui/primitives/Modal.tsx`), 3.5 ChartFrame & ChartLegend (`src/ui/primitives/ChartFrame.tsx`), 3.6 Data Display & Status Primitives (`src/ui/primitives/index.tsx`) (+18 more)
 
 ### Community 5 - "package.json"
 Cohesion: 0.11
@@ -152,8 +154,8 @@ Cohesion: 0.20
 Nodes (9): 0. CONTEXT & UX RESTRAINT RULES, 1. CREATE `src/ui/primitives/KabanMascot.tsx`, 2. WIRE `<KabanMascot />` INTO THE 4 TARGET UI TOUCHPOINTS, 3. VERIFICATION GATES, AGY DIRECTIVE (PART 4): Integrating "Bantay" — The Living Kaban Chest Mascot, Touchpoint A: Upgrade `TactileEmptyState.tsx`, Touchpoint B: `Local Vault • Backup` Modal (`VaultBackupModal.tsx`), Touchpoint C: Shortfall Radar Banner (`WalletShortfallAlertCard.tsx`) (+1 more)
 
 ### Community 8 - "useUIStore.ts"
-Cohesion: 0.17
-Nodes (18): APP_THEMES, applyThemeToDom(), AppThemeConfig, getStoredThemePreferences(), getThemeConfig(), resolveEffectiveMode(), saveThemePreferences(), ThemePreferences (+10 more)
+Cohesion: 0.16
+Nodes (19): zustand, APP_THEMES, applyThemeToDom(), AppThemeConfig, getStoredThemePreferences(), getThemeConfig(), resolveEffectiveMode(), saveThemePreferences() (+11 more)
 
 ### Community 9 - "verify-portability.mjs"
 Cohesion: 0.08
@@ -172,19 +174,19 @@ Cohesion: 0.40
 Nodes (4): Files, Kaban / Baulito — Curious Chest, Typeface and rights, Validation
 
 ### Community 19 - "App.tsx"
-Cohesion: 0.17
-Nodes (14): Web App HTML Entrypoint, PWA Application Icon, AIAssistantModal, App(), EditProfileModal, NotificationCenterModal, PendingAndSubsHub, QuickAddDrawer (+6 more)
+Cohesion: 0.23
+Nodes (11): AIAssistantModal, App(), EditProfileModal, NotificationCenterModal, PendingAndSubsHub, QuickAddDrawer, SettingsScreen, VaultBackupModal (+3 more)
 
 ### Community 20 - "AIAssistantModal.tsx"
-Cohesion: 0.10
-Nodes (39): zod, clearAllChatThreads(), clearChatHistory(), createEmptyThread(), createNewThread(), deleteThreadFromStorage(), exportChatHistoryAsMarkdown(), exportThreadAsMarkdown() (+31 more)
+Cohesion: 0.08
+Nodes (50): clearAllChatThreads(), clearChatHistory(), createEmptyThread(), createNewThread(), deleteThreadFromStorage(), exportChatHistoryAsMarkdown(), exportThreadAsMarkdown(), generateThreadTitle() (+42 more)
 
 ### Community 21 - "DexieStorageRepo"
-Cohesion: 0.09
-Nodes (4): appDefaults(), DexieStorageRepo, createDemoSeed(), UserProfile
+Cohesion: 0.10
+Nodes (3): appDefaults(), DexieStorageRepo, createDemoSeed()
 
 ### Community 22 - "Subscription"
-Cohesion: 0.11
+Cohesion: 0.10
 Nodes (13): 0. CONTEXT & ARCHITECTURAL GUARDRAILS, 1. MODULE 1: Friction & Fee Leakage Tracker (`Transfer` + `E-wallet cash-in`), 2. MODULE 2: Committed Cashflow Waterfall ("True Safe-to-Spend"), 3. MODULE 3: Debt & Installment Payoff Horizon (`Loan` + `Installment`), 4. MODULE 4: Per-Wallet Liquidity & Shortfall Radar, 5. MODULE 5: Invoice Aging, Tax & Discount Ledger (`Invoice`), 6. UI COMPONENT SPECIFICATIONS (`src/ui/screens/AnalyticsInsightsSection.tsx`), AGY DIRECTIVE (PART 2): Kaban 5-Module Financial Analytics & Insights Engine (+5 more)
 
 ### Community 23 - "AGY DIRECTIVE (PART 1): Kaban `NewEntryModal` 8-Mode UX Refinements"
@@ -199,9 +201,9 @@ Nodes (3): Digital-First Banks, E-Wallets, Traditional Banks
 Cohesion: 0.17
 Nodes (12): devDependencies, fake-indexeddb, tailwindcss, @tailwindcss/vite, @types/qrcode, @types/react, @types/react-dom, typescript (+4 more)
 
-### Community 26 - "queries/index.ts"
-Cohesion: 0.08
-Nodes (68): react-dom, CardNetwork, WalletPattern, WalletType, queryKeys, useAllTransactions(), useAttachments(), useCategories() (+60 more)
+### Community 26 - "WalletFormModal.tsx"
+Cohesion: 0.17
+Nodes (30): CardNetwork, WalletPattern, WalletType, getLogoDevUrl(), InstitutionBrandmark(), matchPhInstitution(), PH_INSTITUTIONS, PhInstitutionMeta (+22 more)
 
 ### Community 27 - "Wrangler CLI"
 Cohesion: 0.15
@@ -244,20 +246,20 @@ Cohesion: 0.10
 Nodes (19): 0. CONTEXT & OBJECTIVE, 1. FIX 1: Eliminate Text & Number Truncation in `CommittedWaterfallCard.tsx`, 2. FIX 2: Replace the `Module 4` Debug Badge on `INVOICE AGING & TAX LEDGER`, 3. FIX 3: Un-Cramp `TRANSFER & CASH-IN FRICTION` and `INSTALLMENT & LOAN HORIZON`, 4. FIX 4: Tactile Neobrutalist Empty States with Quick-Action Triggers, 5. FIX 5: Dashboard View Mode Switcher (`Core Ledger` vs. `Deep Analytics`), 6. VERIFICATION CHECKLIST, AGY DIRECTIVE (PART 3): Surgical UI Polish, Anti-Truncation & Layout Hierarchy Fixes (+11 more)
 
 ### Community 39 - "zipVault.ts"
-Cohesion: 0.09
-Nodes (17): Local Vault & State Phase, QrAssemblerProgress, QrStreamBatch, dumpSchema, fileMetaSchema, MAX_ATTACHMENT_COUNT, MAX_VAULT_BYTES, SyncAttachmentPayload (+9 more)
+Cohesion: 0.10
+Nodes (19): Local Vault & State Phase, QrAssemblerProgress, QrStreamBatch, dumpSchema, fileMetaSchema, MAX_ATTACHMENT_COUNT, MAX_VAULT_BYTES, SyncAttachmentPayload (+11 more)
 
-### Community 40 - "react"
-Cohesion: 0.15
-Nodes (26): react, ConfirmDeleteModal(), EditEntryModal(), EditInvoiceModal(), CURRENCIES, EditProfileModal(), THEME_COLORS, Button() (+18 more)
+### Community 40 - "PendingAndSubsHub.tsx"
+Cohesion: 0.07
+Nodes (59): Props (`FieldProps` / `FormFieldProps`), react, blockInvalidNumberKeys(), parseMinorInput(), sanitizeMoneyInput(), scheduledPaymentMinor(), buildInvoicePayment(), selectPendingOverview() (+51 more)
 
-### Community 42 - "reconciler.ts"
-Cohesion: 0.16
-Nodes (12): Deterministic Reconciliation Cycle, Portable Core Engine Phase, addDaysUtc(), asUtcDate(), cycleDate(), daysBetweenUtc(), PendingConfirmation, reconcile() (+4 more)
+### Community 42 - "Invoice"
+Cohesion: 0.11
+Nodes (12): Deterministic Reconciliation Cycle, Portable Core Engine Phase, CashflowInput, obligationDueDate(), addDaysUtc(), asUtcDate(), cycleDate(), daysBetweenUtc() (+4 more)
 
 ### Community 43 - "customLabels.test.tsx"
-Cohesion: 0.19
-Nodes (9): CustomLabelPicker(), CustomLabelPickerProps, mergeCustomLabel(), normalizeLabel(), PRESET_LABELS, Mode, OnboardingPractice(), elements() (+1 more)
+Cohesion: 0.24
+Nodes (8): ENTRY_FIELD_META, CustomLabelPicker(), CustomLabelPickerProps, mergeCustomLabel(), normalizeLabel(), PRESET_LABELS, elements(), hooks
 
 ### Community 44 - "KromaLedger implementation plan"
 Cohesion: 0.33
@@ -279,13 +281,13 @@ Nodes (4): Construction and rationale, Kaban / chest-reference round, Noun–ver
 Cohesion: 0.18
 Nodes (11): Binding-code consistency, Configuration, Enable nodejs_compat, Enable Workers Logs and Traces, Generate binding types with wrangler types, Keep compatibility_date current, Observability, Place compute near regional databases (+3 more)
 
-### Community 49 - "QuickAddDrawer.tsx"
-Cohesion: 0.09
-Nodes (32): convenienceFeeMinor(), calculateInstallmentPlan(), InstallmentBreakdown, calculateInvoice(), parseMinorInput(), obligationDueDate(), ALLOWED_ATTACHMENT_MIME_TYPES, TransferChannel (+24 more)
+### Community 49 - "entryDraft.ts"
+Cohesion: 0.13
+Nodes (16): convenienceFeeMinor(), TransferChannel, buildEntryDraft(), CashInInput, Common, EntryDraft, EntryDraftInput, EntryMode (+8 more)
 
 ### Community 50 - "db.ts"
-Cohesion: 0.16
-Nodes (8): Atomic ZIP Vault Restore, fake-indexeddb, jszip, vitest, exportVault(), restoreVault(), base, createObligation()
+Cohesion: 0.24
+Nodes (4): Atomic ZIP Vault Restore, jszip, exportVault(), restoreVault()
 
 ### Community 51 - "Design System: Kaban"
 Cohesion: 0.12
@@ -300,12 +302,12 @@ Cohesion: 0.20
 Nodes (10): Always await or waitUntil Promises, Be aware of platform limits, Code Patterns, Development & Testing, Do not store request-scoped state in global scope, Explicit error handling over passThroughOnException, Security, Test with @cloudflare/vitest-pool-workers (+2 more)
 
 ### Community 55 - "AGY DIRECTIVE (PART 5): Complete "Bantay (Baulito)" Mascot Suite & Front-Page Integration"
-Cohesion: 0.25
-Nodes (7): 0. OVERVIEW & MASCOT ASSET ARCHITECTURE, 2. PRODUCTION REACT COMPONENT (`src/ui/primitives/KabanMascot.tsx`), 3. FRONT-PAGE HERO COMPONENT (`src/ui/components/FrontPageHero.tsx`), 4. WIRING ALL 9 `baulito-*.svg` POSES ACROSS THE APP, 5. VERIFICATION CHECKLIST, AGY DIRECTIVE (PART 5): Complete "Bantay (Baulito)" Mascot Suite & Front-Page Integration, Core Rule: Non-Intrusive Placement
+Cohesion: 0.22
+Nodes (8): 0. OVERVIEW & MASCOT ASSET ARCHITECTURE, 1. THE 9-POSE FIGMA LAYER & FUNCTIONAL MATRIX, 2. PRODUCTION REACT COMPONENT (`src/ui/primitives/KabanMascot.tsx`), 3. FRONT-PAGE HERO COMPONENT (`src/ui/components/FrontPageHero.tsx`), 4. WIRING ALL 9 `baulito-*.svg` POSES ACROSS THE APP, 5. VERIFICATION CHECKLIST, AGY DIRECTIVE (PART 5): Complete "Bantay (Baulito)" Mascot Suite & Front-Page Integration, Core Rule: Non-Intrusive Placement
 
 ### Community 56 - "HomeDashboard.tsx"
-Cohesion: 0.05
-Nodes (76): 5. Centralized Component Conventions, PWA & Mobile UI Phase, 7. VERIFICATION GATES, 1. THE 9-POSE FIGMA LAYER & FUNCTIONAL MATRIX, AgingBucket, analyzeInvoiceAging(), analyzeWalletLiquidity(), calculateCashflow() (+68 more)
+Cohesion: 0.06
+Nodes (69): 5. Centralized Component Conventions, PWA & Mobile UI Phase, 7. VERIFICATION GATES, date-fns, AgingBucket, analyzeInvoiceAging(), analyzeWalletLiquidity(), calculateCashflow() (+61 more)
 
 ### Community 57 - "Type Validation"
 Cohesion: 0.25
@@ -320,12 +322,12 @@ Cohesion: 0.40
 Nodes (4): Issue body, Skill feedback, Steps, What not to include
 
 ### Community 61 - "BaulitoTour.tsx"
-Cohesion: 0.24
-Nodes (9): markFirstBoot(), parseStartingBalance(), restartOnboarding(), BaulitoTour(), practice, PracticeMode, ProfileSetup(), walkthrough (+1 more)
+Cohesion: 0.18
+Nodes (12): markFirstBoot(), parseStartingBalance(), restartOnboarding(), useSaveProfile(), BaulitoTour(), practice, PracticeMode, ProfileSetup() (+4 more)
 
-### Community 63 - "MarkdownRenderer.tsx"
-Cohesion: 0.33
-Nodes (8): Block, BlockComponent(), CodeBlock(), InlineContent(), MarkdownRenderer(), MarkdownRendererProps, parseMarkdownBlocks(), parseTable()
+### Community 63 - "Transaction"
+Cohesion: 0.22
+Nodes (15): fake-indexeddb, react-dom, @tanstack/react-query, vitest, KromaLedgerDB, Transaction, queryKeys, StorageProvider() (+7 more)
 
 ### Community 64 - "Request & Response Handling"
 Cohesion: 0.50
@@ -333,59 +335,67 @@ Nodes (4): Request & Response Handling, Stream request and response bodies, Use 
 
 ### Community 65 - "qrStream.ts"
 Cohesion: 0.11
-Nodes (21): base64ToBytes(), bytesToBase64(), compressStringGzip(), computeCrc32(), CRC32_TABLE, decompressStringGzip(), DEFAULT_QR_CHUNK_BYTES, encodePayloadToQrFrames() (+13 more)
+Nodes (22): dexie, base64ToBytes(), bytesToBase64(), compressStringGzip(), computeCrc32(), CRC32_TABLE, decompressStringGzip(), DEFAULT_QR_CHUNK_BYTES (+14 more)
 
 ### Community 66 - "LineItemBuilder.tsx"
-Cohesion: 0.18
-Nodes (17): Minor-Unit Integer Money Math, computeInvoiceTotals(), InvoiceCalculation, InvoiceCalculationInput, safeMinor(), addLineItem(), LineItemDraft, lineTotalMinor() (+9 more)
+Cohesion: 0.20
+Nodes (17): Minor-Unit Integer Money Math, calculateInvoice(), computeInvoiceTotals(), InvoiceCalculation, InvoiceCalculationInput, safeMinor(), addLineItem(), LineItemDraft (+9 more)
 
 ### Community 67 - "TopStatusHeader.tsx"
-Cohesion: 0.17
-Nodes (12): 3.6 Data Display & Status Primitives (`src/ui/primitives/index.tsx`), `AnimatedMoney`, `BrandLogo`, `DonutChartSVG`, `getAvatarColors` (`src/ui/primitives/avatarColors.ts`), `HatchedProgressBar` / `AnimatedProgressBar`, `SmokedCard` (Neobrutalist Card), `StatusDot` (+4 more)
+Cohesion: 0.39
+Nodes (4): useNotifications(), TopStatusHeader(), getAvatarColors(), BrandLogo()
 
 ### Community 68 - "DexieFileStore.ts"
-Cohesion: 0.15
-Nodes (10): DexieFileStore, IFileStore, StorageContext, StorageProvider(), StorageServices, WebPresentationProvider(), wrap(), wrapWithProviders() (+2 more)
+Cohesion: 0.16
+Nodes (3): DexieFileStore, AttachmentMeta, IFileStore
 
-### Community 70 - "PendingAndSubsHub.tsx"
-Cohesion: 0.22
-Nodes (17): blockInvalidNumberKeys(), sanitizeMoneyInput(), scheduledPaymentMinor(), buildInvoicePayment(), selectPendingOverview(), formatWalletLabel(), useConfirmSubscriptionPayment(), EditSubscriptionModal() (+9 more)
+### Community 69 - "queries/index.ts"
+Cohesion: 0.26
+Nodes (19): useAllTransactions(), useCategories(), useClearAllData(), useDeleteInvoice(), useDeleteSubscription(), useDeleteTransaction(), useDeleteWallet(), useProfile() (+11 more)
+
+### Community 70 - "QuickAddDrawer.tsx"
+Cohesion: 0.21
+Nodes (11): calculateInstallmentPlan(), InstallmentBreakdown, EntrySaveProgress, saveEntryAndAttachment(), useSaveAttachment(), useSaveCategory(), useSaveInvoice(), useSaveSubscription() (+3 more)
+
+### Community 71 - "WalletTypeIcon.tsx"
+Cohesion: 0.39
+Nodes (8): BankIcon(), CashIcon(), CreditCardIcon(), CryptoIcon(), EWalletIcon(), OtherVaultIcon(), WalletTypeIcon(), WalletTypeOption
 
 ### Community 72 - "imageOptimizer.test.ts"
-Cohesion: 0.20
-Nodes (13): dexie, attachmentCache, AttachmentFileRecord, KromaLedgerDB, ImageCompressorFn, migrateAttachmentsToWebp(), normalizeFilenameToWebp(), optimizeImageToWebp() (+5 more)
+Cohesion: 0.26
+Nodes (10): attachmentCache, ImageCompressorFn, migrateAttachmentsToWebp(), normalizeFilenameToWebp(), optimizeImageToWebp(), setCustomImageCompressor(), WEBP_MAX_BYTES, WEBP_MAX_DIMENSION (+2 more)
 
 ### Community 73 - "WebBootstrap.tsx"
-Cohesion: 0.22
-Nodes (10): @tanstack/react-query, restoreQueryCache(), setupQueryCachePersistence(), db, files, ForegroundReconcile(), queryClient, repo (+2 more)
+Cohesion: 0.15
+Nodes (11): Web App HTML Entrypoint, PWA Application Icon, restoreQueryCache(), setupQueryCachePersistence(), db, files, ForegroundReconcile(), queryClient (+3 more)
 
 ### Community 74 - "UIState"
-Cohesion: 0.18
-Nodes (3): AppThemeId, ThemeMode, UIState
+Cohesion: 0.19
+Nodes (5): AppThemeId, ThemeMode, UIState, Toggle(), SettingsScreen()
 
 ### Community 76 - "VaultBackupModal.tsx"
-Cohesion: 0.31
+Cohesion: 0.21
 Nodes (7): jsqr, qrcode, QrSyncPanel(), today(), formatBytes(), today(), VaultBackupModal()
 
 ## Knowledge Gaps
 - **18 isolated node(s):** `@types/qrcode`, `@types/react`, `@types/react-dom`, `tailwindcss`, `typescript` (+13 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 474 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 477 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `vitest` connect `db.ts` to `Invoice`, `models/index.ts`, `package.json`, `useUIStore.ts`, `verify-portability.mjs`, `SmokedCard`, `AIAssistantModal.tsx`, `DexieStorageRepo`, `queries/index.ts`, `gemma.ts`, `transferFees.ts`, `react`, `reconciler.ts`, `customLabels.test.tsx`, `Wallet`, `QuickAddDrawer.tsx`, `WebPresentationProvider.tsx`, `HomeDashboard.tsx`, `BaulitoTour.tsx`, `MarkdownRenderer.tsx`, `qrStream.ts`, `LineItemBuilder.tsx`, `TopStatusHeader.tsx`, `DexieFileStore.ts`, `PendingAndSubsHub.tsx`, `imageOptimizer.test.ts`?**
-  _High betweenness centrality (0.107) - this node is a cross-community bridge._
+- **Why does `vitest` connect `Transaction` to `Invoice`, `models/index.ts`, `package.json`, `useUIStore.ts`, `verify-portability.mjs`, `SmokedCard`, `AIAssistantModal.tsx`, `DexieStorageRepo`, `WalletFormModal.tsx`, `gemma.ts`, `transferFees.ts`, `zipVault.ts`, `PendingAndSubsHub.tsx`, `Invoice`, `customLabels.test.tsx`, `Wallet`, `entryDraft.ts`, `db.ts`, `WebPresentationProvider.tsx`, `HomeDashboard.tsx`, `BaulitoTour.tsx`, `qrStream.ts`, `LineItemBuilder.tsx`, `TopStatusHeader.tsx`, `QuickAddDrawer.tsx`, `imageOptimizer.test.ts`?**
+  _High betweenness centrality (0.104) - this node is a cross-community bridge._
 - **Are the 4 inferred relationships involving `Invoice` (e.g. with `0. CONTEXT & ARCHITECTURAL GUARDRAILS` and `2. MODULE 2: Committed Cashflow Waterfall ("True Safe-to-Spend")`) actually correct?**
   _`Invoice` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `@types/qrcode`, `@types/react`, `@types/react-dom` to the rest of the system?**
   _18 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `IStorageRepo` be split into smaller, more focused modules?**
-  _Cohesion score 0.06543385490753911 - nodes in this community are weakly interconnected._
-- **Why does `react` connect `react` to `LineItemBuilder.tsx`, `TopStatusHeader.tsx`, `DexieFileStore.ts`, `package.json`, `PendingAndSubsHub.tsx`, `zipVault.ts`, `WebBootstrap.tsx`, `SmokedCard`, `customLabels.test.tsx`, `VaultBackupModal.tsx`, `QuickAddDrawer.tsx`, `NotificationCenterModal.tsx`, `App.tsx`, `WebPresentationProvider.tsx`, `HomeDashboard.tsx`, `queries/index.ts`, `BaulitoTour.tsx`, `MarkdownRenderer.tsx`?**
-  _High betweenness centrality (0.089) - this node is a cross-community bridge._
+  _Cohesion score 0.06463414634146342 - nodes in this community are weakly interconnected._
+- **Why does `react` connect `PendingAndSubsHub.tsx` to `package.json`, `SmokedCard`, `App.tsx`, `AIAssistantModal.tsx`, `WalletFormModal.tsx`, `NotificationCenterModal.tsx`, `zipVault.ts`, `customLabels.test.tsx`, `WebPresentationProvider.tsx`, `HomeDashboard.tsx`, `BaulitoTour.tsx`, `Transaction`, `LineItemBuilder.tsx`, `TopStatusHeader.tsx`, `queries/index.ts`, `QuickAddDrawer.tsx`, `WalletTypeIcon.tsx`, `WebBootstrap.tsx`, `VaultBackupModal.tsx`?**
+  _High betweenness centrality (0.096) - this node is a cross-community bridge._
 - **Are the 3 inferred relationships involving `HomeDashboard()` (e.g. with `dashboardAndHookOrder.test.tsx` and `renderDashboard()`) actually correct?**
   _`HomeDashboard()` has 3 INFERRED edges - model-reasoned connections that need verification._
 - **Should `models/index.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.08826945412311266 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09957325746799431 - nodes in this community are weakly interconnected._

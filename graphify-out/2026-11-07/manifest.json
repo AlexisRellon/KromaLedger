@@ -48,9 +48,9 @@
     "semantic_hash": ""
   },
   "src/adapters/web-dexie/WebBootstrap.tsx": {
-    "mtime": 1794064803.6064644,
-    "seen": 1794065270.5453808,
-    "ast_hash": "7ec666e76ea343ed382cb0cf9a6b900c",
+    "mtime": 1794065363.7954257,
+    "seen": 1794065472.1977508,
+    "ast_hash": "27f57566c9a14ce7aa451d30bbdf6a88",
     "semantic_hash": ""
   },
   "src/adapters/web-dexie/db.ts": {
@@ -132,9 +132,9 @@
     "semantic_hash": ""
   },
   "src/state/StorageContext.tsx": {
-    "mtime": 1794064779.474147,
-    "seen": 1794065270.545449,
-    "ast_hash": "d50434a4b4e932ee39af133cd8ac5a1b",
+    "mtime": 1794065359.820173,
+    "seen": 1794065472.1978004,
+    "ast_hash": "1f285e0d1808056e95bdc5deb662f3bd",
     "semantic_hash": ""
   },
   "src/state/entryDraft.ts": {
@@ -2094,9 +2094,9 @@
     "semantic_hash": ""
   },
   "src/ui/components/analytics/CommittedWaterfallCard.tsx": {
-    "mtime": 1793716204.8265,
-    "seen": 1793716323.5347447,
-    "ast_hash": "6f29f5290bd30647fb65d8ce0ced6bc8",
+    "mtime": 1794066653.6359406,
+    "seen": 1794066691.3294518,
+    "ast_hash": "491beb43e076dd9b6d3e93e15b0b7bfb",
     "semantic_hash": ""
   },
   "src/ui/components/analytics/FeeLeakageAndPayoffRow.tsx": {
@@ -2610,9 +2610,9 @@
     "semantic_hash": ""
   },
   "src/ui/components/QrSyncPanel.tsx": {
-    "mtime": 1794064392.6861153,
-    "seen": 1794065270.5455096,
-    "ast_hash": "1ed290a722ad95b647557b41dda8c8d6",
+    "mtime": 1794065438.2546082,
+    "seen": 1794065472.1978514,
+    "ast_hash": "aa4e139c6aa9f804d29f25ea9c6ccdbe",
     "semantic_hash": ""
   },
   "tests/adapters/qrStream.test.ts": {
