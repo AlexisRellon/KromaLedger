@@ -35,6 +35,29 @@ Open the local URL printed by Vite in your browser. On first launch, Kaban initi
 
 ---
 
+## Deployment (Cloudflare Pages)
+
+Kaban is deployed on Cloudflare Pages at **https://kaban-ckh.pages.dev** with zero cold starts, global edge distribution, and zero monthly cost on the free tier.
+
+SPA routing (`public/_redirects`), security headers, and long-term asset caching (`public/_headers`) are preconfigured and copied into `dist/` during build.
+
+### Option A: Automatic Git Deploy (Recommended)
+1. In Cloudflare Dashboard, go to **Workers & Pages** > **Create application** > **Pages** > **Connect to Git**.
+2. Select repository `Kaban`.
+3. Set build configuration:
+   - **Framework preset**: `None` or `Vite`
+   - **Build command**: `npm run build`
+   - **Build output directory**: `dist`
+4. Click **Save and Deploy**. Cloudflare assigns a free `*.pages.dev` subdomain automatically.
+
+### Option B: Wrangler CLI Deploy
+```sh
+npm run build
+npx wrangler pages deploy dist --project-name=kaban
+```
+
+---
+
 ## Verification & Quality Gates
 
 Run the automated test suites, typechecks, and portability guardrails:

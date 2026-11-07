@@ -3,7 +3,7 @@
 ## Corpus Check
 - 194 files · ~591,108 words
 - Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 20 file(s) not represented in the graph (top: .woff2 6, .otf 4, (none) 3)
+- Unclassified: 22 file(s) not represented in the graph (top: .woff2 6, (none) 4, .otf 4)
 
 ## Summary
 - 1132 nodes · 3232 edges · 61 communities (47 shown, 14 thin omitted)
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `942bf723`
+- Built from commit: `9c3324aa`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -37,7 +37,7 @@
 - App.tsx
 - AIAssistantModal.tsx
 - DexieStorageRepo
-- Invoice
+- Subscription
 - AGY DIRECTIVE (PART 1): Kaban `NewEntryModal` 8-Mode UX Refinements
 - bank-transfer-fee-chart.md
 - devDependencies
@@ -60,21 +60,21 @@
 - customLabels.test.tsx
 - KromaLedger implementation plan
 - Wallet
-- pendingAnalytics.ts
+- entryDraft.ts
 - Kaban / chest-reference round
-- MarkdownRenderer.tsx
-- Design System: Kaban
 - LineItemBuilder.tsx
 - QuickAddDrawer.tsx
-- AGENTS.md
-- cashflowAnalytics.ts
-- entryDraft.ts
-- AttachmentCacheManager
 - transferFees.ts
+- Design System: Kaban
+- MarkdownRenderer.tsx
+- pendingAnalytics.ts
+- AGENTS.md
+- KromaLedger
+- cashflowAnalytics.ts
+- AttachmentCacheManager
 - BaulitoTour.tsx
 - baulito-logo-concepts/brief.md
 - vite.config.ts
-- KromaLedger
 
 ## God Nodes (most connected - your core abstractions)
 1. `react` - 58 edges
@@ -169,7 +169,7 @@ Nodes (39): zod, clearAllChatThreads(), clearChatHistory(), createEmptyThread(),
 Cohesion: 0.08
 Nodes (5): appDefaults(), DexieStorageRepo, CashflowInput, Invoice, Transaction
 
-### Community 22 - "Invoice"
+### Community 22 - "Subscription"
 Cohesion: 0.10
 Nodes (13): 0. CONTEXT & ARCHITECTURAL GUARDRAILS, 1. MODULE 1: Friction & Fee Leakage Tracker (`Transfer` + `E-wallet cash-in`), 2. MODULE 2: Committed Cashflow Waterfall ("True Safe-to-Spend"), 3. MODULE 3: Debt & Installment Payoff Horizon (`Loan` + `Installment`), 4. MODULE 4: Per-Wallet Liquidity & Shortfall Radar, 5. MODULE 5: Invoice Aging, Tax & Discount Ledger (`Invoice`), 6. UI COMPONENT SPECIFICATIONS (`src/ui/screens/AnalyticsInsightsSection.tsx`), AGY DIRECTIVE (PART 2): Kaban 5-Module Financial Analytics & Insights Engine (+5 more)
 
@@ -253,37 +253,37 @@ Nodes (5): KromaLedger implementation plan, Phase 1: guardrails and portable cor
 Cohesion: 0.15
 Nodes (10): addDaysUtc(), BuildSnapshotInput, buildWeeklyBudgetSnapshot(), formatDateUtc(), getIsoWeekBoundaries(), parseDateUtc(), ReconcileInput, Category (+2 more)
 
+### Community 46 - "entryDraft.ts"
+Cohesion: 0.14
+Nodes (18): convenienceFeeMinor(), parseMinorInput(), sanitizeQuantityInput(), buildEntryDraft(), CashInInput, Common, EntryDraft, EntryDraftInput (+10 more)
+
 ### Community 47 - "Kaban / chest-reference round"
 Cohesion: 0.40
 Nodes (4): Construction and rationale, Kaban / chest-reference round, Noun–verb longlist, Refinement and validation
 
-### Community 49 - "MarkdownRenderer.tsx"
-Cohesion: 0.33
-Nodes (8): Block, BlockComponent(), CodeBlock(), InlineContent(), MarkdownRenderer(), MarkdownRendererProps, parseMarkdownBlocks(), parseTable()
+### Community 48 - "LineItemBuilder.tsx"
+Cohesion: 0.23
+Nodes (15): Minor-Unit Integer Money Math, calculateInvoice(), computeInvoiceTotals(), InvoiceCalculation, InvoiceCalculationInput, safeMinor(), addLineItem(), LineItemDraft (+7 more)
+
+### Community 49 - "QuickAddDrawer.tsx"
+Cohesion: 0.20
+Nodes (10): calculateInstallmentPlan(), InstallmentBreakdown, TransferChannel, EntrySaveProgress, saveEntryAndAttachment(), useSaveAttachment(), LineDraft, QuickAddDrawer() (+2 more)
+
+### Community 50 - "transferFees.ts"
+Cohesion: 0.36
+Nodes (8): BANK_TRANSFER_FEE_RULES, detectTransferFee(), findFeeRule(), lookupTransferFee(), parseTransferRouteFromText(), TransferChannel, TransferFeeDetectionResult, TransferFeeRule
 
 ### Community 51 - "Design System: Kaban"
 Cohesion: 0.12
 Nodes (15): 1. Overview & Brand Metaphor, 2. Color Palette & Semantic Tokens, 3. Typography & Sourced Typefaces, 4. Elevation, Shapes & Neobrutalist Depth, 6. Responsive Layout & Viewport Rules, 7. Do's and Don'ts, Corner Radii, Design System: Kaban (+7 more)
 
-### Community 52 - "LineItemBuilder.tsx"
-Cohesion: 0.23
-Nodes (15): Minor-Unit Integer Money Math, calculateInvoice(), computeInvoiceTotals(), InvoiceCalculation, InvoiceCalculationInput, safeMinor(), addLineItem(), LineItemDraft (+7 more)
-
-### Community 53 - "QuickAddDrawer.tsx"
-Cohesion: 0.20
-Nodes (10): calculateInstallmentPlan(), InstallmentBreakdown, TransferChannel, EntrySaveProgress, saveEntryAndAttachment(), useSaveAttachment(), LineDraft, QuickAddDrawer() (+2 more)
+### Community 52 - "MarkdownRenderer.tsx"
+Cohesion: 0.33
+Nodes (8): Block, BlockComponent(), CodeBlock(), InlineContent(), MarkdownRenderer(), MarkdownRendererProps, parseMarkdownBlocks(), parseTable()
 
 ### Community 56 - "cashflowAnalytics.ts"
 Cohesion: 0.06
 Nodes (45): 7. VERIFICATION GATES, 0. OVERVIEW & MASCOT ASSET ARCHITECTURE, 1. THE 9-POSE FIGMA LAYER & FUNCTIONAL MATRIX, 2. PRODUCTION REACT COMPONENT (`src/ui/primitives/KabanMascot.tsx`), 3. FRONT-PAGE HERO COMPONENT (`src/ui/components/FrontPageHero.tsx`), 4. WIRING ALL 9 `baulito-*.svg` POSES ACROSS THE APP, 5. VERIFICATION CHECKLIST, AGY DIRECTIVE (PART 5): Complete "Bantay (Baulito)" Mascot Suite & Front-Page Integration (+37 more)
-
-### Community 57 - "entryDraft.ts"
-Cohesion: 0.14
-Nodes (18): convenienceFeeMinor(), parseMinorInput(), sanitizeQuantityInput(), buildEntryDraft(), CashInInput, Common, EntryDraft, EntryDraftInput (+10 more)
-
-### Community 60 - "transferFees.ts"
-Cohesion: 0.36
-Nodes (8): BANK_TRANSFER_FEE_RULES, detectTransferFee(), findFeeRule(), lookupTransferFee(), parseTransferRouteFromText(), TransferChannel, TransferFeeDetectionResult, TransferFeeRule
 
 ### Community 61 - "BaulitoTour.tsx"
 Cohesion: 0.18
@@ -301,7 +301,7 @@ Nodes (5): @tailwindcss/vite, vite, vite-plugin-pwa, @vitejs/plugin-react, confi
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `vitest` connect `vitest` to `Invoice`, `models/index.ts`, `package.json`, `useUIStore.ts`, `verify-portability.mjs`, `SmokedCard`, `TopStatusHeader.tsx`, `AIAssistantModal.tsx`, `PhysicalWalletCard.tsx`, `WebPresentationProvider.tsx`, `gemma.ts`, `HomeDashboard.tsx`, `reconciler.ts`, `customLabels.test.tsx`, `Wallet`, `pendingAnalytics.ts`, `MarkdownRenderer.tsx`, `LineItemBuilder.tsx`, `QuickAddDrawer.tsx`, `cashflowAnalytics.ts`, `entryDraft.ts`, `transferFees.ts`, `BaulitoTour.tsx`, `vite.config.ts`?**
+- **Why does `vitest` connect `vitest` to `Invoice`, `models/index.ts`, `package.json`, `useUIStore.ts`, `verify-portability.mjs`, `SmokedCard`, `TopStatusHeader.tsx`, `AIAssistantModal.tsx`, `PhysicalWalletCard.tsx`, `WebPresentationProvider.tsx`, `gemma.ts`, `HomeDashboard.tsx`, `reconciler.ts`, `customLabels.test.tsx`, `Wallet`, `entryDraft.ts`, `LineItemBuilder.tsx`, `QuickAddDrawer.tsx`, `transferFees.ts`, `MarkdownRenderer.tsx`, `pendingAnalytics.ts`, `cashflowAnalytics.ts`, `BaulitoTour.tsx`, `vite.config.ts`?**
   _High betweenness centrality (0.123) - this node is a cross-community bridge._
 - **Are the 4 inferred relationships involving `Invoice` (e.g. with `0. CONTEXT & ARCHITECTURAL GUARDRAILS` and `2. MODULE 2: Committed Cashflow Waterfall ("True Safe-to-Spend")`) actually correct?**
   _`Invoice` has 4 INFERRED edges - model-reasoned connections that need verification._
@@ -309,7 +309,7 @@ _Questions this graph is uniquely positioned to answer:_
   _17 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Invoice` be split into smaller, more focused modules?**
   _Cohesion score 0.12857142857142856 - nodes in this community are weakly interconnected._
-- **Why does `react` connect `HomeDashboard.tsx` to `package.json`, `SmokedCard`, `customLabels.test.tsx`, `TopStatusHeader.tsx`, `MarkdownRenderer.tsx`, `NotificationCenterModal.tsx`, `App.tsx`, `LineItemBuilder.tsx`, `QuickAddDrawer.tsx`, `cashflowAnalytics.ts`, `PhysicalWalletCard.tsx`, `WebPresentationProvider.tsx`, `BaulitoTour.tsx`, `vitest`?**
+- **Why does `react` connect `HomeDashboard.tsx` to `package.json`, `SmokedCard`, `customLabels.test.tsx`, `TopStatusHeader.tsx`, `LineItemBuilder.tsx`, `QuickAddDrawer.tsx`, `NotificationCenterModal.tsx`, `App.tsx`, `MarkdownRenderer.tsx`, `cashflowAnalytics.ts`, `PhysicalWalletCard.tsx`, `WebPresentationProvider.tsx`, `BaulitoTour.tsx`, `vitest`?**
   _High betweenness centrality (0.100) - this node is a cross-community bridge._
 - **Are the 3 inferred relationships involving `HomeDashboard()` (e.g. with `dashboardAndHookOrder.test.tsx` and `renderDashboard()`) actually correct?**
   _`HomeDashboard()` has 3 INFERRED edges - model-reasoned connections that need verification._

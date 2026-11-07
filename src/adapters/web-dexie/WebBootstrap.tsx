@@ -10,6 +10,7 @@ import { restoreQueryCache, setupQueryCachePersistence } from "./queryCachePersi
 import { ScreenSkeleton } from "../../ui/components/skeletons";
 import { useUIStore } from "../../state/useUIStore";
 import { markFirstBoot } from "../../state/onboarding";
+import type { SyncDumpPayload, SyncRestoreOptions } from "../backup/zipVault";
 
 const db = new KromaLedgerDB();
 const repo = new DexieStorageRepo(db);
@@ -43,6 +44,18 @@ const services = {
       const { restoreVault } = await import("../backup/zipVault");
       return restoreVault(db, data);
     },
+    exportSyncFrames: async (today: string, options?: { includeAttachments?: boolean; chunkSize?: number }) => {
+      const { exportSyncFrames } = await import("../backup/zipVault");
+      return exportSyncFrames(db, today, options);
+    },
+    parseSyncPayload: async (jsonText: string) => {
+      const { parseSyncPayload } = await import("../backup/zipVault");
+      return parseSyncPayload(jsonText);
+    },
+    restoreSyncPayload: async (dumpOrJson: SyncDumpPayload | string, options: SyncRestoreOptions) => {
+      const { restoreSyncPayload } = await import("../backup/zipVault");
+      return restoreSyncPayload(db, dumpOrJson, options);
+    },
   },
   storageStatus: async () => {
     const estimate = await navigator.storage?.estimate?.();
@@ -73,6 +86,7 @@ export function WebBootstrap({ children }: PropsWithChildren) {
     const boot = async () => {
       const today = format(new Date(), "yyyy-MM-dd");
       await repo.initialize(today);
+      void files.optimizeExistingAttachments().catch(() => {});
       try {
         markFirstBoot(localStorage);
       } catch {}

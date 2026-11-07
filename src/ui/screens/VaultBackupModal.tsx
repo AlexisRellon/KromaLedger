@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useStorage } from "../../state/StorageContext";
 import { Button, ModalShell, KabanMascot } from "../primitives";
+import { QrSyncPanel } from "../components/QrSyncPanel";
 
 const today = () => format(new Date(), "yyyy-MM-dd");
 const formatBytes = (value: number | null) =>
@@ -13,6 +14,7 @@ const formatBytes = (value: number | null) =>
 
 export function VaultBackupModal({ onClose }: { onClose: () => void }) {
   const { vault, storageStatus } = useStorage();
+  const [mainTab, setMainTab] = useState<"qr" | "zip">("qr");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [usage, setUsage] = useState<{ usage: number | null; quota: number | null }>();
@@ -99,90 +101,122 @@ export function VaultBackupModal({ onClose }: { onClose: () => void }) {
         <rect width="100%" height="100%" fill="url(#pattern-tnalak-circuit)" />
       </svg>
       <div className="space-y-4">
-        <p className="text-sm font-medium leading-relaxed text-neutral-700">
-          Your financial data stays securely on this device. Export a standalone ZIP archive or restore a previous Kaban vault snapshot.
-        </p>
-
-        <div className="rounded-2xl border-2 border-[var(--border-ink)] bg-[var(--status-warning-bg,#FEF3C7)] p-3 text-xs leading-relaxed text-[var(--text-primary)] shadow-[2px_2px_0px_var(--shadow-ink)]">
-          <span className="font-bold text-[var(--status-warning-text,#92400E)]">Privacy Notice:</span> Backups are unencrypted ZIP archives holding your raw ledger records and attachments. Store exported copies in a secure, private location.
+        {/* Top-Level Mode Tabs */}
+        <div className="flex rounded-2xl border-2 border-[var(--border-ink)] bg-[var(--bg-muted)] p-1 shadow-[2px_2px_0px_var(--shadow-ink)]">
+          <button
+            type="button"
+            onClick={() => setMainTab("qr")}
+            className={`flex-1 rounded-xl py-2 px-3 text-xs font-black transition cursor-pointer select-none ${
+              mainTab === "qr"
+                ? "border-2 border-[var(--border-ink)] bg-[#D9F938] text-black shadow-[1px_1px_0px_var(--shadow-ink)]"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] border-2 border-transparent"
+            }`}
+          >
+            QR Air-Sync
+          </button>
+          <button
+            type="button"
+            onClick={() => setMainTab("zip")}
+            className={`flex-1 rounded-xl py-2 px-3 text-xs font-black transition cursor-pointer select-none ${
+              mainTab === "zip"
+                ? "border-2 border-[var(--border-ink)] bg-[#D9F938] text-black shadow-[1px_1px_0px_var(--shadow-ink)]"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] border-2 border-transparent"
+            }`}
+          >
+            ZIP File Archive
+          </button>
         </div>
 
-        <div className="rounded-2xl border-2 border-[var(--border-ink)] bg-[var(--bg-card)] p-3.5 shadow-[2px_2px_0px_var(--shadow-ink)] flex items-center justify-between gap-3">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Local device storage</p>
-            <p className="mt-1 font-mono text-xs font-bold text-[var(--text-primary)]">
-              {formatBytes(usage?.usage ?? null)} used of {formatBytes(usage?.quota ?? null)}
-            </p>
-          </div>
-          <KabanMascot pose="vault-locked" size={88} />
-        </div>
-
-        {/* Destructive restore confirmation step */}
-        {pendingFile ? (
-          <div className="rounded-2xl border-2 border-[var(--border-ink)] bg-[var(--status-danger-bg,#FFE4E6)] p-4 shadow-[3px_3px_0px_var(--shadow-ink)]">
-            <p className="text-xs font-black tracking-wider text-[var(--status-danger-text,#BE123C)]">WARNING: DESTRUCTIVE RESTORE</p>
-            <p className="mt-1.5 text-xs font-medium leading-relaxed text-[var(--text-primary)]">
-              Restoring <span className="font-mono font-bold text-[var(--text-primary)]">{pendingFile.name}</span> will permanently overwrite and replace all current transactions, subscriptions, and accounts on this device.
-            </p>
-            <label className="mt-3 flex items-center gap-2 cursor-pointer text-xs font-bold text-[var(--text-secondary)] select-none">
-              <input
-                type="checkbox"
-                checked={autoBackupBeforeRestore}
-                onChange={(e) => setAutoBackupBeforeRestore(e.target.checked)}
-                className="h-4 w-4 rounded accent-[var(--theme-primary)]"
-              />
-              <span>Download safety backup before overwriting</span>
-            </label>
-            <div className="mt-4 flex gap-2">
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                disabled={busy}
-                onClick={() => setPendingFile(null)}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                variant="danger"
-                size="sm"
-                disabled={busy}
-                onClick={() => void confirmRestore()}
-                className="flex-1"
-              >
-                {busy ? "Restoring…" : "Overwrite & Restore"}
-              </Button>
-            </div>
-          </div>
+        {mainTab === "qr" ? (
+          <QrSyncPanel onClose={onClose} />
         ) : (
-          <div className="grid gap-3 pt-2">
-            <Button
-              type="button"
-              variant="primary"
-              size="md"
-              disabled={busy}
-              onClick={() => void backup()}
-              className="w-full"
-            >
-              {busy ? "Exporting…" : "Download ZIP backup"}
-            </Button>
+          <>
+            <p className="text-sm font-medium leading-relaxed text-neutral-700">
+              Your financial data stays securely on this device. Export a standalone ZIP archive or restore a previous Kaban vault snapshot.
+            </p>
 
-            <label className="inline-flex items-center justify-center cursor-pointer rounded-2xl border-2 border-[var(--border-ink)] bg-[var(--bg-card)] px-5 py-3 text-sm font-bold text-[var(--text-primary)] shadow-[3px_3px_0px_var(--shadow-ink)] neo-btn-interactive transition-all hover:bg-[var(--bg-muted)]">
-              Restore a ZIP backup
-              <input
-                type="file"
-                accept=".zip,application/zip"
-                className="hidden"
-                disabled={busy}
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) setPendingFile(file);
-                }}
-              />
-            </label>
-          </div>
+            <div className="rounded-2xl border-2 border-[var(--border-ink)] bg-[var(--status-warning-bg,#FEF3C7)] p-3 text-xs leading-relaxed text-[var(--text-primary)] shadow-[2px_2px_0px_var(--shadow-ink)]">
+              <span className="font-bold text-[var(--status-warning-text,#92400E)]">Privacy Notice:</span> Backups are unencrypted ZIP archives holding your raw ledger records and attachments. Store exported copies in a secure, private location.
+            </div>
+
+            <div className="rounded-2xl border-2 border-[var(--border-ink)] bg-[var(--bg-card)] p-3.5 shadow-[2px_2px_0px_var(--shadow-ink)] flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Local device storage</p>
+                <p className="mt-1 font-mono text-xs font-bold text-[var(--text-primary)]">
+                  {formatBytes(usage?.usage ?? null)} used of {formatBytes(usage?.quota ?? null)}
+                </p>
+              </div>
+              <KabanMascot pose="vault-locked" size={88} />
+            </div>
+
+            {/* Destructive restore confirmation step */}
+            {pendingFile ? (
+              <div className="rounded-2xl border-2 border-[var(--border-ink)] bg-[var(--status-danger-bg,#FFE4E6)] p-4 shadow-[3px_3px_0px_var(--shadow-ink)]">
+                <p className="text-xs font-black tracking-wider text-[var(--status-danger-text,#BE123C)]">WARNING: DESTRUCTIVE RESTORE</p>
+                <p className="mt-1.5 text-xs font-medium leading-relaxed text-[var(--text-primary)]">
+                  Restoring <span className="font-mono font-bold text-[var(--text-primary)]">{pendingFile.name}</span> will permanently overwrite and replace all current transactions, subscriptions, and accounts on this device.
+                </p>
+                <label className="mt-3 flex items-center gap-2 cursor-pointer text-xs font-bold text-[var(--text-secondary)] select-none">
+                  <input
+                    type="checkbox"
+                    checked={autoBackupBeforeRestore}
+                    onChange={(e) => setAutoBackupBeforeRestore(e.target.checked)}
+                    className="h-4 w-4 rounded accent-[var(--theme-primary)]"
+                  />
+                  <span>Download safety backup before overwriting</span>
+                </label>
+                <div className="mt-4 flex gap-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    disabled={busy}
+                    onClick={() => setPendingFile(null)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="danger"
+                    size="sm"
+                    disabled={busy}
+                    onClick={() => void confirmRestore()}
+                    className="flex-1"
+                  >
+                    {busy ? "Restoring…" : "Overwrite & Restore"}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="grid gap-3 pt-2">
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="md"
+                  disabled={busy}
+                  onClick={() => void backup()}
+                  className="w-full"
+                >
+                  {busy ? "Exporting…" : "Download ZIP backup"}
+                </Button>
+
+                <label className="inline-flex items-center justify-center cursor-pointer rounded-2xl border-2 border-[var(--border-ink)] bg-[var(--bg-card)] px-5 py-3 text-sm font-bold text-[var(--text-primary)] shadow-[3px_3px_0px_var(--shadow-ink)] neo-btn-interactive transition-all hover:bg-[var(--bg-muted)]">
+                  Restore a ZIP backup
+                  <input
+                    type="file"
+                    accept=".zip,application/zip"
+                    className="hidden"
+                    disabled={busy}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) setPendingFile(file);
+                    }}
+                  />
+                </label>
+              </div>
+            )}
+          </>
         )}
 
         {message && (

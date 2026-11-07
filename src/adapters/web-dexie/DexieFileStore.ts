@@ -1,6 +1,7 @@
 import { attachmentMetaSchema, attachmentMimeTypeSchema } from "../../core/models";
 import type { IFileStore } from "../../core/ports/IFileStore";
 import { KromaLedgerDB } from "./db";
+import { migrateAttachmentsToWebp, optimizeImageToWebp } from "./imageOptimizer";
 
 const safeId = /^[A-Za-z0-9_-]+$/;
 
@@ -18,16 +19,14 @@ export class DexieFileStore implements IFileStore {
   async saveAttachment(value: Parameters<IFileStore["saveAttachment"]>[0], data: Uint8Array): Promise<Parameters<IFileStore["saveAttachment"]>[0]> {
     let meta = attachmentMetaSchema.parse(value);
     if (!safeId.test(meta.id) || data.byteLength !== meta.size) throw new RangeError("Attachment metadata does not match its bytes");
-    let bytes = data;
-    if (meta.mimeType.startsWith("image/") && meta.mimeType !== "image/webp") {
-      const { default: imageCompression } = await import("browser-image-compression");
-      const inBuffer = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer;
-      const file = new File([inBuffer], meta.filename, { type: meta.mimeType });
-      const compressed = await imageCompression(file, { maxSizeMB: 0.5, maxWidthOrHeight: 1920, useWebWorker: false, fileType: "image/webp" });
-      bytes = new Uint8Array(await compressed.arrayBuffer());
-      const baseName = meta.filename.lastIndexOf(".") > 0 ? meta.filename.slice(0, meta.filename.lastIndexOf(".")) : meta.filename;
-      meta = attachmentMetaSchema.parse({ ...meta, filename: `${baseName}.webp`, mimeType: "image/webp", size: compressed.size });
-    }
+    const optimized = await optimizeImageToWebp(data, meta.filename, meta.mimeType);
+    const bytes = optimized.bytes;
+    meta = attachmentMetaSchema.parse({
+      ...meta,
+      filename: optimized.filename,
+      mimeType: optimized.mimeType,
+      size: optimized.size,
+    });
     const outBuffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
     const blob = new Blob([outBuffer], { type: meta.mimeType });
     await this.db.transaction("rw", this.db.attachments, this.db.attachmentFiles, this.db.transactions, this.db.invoices, async () => {
@@ -51,5 +50,9 @@ export class DexieFileStore implements IFileStore {
       await this.db.attachments.delete(id);
       await this.db.attachmentFiles.delete(id);
     });
+  }
+
+  async optimizeExistingAttachments(): Promise<number> {
+    return migrateAttachmentsToWebp(this.db);
   }
 }

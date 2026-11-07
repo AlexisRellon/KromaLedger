@@ -174,8 +174,8 @@ export function CommittedWaterfallCard({
         </div>
       </div>
 
-      {/* Bottom 2x2 Bento Grid (Replaces cramped 4-column row) */}
-      <div className="mt-4 grid grid-cols-2 gap-2.5 pt-1">
+      {/* Bottom 2x2 Bento Grid (1-col on mobile, 2x2 on sm+) */}
+      <div className="mt-4 grid grid-cols-1 gap-2 pt-1 sm:grid-cols-2 sm:gap-2.5">
         {[
           {
             label: "Subscriptions",
@@ -203,7 +203,7 @@ export function CommittedWaterfallCard({
         ].map((item) => (
           <div
             key={item.label}
-            className={`flex items-center justify-between rounded-xl border-2 border-[var(--border-ink)] px-3 py-2 shadow-[1px_1px_0px_var(--shadow-ink)] ${
+            className={`flex items-center justify-between gap-2 rounded-xl border-2 border-[var(--border-ink)] px-3 py-2 shadow-[1px_1px_0px_var(--shadow-ink)] ${
               item.tint ?? "bg-[var(--bg-subtle)]"
             }`}
           >
@@ -212,7 +212,7 @@ export function CommittedWaterfallCard({
                 className={`h-2.5 w-2.5 shrink-0 rounded-full border border-[var(--border-ink)] ${item.dotBg}`}
               />
               <span
-                className={`font-mono text-[11px] font-semibold whitespace-nowrap ${
+                className={`truncate font-mono text-[11px] font-semibold ${
                   item.textTone ?? "text-[var(--text-secondary)]"
                 }`}
               >
@@ -220,7 +220,7 @@ export function CommittedWaterfallCard({
               </span>
             </div>
             <span
-              className={`font-mono text-xs font-bold whitespace-nowrap ml-2 tabular-nums ${
+              className={`shrink-0 font-mono text-xs font-bold whitespace-nowrap tabular-nums ${
                 item.textTone ?? "text-[var(--text-primary)]"
               }`}
             >
