@@ -396,9 +396,9 @@
     "semantic_hash": ""
   },
   "src/ui/screens/SettingsScreen.tsx": {
-    "mtime": 1793960246.4062257,
-    "seen": 1793960283.0024912,
-    "ast_hash": "ab84489a115d33068eaf708cacbfe960",
+    "mtime": 1794113172.916247,
+    "seen": 1794113477.8302348,
+    "ast_hash": "5a1af0f50c0f2422095ef4d3b938f54f",
     "semantic_hash": ""
   },
   "DESIGN.md": {
@@ -2625,6 +2625,18 @@
     "mtime": 1794112576.2365754,
     "seen": 1794112612.440967,
     "ast_hash": "659ef379d61d20cdb7c5c486c9cd7182",
+    "semantic_hash": ""
+  },
+  "src/ui/components/AppPermissionsSection.tsx": {
+    "mtime": 1794113127.6519413,
+    "seen": 1794113477.8301477,
+    "ast_hash": "b111e7191e5fc74f60523eccc4e451af",
+    "semantic_hash": ""
+  },
+  "tests/ui/appPermissionsSection.test.tsx": {
+    "mtime": 1794113214.4633498,
+    "seen": 1794113477.8303125,
+    "ast_hash": "72fa4414bce26a7e33e7a6f5f46f9244",
     "semantic_hash": ""
   }
 }

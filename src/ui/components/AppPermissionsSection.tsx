@@ -203,21 +203,36 @@ export function AppPermissionsSection({ onShowNotice }: AppPermissionsSectionPro
     }
     setIsCheckingCamera(true);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" },
+      });
       // Stop all tracks immediately
       stream.getTracks().forEach((track) => track.stop());
       setCameraStatus("granted");
       onShowNotice?.("Camera access confirmed for QR Air-Sync.");
     } catch (err: unknown) {
+      console.warn("Camera request error:", err);
       const isDenied =
         err instanceof Error &&
         (err.name === "NotAllowedError" || err.name === "PermissionDeniedError");
-      setCameraStatus(isDenied ? "denied" : "unsupported");
-      onShowNotice?.(
-        isDenied
-          ? "Camera permission was denied in browser settings."
-          : "Could not open camera device."
-      );
+      const isNotFound =
+        err instanceof Error &&
+        (err.name === "NotFoundError" || err.name === "DevicesNotFoundError");
+
+      if (isDenied) {
+        setCameraStatus("denied");
+        onShowNotice?.("Camera permission was denied in browser settings.");
+      } else if (isNotFound) {
+        setCameraStatus("unsupported");
+        onShowNotice?.("No camera device was detected on this system.");
+      } else {
+        setCameraStatus("prompt");
+        onShowNotice?.(
+          err instanceof Error
+            ? `Camera error: ${err.message}`
+            : "Could not open camera device."
+        );
+      }
     } finally {
       setIsCheckingCamera(false);
     }
