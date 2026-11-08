@@ -14,22 +14,34 @@ describe("first boot onboarding", () => {
     const storage = memoryStorage();
     markFirstBoot(storage);
     markFirstBoot(storage);
+    expect(storage.getItem("kaban_onboarding")).toBe("pending");
     expect(storage.getItem("kromaledger_onboarding")).toBe("pending");
+    storage.setItem("kaban_onboarding", "done");
     storage.setItem("kromaledger_onboarding", "done");
     markFirstBoot(storage);
+    expect(storage.getItem("kaban_onboarding")).toBe("done");
     expect(storage.getItem("kromaledger_onboarding")).toBe("done");
   });
 
   it("does not introduce a tour to an existing installation", () => {
+    const storage = memoryStorage({ kaban_booted: "1" });
+    markFirstBoot(storage);
+    expect(storage.getItem("kaban_onboarding")).toBeNull();
+    expect(storage.getItem("kromaledger_onboarding")).toBeNull();
+  });
+
+  it("preserves backward compatibility for existing kromaledger_booted installations", () => {
     const storage = memoryStorage({ kromaledger_booted: "1" });
     markFirstBoot(storage);
+    expect(storage.getItem("kaban_onboarding")).toBeNull();
     expect(storage.getItem("kromaledger_onboarding")).toBeNull();
   });
 
   it("marks onboarding pending again after a reset and keeps it pending across boot", () => {
-    const storage = memoryStorage({ kromaledger_booted: "1", kromaledger_onboarding: "done" });
+    const storage = memoryStorage({ kaban_booted: "1", kaban_onboarding: "done" });
     restartOnboarding(storage);
     markFirstBoot(storage);
+    expect(storage.getItem("kaban_onboarding")).toBe("pending");
     expect(storage.getItem("kromaledger_onboarding")).toBe("pending");
   });
 });

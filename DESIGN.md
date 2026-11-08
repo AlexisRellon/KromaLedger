@@ -77,7 +77,7 @@ components:
 - **Cultural Typography**: Filipino sign-painting brushcraft (**Dangwa**) and historical monument lettering (**Bantayog**), paired with modern Swiss grotesque body text (**Satoshi**) and deterministic financial numerics (**JetBrains Mono**).
 
 > [!NOTE]
-> **Evolution Note**: Kaban completely replaces the obsolete "Stealth Smoked-Glass & Electric Volt" dark design. Database identifiers (`KromaLedgerDB`) and backup archive formats (`kromaledger-vault-*.zip`) remain backward-compatible to guarantee zero data loss.
+> **Evolution Note**: Kaban completely replaces the obsolete "Stealth Smoked-Glass & Electric Volt" dark design. Database identifiers (`KromaLedgerDB`) and backup archives export as `kaban-vault-*.zip` while legacy formats (`kromaledger-vault-*.zip`) remain backward-compatible to guarantee zero data loss.
 
 ---
 

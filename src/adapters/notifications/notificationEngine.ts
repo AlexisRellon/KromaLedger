@@ -1,10 +1,13 @@
 import type { AppNotification } from "../../core/models";
 
-const SHOWN_BROWSER_NOTIFS_KEY = "kromaledger_shown_browser_notifications";
+const SHOWN_BROWSER_NOTIFS_KEY = "kaban_shown_browser_notifications";
+const LEGACY_SHOWN_BROWSER_NOTIFS_KEY = "kromaledger_shown_browser_notifications";
 
 function getShownIds(): Set<string> {
   try {
-    const raw = sessionStorage.getItem(SHOWN_BROWSER_NOTIFS_KEY);
+    const raw =
+      sessionStorage.getItem(SHOWN_BROWSER_NOTIFS_KEY) ??
+      sessionStorage.getItem(LEGACY_SHOWN_BROWSER_NOTIFS_KEY);
     return new Set(raw ? JSON.parse(raw) : []);
   } catch {
     return new Set();

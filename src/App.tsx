@@ -33,11 +33,20 @@ export function App() {
   const closeAI = useAIStore((s) => s.closeModal);
   const [backupOpen, setBackupOpen] = useState(false);
   const [tourOpen, setTourOpen] = useState(() => {
-    try { return localStorage.getItem("kromaledger_onboarding") === "pending"; }
-    catch { return false; }
+    try {
+      const status =
+        localStorage.getItem("kaban_onboarding") ??
+        localStorage.getItem("kromaledger_onboarding");
+      return status === "pending";
+    } catch {
+      return false;
+    }
   });
   const finishTour = () => {
-    try { localStorage.setItem("kromaledger_onboarding", "done"); } catch {}
+    try {
+      localStorage.setItem("kaban_onboarding", "done");
+      localStorage.setItem("kromaledger_onboarding", "done");
+    } catch {}
     setTourOpen(false);
   };
   const startTour = () => {

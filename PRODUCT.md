@@ -16,7 +16,7 @@ Provide an uncompromisingly fast, local-first personal financial vault. Operates
 
 ## Positioning
 
-100% on-device, local-first financial ledger with deterministic integer math, a 3-second tactile numpad entry drawer, multi-wallet balance tracking, and an exportable IndexedDB vault archive (`kromaledger-vault-YYYY-MM-DD.zip`). 
+100% on-device, local-first financial ledger with deterministic integer math, a 3-second tactile numpad entry drawer, multi-wallet balance tracking, and an exportable IndexedDB vault archive (`kaban-vault-YYYY-MM-DD.zip`). 
 
 ## Operating Context
 
@@ -27,7 +27,7 @@ Mobile-first Progressive Web App (PWA) with offline execution, floating dock nav
 - **Local Storage Sovereign**: Local IndexedDB storage engine (`KromaLedgerDB`) via Dexie.js with persistent storage permission requests (`navigator.storage.persist()`). Database identifier maintained for full backwards-compatibility.
 - **Discrete Attachment Vault**: WebP image compression for receipts and invoice PDFs stored in an isolated `attachments` object store to guarantee instant query performance.
 - **Deterministic Math**: Strict minor-unit integer arithmetic (centavos/cents) and date-only ISO validation to eliminate floating-point drift.
-- **Atomic Backup & Restore**: Single-transaction full-archive export and atomic restore with checksum validation (`kromaledger-vault-YYYY-MM-DD.zip`).
+- **Atomic Backup & Restore**: Single-transaction full-archive export and atomic restore with checksum validation (`kaban-vault-YYYY-MM-DD.zip`, with legacy `kromaledger-vault-*.zip` archives fully supported).
 - **Subscription Boot Reconciler**: Automatic detection and chronological backfilling of recurring charges upon application boot.
 - **Dynamic Cashflow Analytics**: Real-time net outflow calculations, burn rate meters, fixed vs. variable spending breakdown, and upcoming obligation schedules.
 - **Physical Wallets Deck**: Support for tracking multiple physical accounts (cash, bank, e-wallets) with live balances and transfer fees.

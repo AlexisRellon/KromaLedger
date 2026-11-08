@@ -77,7 +77,7 @@ export const userProfileSchema = z.object({
   id: z.literal("profile").default("profile"),
   name: z.string().min(1).default("Anonymous Operator"),
   handle: z.string().default("operator"),
-  email: z.string().default("operator@kroma.local"),
+  email: z.string().default("operator@kaban.local"),
   initials: z.string().max(4).default("KO"),
   themeColor: z.string().default("#D9F938"),
   defaultCurrency: currencySchema.default("PHP"),

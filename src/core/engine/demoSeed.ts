@@ -45,7 +45,7 @@ export function createDemoSeed(today: string): DemoSeed {
     id: "profile",
     name: "Operator",
     handle: "operator",
-    email: "operator@kroma.local",
+    email: "operator@kaban.local",
     initials: "KO",
     themeColor: "#D9F938",
     defaultCurrency: "PHP",

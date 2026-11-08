@@ -390,7 +390,7 @@ export class DexieStorageRepo implements IStorageRepo {
         id: "profile",
         name: "Anonymous Operator",
         handle: "operator",
-        email: "operator@kroma.local",
+        email: "operator@kaban.local",
         initials: "KO",
         themeColor: "#D9F938",
         defaultCurrency: "PHP",

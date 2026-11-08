@@ -8,7 +8,7 @@ export interface AttachmentFileRecord {
   blob: Blob;
 }
 
-export class KromaLedgerDB extends Dexie {
+export class KabanDB extends Dexie {
   transactions!: Table<Transaction, string>;
   subscriptions!: Table<Subscription, string>;
   invoices!: Table<Invoice, string>;
@@ -22,6 +22,7 @@ export class KromaLedgerDB extends Dexie {
   notifications!: Table<AppNotification, string>;
 
   constructor() {
+    // Preserve "KromaLedgerDB" as the on-device IndexedDB database identifier for zero-loss backwards compatibility
     super("KromaLedgerDB");
     this.version(2).stores({
       transactions: "&id,date,type,categoryId,subscriptionId,invoiceId",
@@ -46,3 +47,5 @@ export class KromaLedgerDB extends Dexie {
     });
   }
 }
+
+export { KabanDB as KromaLedgerDB };

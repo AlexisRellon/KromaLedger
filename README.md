@@ -15,7 +15,7 @@ Reflecting this heritage of private custody, Kaban abandons sterile fintech glas
 - **Authentic Local Typography**: **Dangwa** (Filipino public transport brush lettering by Aaron Amar) and **Bantayog** (Philippine monument display lettering by Jad Maza), paired with **Satoshi** (modern body grotesque) and **JetBrains Mono** (monospaced tabular financial numbers).
 
 > [!NOTE]
-> **Compatibility Note**: To preserve existing user databases during the rebrand, the underlying IndexedDB database identifier remains `KromaLedgerDB`, and the backup vault archive format remains `kromaledger-vault-YYYY-MM-DD.zip`.
+> **Compatibility Note**: To preserve existing user databases during the rebrand, the underlying IndexedDB database identifier remains `KromaLedgerDB`. Backups export as `kaban-vault-YYYY-MM-DD.zip`, while legacy `kromaledger-vault-*.zip` archives remain fully importable.
 
 ---
 

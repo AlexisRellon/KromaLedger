@@ -25,7 +25,7 @@ afterEach(() => db.close());
 describe("vault ZIP", () => {
   it("round-trips database rows and binary attachments", async () => {
     const archive = await exportVault(db, "2026-10-20");
-    expect(archive.filename).toBe("kromaledger-vault-2026-10-20.zip");
+    expect(archive.filename).toBe("kaban-vault-2026-10-20.zip");
     const zip = await JSZip.loadAsync(archive.data);
     expect(await zip.file("db-dump.json")?.async("string")).toContain('"formatVersion":1');
     expect(await zip.file("attachments/receipt")?.async("uint8array")).toEqual(new Uint8Array([1, 2, 3]));

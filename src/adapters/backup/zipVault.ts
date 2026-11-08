@@ -141,7 +141,7 @@ export async function exportVault(db: KromaLedgerDB, today: string): Promise<{ f
   const zip = new JSZip();
   zip.file("db-dump.json", JSON.stringify(dump));
   await Promise.all(files.map(async (file) => zip.file(`attachments/${file.id}`, await file.blob.arrayBuffer())));
-  return { filename: `kromaledger-vault-${today}.zip`, data: await zip.generateAsync({ type: "uint8array", compression: "DEFLATE", compressionOptions: { level: 6 } }) };
+  return { filename: `kaban-vault-${today}.zip`, data: await zip.generateAsync({ type: "uint8array", compression: "DEFLATE", compressionOptions: { level: 6 } }) };
 }
 
 export async function restoreVault(db: KromaLedgerDB, data: Uint8Array): Promise<void> {

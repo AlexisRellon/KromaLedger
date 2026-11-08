@@ -59,7 +59,10 @@ function getInitialTab(): NavTab {
     const fromHash = parseNavTab(window.location.hash);
     if (fromHash) return fromHash;
     try {
-      const fromStorage = parseNavTab(localStorage.getItem("kromaledger_active_tab"));
+      const fromStorage = parseNavTab(
+        localStorage.getItem("kaban_active_tab") ??
+        localStorage.getItem("kromaledger_active_tab")
+      );
       if (fromStorage) return fromStorage;
     } catch {}
   }
@@ -98,6 +101,7 @@ export const useUIStore = create<UIState>((set) => ({
             history.replaceState(null, "", window.location.pathname + window.location.search);
           }
         }
+        localStorage.setItem("kaban_active_tab", activeNavTab);
         localStorage.setItem("kromaledger_active_tab", activeNavTab);
       } catch {}
     }

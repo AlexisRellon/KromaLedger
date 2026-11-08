@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Button, FormField, Input, ModalShell, SmokedCard, Toggle, getAvatarColors, KabanMascot } from "../primitives";
 import { WalletFormModal } from "../components/WalletFormModal";
+import { AppPermissionsSection } from "../components/AppPermissionsSection";
 import { WALLET_TYPES, WalletTypeIcon, CashIcon } from "../components/WalletTypeIcon";
 import {
   useClearAllData,
@@ -574,7 +575,10 @@ export function SettingsScreen({
         </div>
       </SmokedCard>
 
-      {/* 4. Storage & Backup Card */}
+      {/* 4. App Permissions Section */}
+      <AppPermissionsSection onShowNotice={showNotice} />
+
+      {/* 5. Storage & Backup Card */}
       <SmokedCard>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <KabanMascot pose="standalone" size={56} />
@@ -598,7 +602,7 @@ export function SettingsScreen({
         </div>
       </SmokedCard>
 
-      {/* 5. Danger Zone */}
+      {/* 6. Danger Zone */}
       <section
         aria-label="Danger Zone"
         className="rounded-3xl border-3 border-neutral-900 bg-[#FFE4E6] p-6 shadow-[5px_5px_0px_#18181B]"

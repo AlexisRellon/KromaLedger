@@ -51,7 +51,7 @@ export function EditProfileModal({
         ...profile,
         name: name.trim(),
         handle: handle.trim() || "operator",
-        email: email.trim() || "operator@kroma.local",
+        email: email.trim() || "operator@kaban.local",
         initials: initials.trim().toUpperCase() || "KO",
         themeColor,
         defaultCurrency,

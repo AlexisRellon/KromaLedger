@@ -67,7 +67,10 @@ export function WebBootstrap({ children }: PropsWithChildren) {
   const [ready, setReady] = useState(() => {
     if (typeof window !== "undefined") {
       try {
-        return localStorage.getItem("kromaledger_booted") === "1";
+        return (
+          localStorage.getItem("kaban_booted") === "1" ||
+          localStorage.getItem("kromaledger_booted") === "1"
+        );
       } catch {}
     }
     return false;

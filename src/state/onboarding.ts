@@ -5,12 +5,22 @@ export function parseStartingBalance(value: string): number {
 }
 
 export function restartOnboarding(storage: Pick<Storage, "setItem">) {
+  storage.setItem("kaban_onboarding", "pending");
   storage.setItem("kromaledger_onboarding", "pending");
 }
 
 export function markFirstBoot(storage: Pick<Storage, "getItem" | "setItem">) {
-  if (storage.getItem("kromaledger_booted") !== "1" && !storage.getItem("kromaledger_onboarding")) {
+  const isBooted =
+    storage.getItem("kaban_booted") === "1" ||
+    storage.getItem("kromaledger_booted") === "1";
+  const onboardingStatus =
+    storage.getItem("kaban_onboarding") ??
+    storage.getItem("kromaledger_onboarding");
+
+  if (!isBooted && !onboardingStatus) {
+    storage.setItem("kaban_onboarding", "pending");
     storage.setItem("kromaledger_onboarding", "pending");
   }
+  storage.setItem("kaban_booted", "1");
   storage.setItem("kromaledger_booted", "1");
 }

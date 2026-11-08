@@ -2,8 +2,10 @@ import { type AIChatMessage, type AIChatThread } from "../../core/models/ai";
 
 export { type AIChatMessage, type AIChatThread };
 
-const THREADS_STORAGE_KEY = "kromaledger_ai_threads_v2";
-const ACTIVE_THREAD_KEY = "kromaledger_ai_active_thread_v2";
+const THREADS_STORAGE_KEY = "kaban_ai_threads_v2";
+const ACTIVE_THREAD_KEY = "kaban_ai_active_thread_v2";
+const LEGACY_THREADS_STORAGE_KEY = "kromaledger_ai_threads_v2";
+const LEGACY_ACTIVE_THREAD_KEY = "kromaledger_ai_active_thread_v2";
 const LEGACY_STORAGE_KEY = "kromaledger_ai_chat_history_v1";
 
 const memoryStore = new Map<string, string>();
@@ -64,11 +66,11 @@ export function createEmptyThread(title = "New Consultation"): AIChatThread {
 export function loadAllThreads(): { threads: AIChatThread[]; activeThreadId: string } {
   try {
     const storage = getStorage();
-    const raw = storage.getItem(THREADS_STORAGE_KEY);
+    const raw = storage.getItem(THREADS_STORAGE_KEY) ?? storage.getItem(LEGACY_THREADS_STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        const storedActiveId = storage.getItem(ACTIVE_THREAD_KEY);
+        const storedActiveId = storage.getItem(ACTIVE_THREAD_KEY) ?? storage.getItem(LEGACY_ACTIVE_THREAD_KEY);
         const resolvedActiveId =
           storedActiveId && parsed.some((t: AIChatThread) => t.id === storedActiveId)
             ? storedActiveId
@@ -113,7 +115,10 @@ export function saveAllThreads(threads: AIChatThread[]): void {
       ...t,
       messages: t.messages.slice(-50),
     }));
-    getStorage().setItem(THREADS_STORAGE_KEY, JSON.stringify(trimmed));
+    const storage = getStorage();
+    const json = JSON.stringify(trimmed);
+    storage.setItem(THREADS_STORAGE_KEY, json);
+    storage.setItem(LEGACY_THREADS_STORAGE_KEY, json);
   } catch {
     // Local storage quota or security error
   }
@@ -121,7 +126,8 @@ export function saveAllThreads(threads: AIChatThread[]): void {
 
 export function getActiveThreadId(): string | null {
   try {
-    return getStorage().getItem(ACTIVE_THREAD_KEY);
+    const storage = getStorage();
+    return storage.getItem(ACTIVE_THREAD_KEY) ?? storage.getItem(LEGACY_ACTIVE_THREAD_KEY);
   } catch {
     return null;
   }
@@ -129,7 +135,9 @@ export function getActiveThreadId(): string | null {
 
 export function setActiveThreadId(id: string): void {
   try {
-    getStorage().setItem(ACTIVE_THREAD_KEY, id);
+    const storage = getStorage();
+    storage.setItem(ACTIVE_THREAD_KEY, id);
+    storage.setItem(LEGACY_ACTIVE_THREAD_KEY, id);
   } catch {
     // Non-fatal
   }
