@@ -1,6 +1,51 @@
-# Kaban
+# Kaban Blueprint
 
 **Kaban** (formerly KromaLedger) is a local-first, on-device financial vault and tracker for daily expenses, recurring subscriptions, itemized client invoices, and physical wallets. Built with a tactile Philippine neobrutalist aesthetic, it operates entirely in the browser using IndexedDB with zero remote tracking, zero account sign-ups, and zero cloud lock-in.
+
+---
+
+## System Overview
+
+Kaban follows a ports-and-adapters architecture with a strict portability boundary:
+- Platform-agnostic domain models, ports, and financial engines live under `src/core/`.
+- State orchestration (`StorageContext`, Zustand stores, TanStack Query hooks, and toolkit-agnostic presentation ports) lives under `src/state/`.
+- Browser persistence (Dexie IndexedDB `KromaLedgerDB`), ZIP/QR Air-Sync backup, Web Notifications, and the Netlify AI client live under `src/adapters/`, while the React UI lives under `src/ui/`.
+- A legacy Netlify serverless proxy (`netlify/functions/gemma.ts`; Netlify hosting is now deprecated—the frontend is hosted on Cloudflare Pages via `wrangler` CLI and `wrangler.jsonc`) mediates optional Google Generative Language API calls with per-IP hourly rate limiting and multi-key rotation, while `scripts/` and `design/` house build/portability verification and brand asset generation scripts.
+
+## Local Interface & Invariants
+
+- `default export` (`defineConfig(({ mode }) => ...)`): [vite.config.ts](./vite.config.ts) — Configures Vite, React, Tailwind CSS v4, `VitePWA` (`registerType: "autoUpdate"`, Workbox runtime caching for `/fonts/` and `img.logo.dev`), Rollup `manualChunks` (`vendor-react`, `vendor-query`, `vendor-db`, `vendor-utils`), and Vitest (`test: { environment: "node" }`).
+- **Cloudflare Pages Deployment Config**: [wrangler.jsonc](./wrangler.jsonc) configures Cloudflare Pages (`name: "kaban"`, `pages_build_output_dir: "./dist"`, `compatibility_date: "2026-11-06"`) for `wrangler` CLI deployments.
+- **Dev Function Proxy Invariant**: `vite.config.ts` registers the `netlify-functions-dev-proxy` middleware to route local `/.netlify/functions/gemma` HTTP requests to `./netlify/functions/gemma.ts`.
+- **Local Side Effects**: `vite.config.ts` invokes `loadEnv(mode, proc.cwd(), "")` and merges loaded variables into `process.env` during Vite startup.
+
+## Subdirectories & System Boundaries
+
+- `src`: [./src/README.md](./src/README.md) - Application entrypoint (`App.tsx`, `main.tsx`) and layered source packages (`core`, `adapters`, `state`, `ui`).
+- `netlify`: [./netlify/README.md](./netlify/README.md) - Deprecated Netlify hosting runtime containing the legacy rate-limited Google Generative Language proxy (`gemma.ts`).
+- `scripts`: [./scripts/README.md](./scripts/README.md) - Node.js ESM verification and asset scripts (`verify-lock.mjs`, `lockPolicy.mjs`, `verify-portability.mjs`, `downloadBrands.mjs`).
+- `design`: [./design/README.md](./design/README.md) - Kaban and Baulito brand identity explorations, font outline study, and verified `logo-kit` asset pipeline.
+
+## Global Invariants
+
+- **Strict Headless Portability**: `src/core/` and `src/state/` must remain free of browser-only globals, DOM/intrinsic JSX elements, and Dexie imports, and must represent at least 10% of nonblank `.ts`/`.tsx`/`.css` lines in `src/` (`scripts/verify-portability.mjs`).
+- **Exact Dependency & Lockfile Policy**: `package.json` (`private: true`, `name` `"kaban"` or `"kromaledger"`) and `package-lock.json` must pin exact SemVer dependency versions (no `^`/`~` ranges) with `react`/`react-dom` on `19.x` (`scripts/lockPolicy.mjs`).
+- **Minor-Unit & Atomic Ledger Integrity**: Monetary values across `src/core/`, `src/adapters/web-dexie/`, and `src/adapters/backup/` operate on `Number.isSafeInteger` minor units; mutations affecting balances, reconciliation, or vault restore execute inside atomic Dexie `rw` transactions.
+- **Database Compatibility**: To preserve existing user vaults during the rebrand, the underlying IndexedDB database identifier remains `KromaLedgerDB`. Backups export as `kaban-vault-YYYY-MM-DD.zip`, while legacy `kromaledger-vault-*.zip` archives remain importable.
+
+## Global Side Effects
+
+- **On-Device Browser Storage**: Reads and mutates IndexedDB (`KromaLedgerDB` across 11 object stores), `localStorage` (`kaban_*` and legacy `kromaledger_*` keys), `sessionStorage`, and `blob:` Object URLs.
+- **Browser APIs & Permissions**: Requests persistent storage (`navigator.storage.persist()`), camera access (`navigator.mediaDevices.getUserMedia`) for QR Air-Sync scanning, Web Notifications (`Notification`), and ZIP archive downloads / `location.reload()` after vault restores.
+- **External Network Calls**: Optional AI budget advisor requests target `/.netlify/functions/gemma`, which forwards HTTPS `POST` requests to `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent`; `scripts/downloadBrands.mjs` fetches institution icons from `https://img.logo.dev/`.
+
+## System Verification
+
+- Run: `npm test`
+- Run: `npm run typecheck`
+- Run: `npm run verify:lock`
+- Run: `node scripts/verify-portability.mjs`
+- Run: `npm run build`
 
 ---
 
@@ -13,9 +58,6 @@ Reflecting this heritage of private custody, Kaban abandons sterile fintech glas
 - **Charcoal Ink**: Bold 2px dark ink borders (`#18181B`) and hard offset shadows (`3px 3px 0px #18181B`).
 - **Heritage Palette**: Royal Plum (`#4A154B`), Lavender (`#EDE9FE`), and Kaban Gold (`#F59E0B` / `#FBBF24`), accompanied by fresh mint (`#10B981`) and rose (`#F43F5E`) ledger indicators.
 - **Authentic Local Typography**: **Dangwa** (Filipino public transport brush lettering by Aaron Amar) and **Bantayog** (Philippine monument display lettering by Jad Maza), paired with **Satoshi** (modern body grotesque) and **JetBrains Mono** (monospaced tabular financial numbers).
-
-> [!NOTE]
-> **Compatibility Note**: To preserve existing user databases during the rebrand, the underlying IndexedDB database identifier remains `KromaLedgerDB`. Backups export as `kaban-vault-YYYY-MM-DD.zip`, while legacy `kromaledger-vault-*.zip` archives remain fully importable.
 
 ---
 
@@ -58,45 +100,6 @@ npx wrangler pages deploy dist --project-name=kaban
 
 ---
 
-## Verification & Quality Gates
-
-Run the automated test suites, typechecks, and portability guardrails:
-
-```sh
-npm run verify:lock
-npm run typecheck
-npm test
-npm run build
-node scripts/verify-portability.mjs
-```
-
-### Strict Headless Portability
-The portability checker (`scripts/verify-portability.mjs`) counts nonblank TypeScript, TSX, and CSS lines across `src`. It enforces strict decoupling by rejecting any browser-specific APIs (`window`, `document`, DOM events) and intrinsic web JSX from `src/core` and `src/state`. This architecture guarantees that core accounting logic and state managers can be ported directly to native mobile frameworks (such as React Native / Expo) without modifications.
-
----
-
-## Architecture & Codebase Layout
-
-```text
-src/
-├── core/                         # 100% Headless domain models, calculators, reconcilers
-│   ├── engine/                   # Reconciler, cashflow, fees, invoice math, numpad evaluator
-│   ├── models/                   # Zod schemas & TypeScript types (Transaction, Invoice, Wallet, etc.)
-│   └── ports/                    # Abstract contracts (IStorageRepo, IFileStore)
-├── adapters/                     # Browser-specific implementations
-│   ├── web-dexie/                # Dexie.js (KromaLedgerDB) storage repo & WebP image compression
-│   └── backup/                   # Zip archive export and atomic restore engine
-├── state/                        # State orchestration (TanStack Query + Zustand)
-│   ├── queries/                  # React Query hooks for reactive UI subscriptions
-│   └── StorageContext.tsx        # Injected storage repo provider
-└── ui/                           # Neobrutalist web interface & responsive screens
-    ├── primitives/               # Centralized design system controls (Button, Field, Modal, ChartFrame)
-    ├── components/               # Domain widgets (TopStatusHeader, FloatingNavPill, QuickAddDrawer)
-    └── screens/                  # HomeDashboard, PendingAndSubsHub, WalletsScreen, SettingsScreen
-```
-
----
-
 ## Local Vault & Atomic Backup
 
 Kaban stores your financial data entirely on this device.
@@ -107,8 +110,8 @@ Kaban stores your financial data entirely on this device.
 
 ## Self-Hosted Fonts & Provenance
 
-All font assets are bundled locally in [`public/fonts/`](file:///public/fonts/) to eliminate external network requests:
-- **Dangwa**: Brush typeface by Aaron Amar (Manila, Philippines). Sourced from Behance. 100% Free for Commercial and Personal Use ([`Dangwa-LICENSE.txt`](file:///public/fonts/Dangwa-LICENSE.txt)).
-- **Bantayog**: Rough monument typeface by Jad Maza (© 2020). Single-user free license ([`Licensing - Bantayog [FREE].txt`](file:///public/fonts/Licensing - Bantayog [FREE].txt)). Web embedding permitted via local `@font-face` per Jad Maza EULA (https://jadmaza.gumroad.com/p/eula-free).
-- **Satoshi & Cabinet Grotesk**: Variable grotesque typefaces by Indian Type Foundry. Free commercial use ([`Satoshi-LICENSE.txt`](file:///public/fonts/Satoshi-LICENSE.txt), [`CabinetGrotesk-LICENSE.txt`](file:///public/fonts/CabinetGrotesk-LICENSE.txt)).
-- **JetBrains Mono**: Monospaced tabular numerals by JetBrains. SIL Open Font License 1.1 ([`JetBrainsMono-OFL.txt`](file:///public/fonts/JetBrainsMono-OFL.txt)).
+All font assets are bundled locally in [`./public/fonts/`](./public/fonts/) to eliminate external network requests:
+- **Dangwa**: Brush typeface by Aaron Amar (Manila, Philippines). Sourced from Behance. 100% Free for Commercial and Personal Use ([`Dangwa-LICENSE.txt`](./public/fonts/Dangwa-LICENSE.txt)).
+- **Bantayog**: Rough monument typeface by Jad Maza (© 2020). Single-user free license ([`Licensing - Bantayog [FREE].txt`](./public/fonts/Licensing%20-%20Bantayog%20%5BFREE%5D.txt)). Web embedding permitted via local `@font-face` per Jad Maza EULA (https://jadmaza.gumroad.com/p/eula-free).
+- **Satoshi & Cabinet Grotesk**: Variable grotesque typefaces by Indian Type Foundry. Free commercial use ([`Satoshi-LICENSE.txt`](./public/fonts/Satoshi-LICENSE.txt), [`CabinetGrotesk-LICENSE.txt`](./public/fonts/CabinetGrotesk-LICENSE.txt)).
+- **JetBrains Mono**: Monospaced tabular numerals by JetBrains. SIL Open Font License 1.1 ([`JetBrainsMono-OFL.txt`](./public/fonts/JetBrainsMono-OFL.txt)).
