@@ -1,4 +1,5 @@
 import { invoiceItemSchema, invoiceSchema, subscriptionSchema, transactionSchema, type Invoice, type InvoiceItem, type Subscription, type Transaction, type Wallet } from "../models";
+import { parseUtcDate } from "./manilaDate";
 import { cycleDate } from "./reconciler";
 import { obligationDueDate } from "./obligationSchedule";
 
@@ -72,7 +73,7 @@ export async function confirmSubscriptionCycle(gateway: LedgerCommandGateway, in
       }
     }
     const billingAnchorDate = subscription.billingAnchorDate ?? subscription.nextBillingDate;
-    const anchor = new Date(`${billingAnchorDate}T00:00:00.000Z`);
+    const anchor = parseUtcDate(billingAnchorDate);
     let count = 0;
     let nextBillingDate = cycleDate(anchor, subscription.billingCycle, count);
     while (nextBillingDate <= payment.date) {

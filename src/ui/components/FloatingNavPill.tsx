@@ -55,12 +55,17 @@ export function FloatingNavPill() {
 
   useEffect(() => {
     const checkModal = () => {
-      const dialog = document.querySelector('[role="dialog"]');
+      const dialog = document.querySelector('dialog[open], [role="dialog"]');
       setHasModalOpen(Boolean(dialog));
     };
     checkModal();
     const observer = new MutationObserver(checkModal);
-    observer.observe(document.body, { childList: true, subtree: true });
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["open", "role"],
+    });
     return () => observer.disconnect();
   }, []);
 

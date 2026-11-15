@@ -1,8 +1,9 @@
 import { z } from "zod";
 
 const dateOnlySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine((value) => {
-  const date = new Date(`${value}T00:00:00.000Z`);
-  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
+  const [y = 0, m = 0, d = 0] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(y, m - 1, d));
+  return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d;
 }, "Expected a real ISO calendar date");
 
 export const weeklyBudgetSnapshotSchema = z.object({

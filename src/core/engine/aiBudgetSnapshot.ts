@@ -7,26 +7,11 @@ import {
   type Wallet,
   type WeeklyBudgetSnapshot,
 } from "../models";
-
-function parseDateUtc(dateStr: string): Date {
-  dateOnlySchema.parse(dateStr);
-  const date = new Date(`${dateStr}T00:00:00.000Z`);
-  if (!Number.isFinite(date.getTime())) throw new RangeError(`Invalid date: ${dateStr}`);
-  return date;
-}
-
-function formatDateUtc(date: Date): string {
-  return date.toISOString().slice(0, 10);
-}
-
-function addDaysUtc(date: Date, days: number): Date {
-  const next = new Date(date.getTime());
-  next.setUTCDate(next.getUTCDate() + days);
-  return next;
-}
+import { addDaysManila, parseUtcDate } from "./manilaDate";
 
 export function getIsoWeekBoundaries(todayStr: string): { start: string; end: string; daysRemaining: number } {
-  const current = parseDateUtc(todayStr);
+  dateOnlySchema.parse(todayStr);
+  const current = parseUtcDate(todayStr);
   // getUTCDay: 0 is Sun, 1 is Mon, ..., 6 is Sat
   const dayOfWeek = current.getUTCDay();
   // Monday is 1; Sunday is 7
@@ -34,12 +19,9 @@ export function getIsoWeekBoundaries(todayStr: string): { start: string; end: st
   const daysToMonday = 1 - isoDay;
   const daysToSunday = 7 - isoDay;
 
-  const monday = addDaysUtc(current, daysToMonday);
-  const sunday = addDaysUtc(current, daysToSunday);
-
   return {
-    start: formatDateUtc(monday),
-    end: formatDateUtc(sunday),
+    start: addDaysManila(todayStr, daysToMonday),
+    end: addDaysManila(todayStr, daysToSunday),
     daysRemaining: daysToSunday + 1, // inclusive of today
   };
 }
@@ -80,7 +62,7 @@ export function buildWeeklyBudgetSnapshot(input: BuildSnapshotInput): WeeklyBudg
   const netObligationsMinor = (subscriptionsMinor + unpaidPayableInvoicesMinor) - expectedReceivablesMinor;
 
   // 30-day discretionary spending history
-  const thirtyDaysAgo = formatDateUtc(addDaysUtc(parseDateUtc(input.today), -30));
+  const thirtyDaysAgo = addDaysManila(input.today, -30);
   const recentExpenses = input.transactions.filter(
     (t) => t.date >= thirtyDaysAgo && t.date <= input.today && t.type === "EXPENSE" && t.amountMinor < 0
   );

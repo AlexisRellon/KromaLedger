@@ -184,7 +184,8 @@ export function resolveEffectiveMode(mode: ThemeMode): "light" | "dark" {
 export function applyThemeToDom(prefs: ThemePreferences) {
   if (typeof document === "undefined") return;
 
-  const root = document.documentElement;
+  const doc = document;
+  const root = doc.documentElement;
   const effectiveMode = resolveEffectiveMode(prefs.themeMode);
   const theme = getThemeConfig(prefs.appTheme);
   const isDark = effectiveMode === "dark";
@@ -198,6 +199,12 @@ export function applyThemeToDom(prefs: ThemePreferences) {
     root.classList.add("dark");
   } else {
     root.classList.remove("dark");
+  }
+
+  root.style.colorScheme = isDark ? "dark" : "light";
+  const themeColorMeta = doc.querySelector?.('meta[name="theme-color"]') ?? null;
+  if (themeColorMeta) {
+    themeColorMeta.setAttribute("content", isDark ? "#121316" : "#FAF8F5");
   }
 
   // Accessibility flags

@@ -202,12 +202,17 @@ function BlockComponent({ block }: { block: Block }) {
 
   if (block.type === "table") {
     return (
-      <div className="overflow-x-auto rounded-xl border-2 border-neutral-900 bg-white shadow-[2px_2px_0px_#18181B] my-2">
+      <div
+        tabIndex={0}
+        role="region"
+        aria-label="Markdown table"
+        className="overflow-x-auto rounded-xl border-2 border-neutral-900 bg-white shadow-[2px_2px_0px_#18181B] my-2 focus-visible:outline-2 focus-visible:outline-[#4A154B]"
+      >
         <table className="w-full text-sm text-left">
           <thead className="bg-[#FAF8F5] text-neutral-900 border-b-2 border-neutral-900">
             <tr>
               {block.headers.map((h, idx) => (
-                <th key={idx} className="px-3 py-2 text-xs font-mono font-bold uppercase tracking-[0.15em] text-neutral-900">
+                <th key={idx} scope="col" className="px-3 py-2 text-xs font-mono font-bold uppercase tracking-[0.15em] text-neutral-900">
                   <InlineContent text={h} />
                 </th>
               ))}

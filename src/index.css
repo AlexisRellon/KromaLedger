@@ -69,6 +69,9 @@
 
 :root {
   color-scheme: light;
+  accent-color: var(--theme-primary);
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-muted) var(--bg-muted);
   font-family: "Satoshi", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* --- Canvas & Surface Tokens --- */
@@ -449,21 +452,39 @@ html.large-text {
   font-size: 112.5%;
 }
 
+.overflow-y-auto,
+.overflow-x-auto,
+textarea {
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-muted) var(--bg-muted);
+}
+
+dialog:modal {
+  overscroll-behavior: contain;
+}
+
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
 /* Neobrutalist tactile scrollbars backed by tokens */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg-muted);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--text-muted);
-  border-radius: 4px;
-  border: 1px solid var(--border-ink);
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-tertiary);
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg-muted);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--text-muted);
+    border-radius: 4px;
+    border: 1px solid var(--border-ink);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+  }
 }
 
 /* ==========================================================================

@@ -445,11 +445,11 @@ export function QuickAddDrawer({
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  });
+  }, [close]);
 
   const drawerContent = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/45 p-3 sm:p-4 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/45 p-3 sm:p-4 backdrop-blur-xs overscroll-contain"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) close();
       }}
@@ -988,6 +988,7 @@ export function QuickAddDrawer({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               onKeyDown={(e) => {
+                if (e.nativeEvent.isComposing || e.keyCode === 229) return;
                 if (e.key === "Enter" && mode === "INVOICE") {
                   e.preventDefault();
                   descriptionInputRef.current?.focus();

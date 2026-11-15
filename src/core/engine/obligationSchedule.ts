@@ -1,4 +1,5 @@
 import type { Invoice } from "../models";
+import { parseUtcDate } from "./manilaDate";
 import { cycleDate } from "./reconciler";
 
 export function scheduledPaymentMinor(invoice: Invoice): number {
@@ -11,6 +12,6 @@ export function scheduledPaymentMinor(invoice: Invoice): number {
 export function obligationDueDate(invoice: Invoice, paidMinor: number): string {
   if (!invoice.obligation) return invoice.dueDate;
   const schedule = invoice.obligation;
-  return cycleDate(new Date(`${schedule.firstDueDate}T00:00:00.000Z`), schedule.cycle,
+  return cycleDate(parseUtcDate(schedule.firstDueDate), schedule.cycle,
     Math.floor(paidMinor / schedule.paymentMinor));
 }
