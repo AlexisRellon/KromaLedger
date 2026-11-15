@@ -106,4 +106,29 @@ describe("reconcile", () => {
       ])
     );
   });
+
+  it("posts or defers interest rules through reconcile()", () => {
+    const wallets = [{ id: "w1", name: "MariBank", type: "BANK" as const, currency: "PHP", balanceMinor: 10_000_000, color: "#000", isDefault: false }];
+    const interestRules = [{
+      id: "r1",
+      walletId: "w1",
+      enabled: true,
+      tiers: [{ upToMinor: null, rateBps: 325 }],
+      tierMode: "MARGINAL" as const,
+      promoBoostBps: 0,
+      withholdingTaxBps: 2000,
+      dayCountBasis: 365 as const,
+      payoutFrequency: "DAILY" as const,
+      rounding: "FLOOR" as const,
+      startDate: "2026-11-14",
+    }];
+
+    const deferred = reconcile({ subscriptions: [], invoices: [], currentDate: "2026-11-15", wallets, interestRules, deferInterest: true });
+    expect(deferred.transactions).toHaveLength(0);
+
+    const posted = reconcile({ subscriptions: [], invoices: [], currentDate: "2026-11-15", wallets, interestRules, deferInterest: false });
+    expect(posted.transactions).toHaveLength(1);
+    expect(posted.transactions[0]?.type).toBe("INTEREST");
+    expect(posted.walletBalanceDeltas?.w1).toBe(posted.transactions[0]?.amountMinor);
+  });
 });

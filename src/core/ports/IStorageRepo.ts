@@ -1,4 +1,4 @@
-import type { AppMeta, AppNotification, AttachmentMeta, Category, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../models";
+import type { AppMeta, AppNotification, AttachmentMeta, Category, InterestRule, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../models";
 import type { ReconcileResult } from "../engine/reconciler";
 
 export interface IStorageRepo {
@@ -6,7 +6,7 @@ export interface IStorageRepo {
   listTransactions(fromDate?: string, throughDate?: string): Promise<Transaction[]>;
   countTransactions?(): Promise<number>;
   saveTransaction(value: Transaction): Promise<void>;
-  reconcile(currentDate: string): Promise<ReconcileResult>;
+  reconcile(currentDate: string, options?: { deferInterest?: boolean }): Promise<ReconcileResult>;
   deleteTransaction(id: string): Promise<void>;
   getSubscription(id: string): Promise<Subscription | undefined>;
   listSubscriptions(): Promise<Subscription[]>;
@@ -34,6 +34,10 @@ export interface IStorageRepo {
   getWallet(id: string): Promise<Wallet | undefined>;
   saveWallet(value: Wallet): Promise<void>;
   deleteWallet(id: string): Promise<void>;
+  listInterestRules(walletId?: string): Promise<InterestRule[]>;
+  saveInterestRule(rule: InterestRule): Promise<void>;
+  deleteInterestRule(id: string): Promise<void>;
+  verifyInterestTransaction(txId: string, actualAmountMinor: number): Promise<Transaction>;
   listNotifications(): Promise<AppNotification[]>;
   saveNotification(value: AppNotification): Promise<void>;
   markNotificationRead(id: string): Promise<void>;

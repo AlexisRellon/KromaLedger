@@ -1,6 +1,5 @@
 import { useEffect, useState, type PropsWithChildren } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { format } from "date-fns";
 import { DexieStorageRepo } from "./DexieStorageRepo";
 import { DexieFileStore } from "./DexieFileStore";
 import { KromaLedgerDB } from "./db";
@@ -8,9 +7,34 @@ import { StorageProvider } from "../../state/StorageContext";
 import { useReconcileCommand } from "../../state/queries";
 import { restoreQueryCache, setupQueryCachePersistence } from "./queryCachePersistence";
 import { ScreenSkeleton } from "../../ui/components/skeletons";
+import { BaulitoMissedDaysModal } from "../../ui/components/BaulitoMissedDaysModal";
 import { useUIStore } from "../../state/useUIStore";
 import { markFirstBoot } from "../../state/onboarding";
+import { addDaysManila, daysBetweenManila, getTodayManila, msUntilNextManilaMidnight } from "../../core/engine/manilaDate";
+import {
+  LATEST_RELEASE,
+  buildAppUpdateNotification,
+  getAppUpdateNotificationId,
+  hasUnseenAppUpdate,
+  isOnboardingPending,
+  markAppUpdateSeen,
+} from "../../core/engine/appChangelog";
+import type { InterestRule } from "../../core/models";
 import type { SyncDumpPayload, SyncRestoreOptions } from "../backup/zipVault";
+
+function computeMissedInterestDays(rules: InterestRule[], todayManila: string): number {
+  const yesterdayManila = addDaysManila(todayManila, -1);
+  let maxMissed = 0;
+  for (const rule of rules) {
+    if (!rule.enabled || rule.payoutFrequency !== "DAILY") continue;
+    const nextPeriod = rule.lastPostedPeriodKey ? addDaysManila(rule.lastPostedPeriodKey, 1) : rule.startDate;
+    if (nextPeriod <= yesterdayManila) {
+      const missed = daysBetweenManila(nextPeriod, yesterdayManila) + 1;
+      if (missed > maxMissed) maxMissed = missed;
+    }
+  }
+  return maxMissed;
+}
 
 const db = new KromaLedgerDB();
 const repo = new DexieStorageRepo(db);
@@ -84,17 +108,56 @@ export function WebBootstrap({ children }: PropsWithChildren) {
   }, []);
 
   useEffect(() => {
+    let active = true;
+    import("virtual:pwa-register")
+      .then(({ registerSW }) => {
+        if (!active) return;
+        registerSW({
+          immediate: true,
+          onNeedRefresh() {
+            useUIStore.getState().openAppUpdate(true);
+          },
+        });
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
     setError("");
     const boot = async () => {
-      const today = format(new Date(), "yyyy-MM-dd");
+      const today = getTodayManila();
       await repo.initialize(today);
       void files.optimizeExistingAttachments().catch(() => {});
       try {
         markFirstBoot(localStorage);
       } catch {}
+      const rules = await repo.listInterestRules();
+      const missedDays = computeMissedInterestDays(rules, today);
+      if (missedDays >= 1) {
+        useUIStore.getState().setMissedInterestDays(missedDays);
+        useUIStore.getState().setInterestDeferred(true);
+      }
       if (!cancelled) setReady(true);
-      void repo.reconcile(today).catch(() => {});
+      void repo.reconcile(today, { deferInterest: missedDays >= 1 }).catch(() => {});
+      try {
+        if (isOnboardingPending(localStorage)) {
+          markAppUpdateSeen(localStorage);
+        } else if (hasUnseenAppUpdate(localStorage)) {
+          const existingNotifs = await repo.listNotifications();
+          const updateNotifId = getAppUpdateNotificationId();
+          if (!existingNotifs.some((n) => n.id === updateNotifId)) {
+            await repo.saveNotification(buildAppUpdateNotification(LATEST_RELEASE, today));
+            void queryClient.invalidateQueries({ queryKey: ["notifications"] });
+          }
+          if (!cancelled) {
+            useUIStore.getState().openAppUpdate(false);
+          }
+        }
+      } catch {}
       try {
         persistentStatus = (await navigator.storage?.persist?.()) ?? (await navigator.storage?.persisted?.()) ?? false;
       } catch {
@@ -147,11 +210,42 @@ export function WebBootstrap({ children }: PropsWithChildren) {
 function ForegroundReconcile() {
   const mutation = useReconcileCommand();
   useEffect(() => {
+    const runCheck = async () => {
+      const today = getTodayManila();
+      const ui = useUIStore.getState();
+      if (!ui.interestDeferred) {
+        const rules = await repo.listInterestRules();
+        const missedDays = computeMissedInterestDays(rules, today);
+        if (missedDays >= 1) {
+          ui.setMissedInterestDays(missedDays);
+          ui.setInterestDeferred(true);
+          mutation.mutate({ currentDate: today, deferInterest: true });
+          return;
+        }
+      }
+      mutation.mutate({ currentDate: today, deferInterest: ui.interestDeferred });
+    };
+
     const onVisible = () => {
-      if (document.visibilityState === "visible") mutation.mutate(format(new Date(), "yyyy-MM-dd"));
+      if (document.visibilityState === "visible") {
+        void runCheck().catch(() => {});
+      }
     };
     document.addEventListener("visibilitychange", onVisible);
-    return () => document.removeEventListener("visibilitychange", onVisible);
+
+    let midnightTimer: ReturnType<typeof setTimeout> | undefined;
+    const scheduleMidnight = () => {
+      midnightTimer = setTimeout(() => {
+        void runCheck().catch(() => {});
+        scheduleMidnight();
+      }, msUntilNextManilaMidnight() + 500);
+    };
+    scheduleMidnight();
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      if (midnightTimer) clearTimeout(midnightTimer);
+    };
   }, []);
-  return null;
+  return <BaulitoMissedDaysModal />;
 }

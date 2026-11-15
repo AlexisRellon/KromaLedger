@@ -10,10 +10,16 @@ import {
   useCategories,
   useSaveTransaction,
   useDeleteTransaction,
+  useInterestRules,
+  useVerifyInterestTransaction,
 } from "../../state/queries";
+import { estimateMonthlyAccruedMinor } from "../../core/engine/interestEngine";
+import { getTodayManila } from "../../core/engine/manilaDate";
 import { StackedWalletDeck } from "../components/StackedWalletDeck";
 import { PhysicalWalletCard } from "../components/PhysicalWalletCard";
 import { WalletFormModal, WALLET_TYPES } from "../components/WalletFormModal";
+import { WalletInterestSettings } from "../components/WalletInterestSettings";
+import { DeferredInterestBanner } from "../components/DeferredInterestBanner";
 import { WalletTypeIcon, CashIcon } from "../components/WalletTypeIcon";
 import { SmokedCard } from "../primitives";
 import { EditEntryModal } from "../components/EditEntryModal";
@@ -46,6 +52,9 @@ export function WalletsScreen({
   const categoriesQuery = useCategories();
   const saveTxMutation = useSaveTransaction();
   const deleteTxMutation = useDeleteTransaction();
+  const interestRulesQuery = useInterestRules();
+  const verifyInterestMutation = useVerifyInterestTransaction();
+  const [interestSettingsOpen, setInterestSettingsOpen] = useState(false);
 
   const wallets = walletsQuery.data ?? [];
   const allTx = txQuery.data ?? [];
@@ -249,7 +258,13 @@ export function WalletsScreen({
 
               {/* Physical Card Preview in Inspector */}
               <div className="mx-auto my-5 w-full max-w-[360px]">
-                <PhysicalWalletCard wallet={activeWallet} />
+                <PhysicalWalletCard
+                  wallet={activeWallet}
+                  monthlyAccruedEstMinor={(() => {
+                    const rule = (interestRulesQuery.data ?? []).find((r) => r.walletId === activeWallet.id);
+                    return rule ? estimateMonthlyAccruedMinor(rule, activeWallet, allTx, getTodayManila()) : undefined;
+                  })()}
+                />
               </div>
 
               {/* Card Specs */}
@@ -274,6 +289,25 @@ export function WalletsScreen({
                 </div>
               </div>
 
+              {/* Interest Rules Button */}
+              <div className="mt-4 flex items-center justify-between border-t border-neutral-200 pt-3">
+                <span className="text-xs font-medium text-neutral-600">Automated PH bank interest</span>
+                <button
+                  type="button"
+                  onClick={() => setInterestSettingsOpen(true)}
+                  className="rounded-xl border-2 border-neutral-900 bg-white px-3.5 py-1.5 text-xs font-bold text-neutral-900 shadow-[2px_2px_0px_#18181B] hover:bg-neutral-100 transition"
+                >
+                  Interest Rules
+                </button>
+              </div>
+              {interestSettingsOpen && (
+                <WalletInterestSettings
+                  wallet={activeWallet}
+                  isOpen={interestSettingsOpen}
+                  onClose={() => setInterestSettingsOpen(false)}
+                />
+              )}
+
               {/* Set Primary Button */}
               {!activeWallet.isDefault && (
                 <div className="mt-4 flex items-center justify-between">
@@ -293,6 +327,7 @@ export function WalletsScreen({
           ) : null}
 
           {/* Card Ledger Activity */}
+          <DeferredInterestBanner />
           <WalletActivity
             key={activeWallet?.id ?? "no-wallet"}
             activeWallet={activeWallet}
@@ -300,6 +335,9 @@ export function WalletsScreen({
             onQuickAdd={onQuickAdd}
             onEdit={setEditingTransaction}
             onDelete={setDeletingTransaction}
+            onVerifyInterest={(txId, actualAmountMinor) =>
+              verifyInterestMutation.mutate({ txId, actualAmountMinor })
+            }
           />
         </div>
       </div>

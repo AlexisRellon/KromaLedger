@@ -24,6 +24,7 @@ export function ActivityFilters({ filters, onChange, shownCount, totalCount }: {
             <option value="INCOME">Income</option>
             <option value="EXPENSE">Expenses</option>
             <option value="TRANSFER">Transfers</option>
+            <option value="INTEREST">Interest</option>
             <option value="SUBSCRIPTION_PAYMENT">Subscription payments</option>
             <option value="INVOICE">Invoices</option>
           </Select>

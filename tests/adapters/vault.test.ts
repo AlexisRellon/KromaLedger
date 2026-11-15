@@ -85,4 +85,35 @@ describe("vault ZIP", () => {
     const fakeOversized = new Uint8Array(200 * 1024 * 1024 + 1);
     await expect(restoreVault(db, fakeOversized)).rejects.toThrow("Backup archive exceeds maximum 200MB limit");
   });
+
+  it("exports and restores interestRules across ZIP payloads", async () => {
+    await db.wallets.put({
+      id: "w-mari",
+      name: "MariBank",
+      type: "BANK",
+      currency: "PHP",
+      balanceMinor: 10_000_000,
+      color: "#FF6B00",
+      isDefault: false,
+    });
+    await db.interestRules.put({
+      id: "rule-mari",
+      walletId: "w-mari",
+      enabled: true,
+      tiers: [{ upToMinor: null, rateBps: 325 }],
+      tierMode: "MARGINAL",
+      promoBoostBps: 0,
+      withholdingTaxBps: 2000,
+      dayCountBasis: 365,
+      payoutFrequency: "DAILY",
+      rounding: "FLOOR",
+      startDate: "2026-11-14",
+    });
+
+    const archive = await exportVault(db, "2026-11-15");
+    await db.interestRules.clear();
+    await db.wallets.clear();
+    await restoreVault(db, archive.data);
+    expect(await db.interestRules.toArray()).toHaveLength(1);
+  });
 });

@@ -563,4 +563,32 @@ describe("cashflowAnalytics", () => {
       });
     });
   });
+
+  describe("Interest isolation", () => {
+    it("excludes INTEREST from netOutflowMinor inflows and calculateCashForecast, while surfacing interestEarnedMinor", () => {
+      const cashflow = calculateCashflow({
+        month: "2026-11",
+        transactions: [
+          { date: "2026-11-01", amountMinor: 50000, type: "INCOME" },
+          { date: "2026-11-02", amountMinor: 876, type: "INTEREST" },
+          { date: "2026-11-03", amountMinor: -20000, type: "EXPENSE", categoryId: "food" },
+        ],
+        subscriptions: [],
+        invoices: [],
+      });
+      expect(cashflow.interestEarnedMinor).toBe(876);
+      expect(cashflow.netOutflowMinor).toBe(20000 - 50000);
+
+      const forecast = calculateCashForecast({
+        totalCashMinor: 100000,
+        month: "2026-11",
+        transactions: [
+          { date: "2026-11-01", amountMinor: 50000, type: "INCOME" },
+          { date: "2026-11-02", amountMinor: 876, type: "INTEREST" },
+        ],
+        subscriptions: [],
+      });
+      expect(forecast.inflowsMinor).toBe(50000);
+    });
+  });
 });

@@ -44,6 +44,9 @@ function createTestDb(name: string): KromaLedgerDB {
   db.version(5).stores({
     notifications: "&id,createdAt,read,type,entityId",
   });
+  db.version(6).stores({
+    interestRules: "&id,walletId,enabled",
+  });
   return db;
 }
 

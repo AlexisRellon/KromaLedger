@@ -22,6 +22,7 @@ export function EditEntryModal({
   onDelete?: (id: string) => void;
 }) {
   const isTransfer = transaction.type === "TRANSFER";
+  const isInterest = transaction.type === "INTEREST";
   const [title, setTitle] = useState(transaction.title);
   const [type, setType] = useState<"EXPENSE" | "INCOME">(
     transaction.amountMinor < 0 || transaction.type === "EXPENSE" || transaction.type === "SUBSCRIPTION_PAYMENT"
@@ -206,10 +207,19 @@ export function EditEntryModal({
       const updated: Transaction = {
         ...transaction,
         title: title.trim(),
-        amountMinor: isTransfer ? parsedAmountMinor : signedAmountMinor,
-        type: transaction.type === "SUBSCRIPTION_PAYMENT" ? "SUBSCRIPTION_PAYMENT" : isTransfer ? "TRANSFER" : type,
-        date,
-        categoryId: isTransfer ? undefined : effectiveCategoryId || undefined,
+        amountMinor: isInterest ? parsedAmountMinor : isTransfer ? parsedAmountMinor : signedAmountMinor,
+        type: isInterest
+          ? "INTEREST"
+          : transaction.type === "SUBSCRIPTION_PAYMENT"
+          ? "SUBSCRIPTION_PAYMENT"
+          : isTransfer
+          ? "TRANSFER"
+          : type,
+        date: isInterest ? transaction.date : date,
+        interestMeta: isInterest && transaction.interestMeta
+          ? { ...transaction.interestMeta, isEstimated: false, locked: true }
+          : transaction.interestMeta,
+        categoryId: isTransfer || isInterest ? undefined : effectiveCategoryId || undefined,
         walletId: walletId || undefined,
         toWalletId: isTransfer ? toWalletId : undefined,
         feeMinor: isTransfer ? validatedFee : undefined,
