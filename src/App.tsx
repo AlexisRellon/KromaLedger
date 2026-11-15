@@ -17,6 +17,7 @@ const QuickAddDrawer = lazy(() => import("./ui/components/QuickAddDrawer").then(
 const NotificationCenterModal = lazy(() => import("./ui/components/NotificationCenterModal").then((m) => ({ default: m.NotificationCenterModal })));
 const AIAssistantModal = lazy(() => import("./ui/components/AIAssistantModal").then((m) => ({ default: m.AIAssistantModal })));
 const AppUpdateModal = lazy(() => import("./ui/components/AppUpdateModal").then((m) => ({ default: m.AppUpdateModal })));
+const ChangelogModal = lazy(() => import("./ui/components/ChangelogModal").then((m) => ({ default: m.ChangelogModal })));
 import { ScreenSkeleton } from "./ui/components/skeletons";
 import { useAIStore } from "./state/useAIStore";
 
@@ -31,6 +32,8 @@ export function App() {
   const notificationsOpen = useUIStore((s) => s.notificationsOpen);
   const closeNotifications = useUIStore((s) => s.closeNotifications);
   const appUpdateOpen = useUIStore((s) => s.appUpdateOpen);
+  const changelogOpen = useUIStore((s) => s.changelogOpen);
+  const closeChangelog = useUIStore((s) => s.closeChangelog);
   const aiOpen = useAIStore((s) => s.isOpen);
   const closeAI = useAIStore((s) => s.closeModal);
   const [backupOpen, setBackupOpen] = useState(false);
@@ -138,6 +141,7 @@ export function App() {
         {notificationsOpen && <NotificationCenterModal onClose={closeNotifications} />}
         {aiOpen && <AIAssistantModal onClose={closeAI} />}
         {appUpdateOpen && <AppUpdateModal />}
+        {changelogOpen && <ChangelogModal onClose={closeChangelog} />}
       </Suspense>
     </main>
   );

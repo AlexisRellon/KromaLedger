@@ -26,6 +26,7 @@ interface UIState {
   editProfileOpen: boolean;
   notificationsOpen: boolean;
   appUpdateOpen: boolean;
+  changelogOpen: boolean;
   swUpdateReady: boolean;
   interestDeferred: boolean;
   missedInterestDays: number;
@@ -44,6 +45,8 @@ interface UIState {
   closeNotifications(): void;
   openAppUpdate(swReady?: boolean): void;
   closeAppUpdate(): void;
+  openChangelog(): void;
+  closeChangelog(): void;
   setSwUpdateReady(ready: boolean): void;
   setInterestDeferred(deferred: boolean): void;
   setMissedInterestDays(days: number): void;
@@ -94,6 +97,7 @@ export const useUIStore = create<UIState>((set) => ({
   editProfileOpen: false,
   notificationsOpen: false,
   appUpdateOpen: false,
+  changelogOpen: false,
   swUpdateReady: false,
   interestDeferred: false,
   missedInterestDays: 0,
@@ -128,6 +132,8 @@ export const useUIStore = create<UIState>((set) => ({
   closeNotifications: () => set({ notificationsOpen: false }),
   openAppUpdate: (swReady = false) => set((state) => ({ appUpdateOpen: true, swUpdateReady: swReady || state.swUpdateReady })),
   closeAppUpdate: () => set({ appUpdateOpen: false }),
+  openChangelog: () => set({ changelogOpen: true }),
+  closeChangelog: () => set({ changelogOpen: false }),
   setSwUpdateReady: (swUpdateReady) => set({ swUpdateReady }),
   setInterestDeferred: (interestDeferred) => set({ interestDeferred }),
   setMissedInterestDays: (missedInterestDays) => set({ missedInterestDays }),

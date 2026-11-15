@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.1.1] - 2026-11-15
+<!-- cta: Open Wallets | WALLETS -->
 
 ### Fixed
 - Disallow automated savings interest rules and accrued previews on `CASH` (Cash on hand) wallets in UI and `interestEngine`.
@@ -15,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - App version (`v1.1.1`) and author copyright footer at the bottom of `SettingsScreen`.
 
 ## [1.1.0] - 2026-11-15
+<!-- cta: Explore Bank Interest | WALLETS -->
 
 ### Added
 - **Automated PH Digital Bank Interest Posting**: Built-in interest presets for MariBank, Maya Bank, GoTyme Bank, CIMB Bank, and OwnBank with editable custom tiers, promo boosts, 20% withholding tax, and payout frequency (`DAILY` / `MONTHLY`).

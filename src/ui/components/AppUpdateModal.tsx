@@ -8,6 +8,7 @@ export function AppUpdateModal({ onReloadUpdate }: { onReloadUpdate?: () => void
   const isOpen = useUIStore((s) => s.appUpdateOpen);
   const swUpdateReady = useUIStore((s) => s.swUpdateReady);
   const closeAppUpdate = useUIStore((s) => s.closeAppUpdate);
+  const openChangelog = useUIStore((s) => s.openChangelog);
   const setTab = useUIStore((s) => s.setTab);
 
   if (!isOpen) return null;
@@ -72,13 +73,27 @@ export function AppUpdateModal({ onReloadUpdate }: { onReloadUpdate?: () => void
           </ul>
         </div>
 
-        <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-          <Button type="button" variant="secondary" onClick={handleDismiss}>
-            Dismiss
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              markSeen();
+              closeAppUpdate();
+              openChangelog();
+            }}
+          >
+            View full changelog
           </Button>
-          <Button type="button" variant="primary" onClick={handlePrimaryAction}>
-            {swUpdateReady ? "Reload & Apply Update" : LATEST_RELEASE.ctaLabel}
-          </Button>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button type="button" variant="secondary" onClick={handleDismiss}>
+              Dismiss
+            </Button>
+            <Button type="button" variant="primary" onClick={handlePrimaryAction}>
+              {swUpdateReady ? "Reload & Apply Update" : LATEST_RELEASE.ctaLabel}
+            </Button>
+          </div>
         </div>
       </div>
     </ModalShell>
