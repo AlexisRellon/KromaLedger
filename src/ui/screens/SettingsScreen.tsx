@@ -752,7 +752,17 @@ export function SettingsScreen({
       )}
 
       <footer className="pt-2 pb-4 text-center font-mono text-xs text-[var(--text-muted)]">
-        <p className="font-bold text-[var(--text-secondary)]">Kaban (KromaLedger) · v{APP_VERSION}</p>
+        <p className="font-bold text-[var(--text-secondary)]">
+          Kaban (KromaLedger) · v{APP_VERSION}
+          {" · "}
+          <button
+            type="button"
+            onClick={() => useUIStore.getState().openChangelog()}
+            className="text-[var(--theme-accent-text)] underline hover:opacity-80 cursor-pointer"
+          >
+            View Changelog
+          </button>
+        </p>
         <p className="mt-1">© {new Date().getFullYear()} Alexis John Rellon. All rights reserved.</p>
       </footer>
     </div>

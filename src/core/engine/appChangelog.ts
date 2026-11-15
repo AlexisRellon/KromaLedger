@@ -1,32 +1,126 @@
+import changelogRaw from "../../../CHANGELOG.md?raw";
 import type { AppNotification } from "../models";
 
 export type AppUpdateTargetTab = "HOME" | "WALLETS" | "PENDING" | "SETTINGS";
 
+export interface AppReleaseSection {
+  heading: string;
+  items: string[];
+}
+
 export interface AppReleaseNote {
   version: string;
+  date: string;
   title: string;
   summary: string;
   highlights: string[];
+  sections: AppReleaseSection[];
   ctaLabel: string;
   targetTab: AppUpdateTargetTab;
 }
 
-export const APP_VERSION = "1.1.1";
 export const APP_UPDATE_SEEN_KEY = "kaban_last_seen_version";
 export const APP_UPDATE_NOTIF_PREFIX = "app-update-";
 
-export const LATEST_RELEASE: AppReleaseNote = {
-  version: APP_VERSION,
-  title: "Automated Bank Interest & Catch-Up",
-  summary: "Track daily and monthly interest from PH digital banks with receipt verification and missed-day reminders.",
-  highlights: [
-    "Built-in PH digital bank presets (MariBank, Maya, GoTyme, CIMB, OwnBank)",
-    "Midnight Asia/Manila catch-up with Estimated to Verified receipt control",
-    "Baulito missed-days catch-up reminder before automated interest posts",
-  ],
-  ctaLabel: "Explore Bank Interest",
+function stripMarkdownInline(text: string): string {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .trim();
+}
+
+function isValidTargetTab(value: string): value is AppUpdateTargetTab {
+  return value === "HOME" || value === "WALLETS" || value === "PENDING" || value === "SETTINGS";
+}
+
+export function parseChangelog(markdown: string): AppReleaseNote[] {
+  const lines = markdown.split(/\r?\n/);
+  const releases: AppReleaseNote[] = [];
+  let current: AppReleaseNote | null = null;
+  let currentSection: AppReleaseSection | null = null;
+
+  const finalizeCurrent = () => {
+    if (!current) return;
+    const allItems = current.sections.flatMap((s) => s.items);
+    current.highlights = allItems;
+    if (!current.summary) {
+      current.summary = allItems[0] ?? `Release v${current.version}`;
+    }
+    if (!current.title) {
+      const headings = current.sections.map((s) => s.heading);
+      current.title = headings.length > 0 ? `${headings.join(" & ")} Updates` : `Release v${current.version}`;
+    }
+    releases.push(current);
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    const versionMatch = /^##\s+\[([^\]]+)\](?:\s*-\s*(\S+))?/.exec(line);
+    if (versionMatch) {
+      finalizeCurrent();
+      const version = versionMatch[1]!.trim();
+      const date = versionMatch[2]?.trim() ?? "";
+      current = {
+        version,
+        date,
+        title: "",
+        summary: "",
+        highlights: [],
+        sections: [],
+        ctaLabel: "Open Wallets",
+        targetTab: "WALLETS",
+      };
+      currentSection = null;
+      continue;
+    }
+
+    if (!current) continue;
+
+    const ctaMatch = /^<!--\s*cta:\s*([^|]+)\|\s*([A-Z]+)\s*-->$/.exec(line);
+    if (ctaMatch) {
+      const label = ctaMatch[1]!.trim();
+      const tab = ctaMatch[2]!.trim();
+      if (label) current.ctaLabel = label;
+      if (isValidTargetTab(tab)) current.targetTab = tab;
+      continue;
+    }
+
+    const sectionMatch = /^###\s+(.+)$/.exec(line);
+    if (sectionMatch) {
+      currentSection = { heading: sectionMatch[1]!.trim(), items: [] };
+      current.sections.push(currentSection);
+      continue;
+    }
+
+    const bulletMatch = /^-\s+(.+)$/.exec(line);
+    if (bulletMatch) {
+      const cleanItem = stripMarkdownInline(bulletMatch[1]!);
+      if (!currentSection) {
+        currentSection = { heading: "Changes", items: [] };
+        current.sections.push(currentSection);
+      }
+      currentSection.items.push(cleanItem);
+    }
+  }
+
+  finalizeCurrent();
+  return releases;
+}
+
+export const RELEASES: AppReleaseNote[] = parseChangelog(changelogRaw);
+
+export const LATEST_RELEASE: AppReleaseNote = RELEASES[0] ?? {
+  version: "1.0.0",
+  date: "",
+  title: "Kaban Release",
+  summary: "Local-first personal financial vault.",
+  highlights: [],
+  sections: [],
+  ctaLabel: "Open Wallets",
   targetTab: "WALLETS",
 };
+
+export const APP_VERSION = LATEST_RELEASE.version;
 
 export function getAppUpdateNotificationId(version: string = LATEST_RELEASE.version): string {
   return `${APP_UPDATE_NOTIF_PREFIX}${version}`;
@@ -39,7 +133,7 @@ export function buildAppUpdateNotification(
   return {
     id: getAppUpdateNotificationId(release.version),
     title: `What's new in v${release.version}: ${release.title}`,
-    message: `${release.summary} • ${release.highlights.join(" • ")}`,
+    message: release.highlights.join(" • ") || release.summary,
     type: "INFO",
     createdAt,
     read: false,
