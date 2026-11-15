@@ -25,6 +25,10 @@ interface UIState {
   quickAddPrefill?: QuickAddPrefill;
   editProfileOpen: boolean;
   notificationsOpen: boolean;
+  appUpdateOpen: boolean;
+  swUpdateReady: boolean;
+  interestDeferred: boolean;
+  missedInterestDays: number;
   themeMode: ThemeMode;
   appTheme: AppThemeId;
   highContrast: boolean;
@@ -38,6 +42,11 @@ interface UIState {
   closeEditProfile(): void;
   openNotifications(): void;
   closeNotifications(): void;
+  openAppUpdate(swReady?: boolean): void;
+  closeAppUpdate(): void;
+  setSwUpdateReady(ready: boolean): void;
+  setInterestDeferred(deferred: boolean): void;
+  setMissedInterestDays(days: number): void;
   setThemeMode(mode: ThemeMode): void;
   setAppTheme(theme: AppThemeId): void;
   setHighContrast(enabled: boolean): void;
@@ -84,6 +93,10 @@ export const useUIStore = create<UIState>((set) => ({
   quickAddPrefill: undefined,
   editProfileOpen: false,
   notificationsOpen: false,
+  appUpdateOpen: false,
+  swUpdateReady: false,
+  interestDeferred: false,
+  missedInterestDays: 0,
   themeMode: initialThemePrefs.themeMode,
   appTheme: initialThemePrefs.appTheme,
   highContrast: initialThemePrefs.highContrast,
@@ -113,6 +126,11 @@ export const useUIStore = create<UIState>((set) => ({
   closeEditProfile: () => set({ editProfileOpen: false }),
   openNotifications: () => set({ notificationsOpen: true }),
   closeNotifications: () => set({ notificationsOpen: false }),
+  openAppUpdate: (swReady = false) => set((state) => ({ appUpdateOpen: true, swUpdateReady: swReady || state.swUpdateReady })),
+  closeAppUpdate: () => set({ appUpdateOpen: false }),
+  setSwUpdateReady: (swUpdateReady) => set({ swUpdateReady }),
+  setInterestDeferred: (interestDeferred) => set({ interestDeferred }),
+  setMissedInterestDays: (missedInterestDays) => set({ missedInterestDays }),
   setThemeMode: (themeMode) => {
     saveThemePreferences({ themeMode });
     set((state) => {

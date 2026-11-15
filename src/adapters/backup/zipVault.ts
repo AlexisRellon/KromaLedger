@@ -5,6 +5,7 @@ import {
   attachmentMimeTypeSchema,
   categorySchema,
   dateOnlySchema,
+  interestRuleSchema,
   invoiceItemSchema,
   invoiceSchema,
   subscriptionSchema,
@@ -13,6 +14,7 @@ import {
   walletSchema,
   type AppMeta,
   type AttachmentMeta,
+  type InterestRule,
   type AttachmentMimeType,
   type Category,
   type Invoice,
@@ -55,6 +57,7 @@ export interface SyncDumpPayload {
   appMeta: AppMeta;
   wallets: Wallet[];
   profile?: UserProfile;
+  interestRules?: InterestRule[];
 }
 
 export interface SyncRestoreOptions {
@@ -92,6 +95,7 @@ const dumpSchema = z.object({
   appMeta: appMetaSchema,
   wallets: z.array(walletSchema).default([]),
   profile: userProfileSchema.optional(),
+  interestRules: z.array(interestRuleSchema).optional(),
 });
 
 export const syncAttachmentPayloadSchema = z.object({
@@ -108,11 +112,11 @@ export const syncDumpSchema = dumpSchema.extend({
 export async function exportVault(db: KromaLedgerDB, today: string): Promise<{ filename: string; data: Uint8Array }> {
   if (!dateOnlySchema.safeParse(today).success) throw new RangeError("Backup date must be a real ISO calendar date");
   await migrateAttachmentsToWebp(db);
-  const [transactions, subscriptions, invoices, invoiceItems, categories, attachments, files, storedMeta, wallets, profile] = await db.transaction("r", [
-    db.transactions, db.subscriptions, db.invoices, db.invoiceItems, db.categories, db.attachments, db.attachmentFiles, db.appMeta, db.wallets, db.profiles,
+  const [transactions, subscriptions, invoices, invoiceItems, categories, attachments, files, storedMeta, wallets, profile, interestRules] = await db.transaction("r", [
+    db.transactions, db.subscriptions, db.invoices, db.invoiceItems, db.categories, db.attachments, db.attachmentFiles, db.appMeta, db.wallets, db.profiles, db.interestRules,
   ], () => Promise.all([
     db.transactions.toArray(), db.subscriptions.toArray(), db.invoices.toArray(), db.invoiceItems.toArray(), db.categories.toArray(),
-    db.attachments.toArray(), db.attachmentFiles.toArray(), db.appMeta.get("app"), db.wallets.toArray(), db.profiles.get("profile"),
+    db.attachments.toArray(), db.attachmentFiles.toArray(), db.appMeta.get("app"), db.wallets.toArray(), db.profiles.get("profile"), db.interestRules.toArray(),
   ]));
   const dump = dumpSchema.parse({
     formatVersion: 1,
@@ -127,6 +131,7 @@ export async function exportVault(db: KromaLedgerDB, today: string): Promise<{ f
     appMeta: storedMeta ?? { id: "app", currency: "PHP" },
     wallets: wallets ?? [],
     profile: profile ?? undefined,
+    interestRules: interestRules ?? [],
   });
   const metaById = new Map(dump.attachments.map((meta) => [meta.id, meta]));
   const fileById = new Map(files.map((file) => [file.id, file]));
@@ -165,6 +170,12 @@ export async function restoreVault(db: KromaLedgerDB, data: Uint8Array): Promise
   const subscriptionIds = new Set(dump.subscriptions.map((subscription) => subscription.id));
   if (invoiceIds.size !== dump.invoices.length || itemIds.size !== dump.invoiceItems.length || transactionIds.size !== dump.transactions.length || subscriptionIds.size !== dump.subscriptions.length || new Set(dump.categories.map((category) => category.id)).size !== dump.categories.length) throw new RangeError("Backup contains duplicate record IDs");
   if (dump.wallets && new Set(dump.wallets.map((w) => w.id)).size !== dump.wallets.length) throw new RangeError("Backup contains duplicate wallet IDs");
+  if (dump.interestRules && dump.interestRules.length > 0) {
+    const walletIds = new Set((dump.wallets ?? []).map((w) => w.id));
+    if (dump.interestRules.some((r) => !walletIds.has(r.walletId))) {
+      throw new RangeError("Backup contains interest rules referencing missing wallets");
+    }
+  }
   for (const invoice of dump.invoices) {
     const linkedItems = dump.invoiceItems.filter((item) => item.invoiceId === invoice.id).map((item) => item.id).sort();
     if (linkedItems.length !== invoice.itemIds.length || linkedItems.some((id, index) => id !== [...invoice.itemIds].sort()[index]) || invoice.paidMinor > invoice.totalMinor || invoice.totalMinor !== invoice.subtotalMinor - invoice.discountMinor + invoice.taxMinor) throw new RangeError("Backup invoice totals or line references are inconsistent");
@@ -201,10 +212,10 @@ export async function restoreVault(db: KromaLedgerDB, data: Uint8Array): Promise
     });
   }
 
-  await db.transaction("rw", [db.transactions, db.subscriptions, db.invoices, db.invoiceItems, db.categories, db.attachments, db.attachmentFiles, db.appMeta, db.wallets, db.profiles, db.notifications], async () => {
+  await db.transaction("rw", [db.transactions, db.subscriptions, db.invoices, db.invoiceItems, db.categories, db.attachments, db.attachmentFiles, db.appMeta, db.wallets, db.profiles, db.notifications, db.interestRules], async () => {
     await Promise.all([
       db.transactions.clear(), db.subscriptions.clear(), db.invoices.clear(), db.invoiceItems.clear(),
-      db.categories.clear(), db.attachments.clear(), db.attachmentFiles.clear(), db.wallets.clear(), db.profiles.clear(), db.appMeta.clear(), db.notifications.clear(),
+      db.categories.clear(), db.attachments.clear(), db.attachmentFiles.clear(), db.wallets.clear(), db.profiles.clear(), db.appMeta.clear(), db.notifications.clear(), db.interestRules.clear(),
     ]);
     await db.transactions.bulkPut(dump.transactions);
     await db.subscriptions.bulkPut(dump.subscriptions);
@@ -215,6 +226,9 @@ export async function restoreVault(db: KromaLedgerDB, data: Uint8Array): Promise
     await db.attachmentFiles.bulkPut(restoredFiles);
     if (dump.wallets && dump.wallets.length > 0) {
       await db.wallets.bulkPut(dump.wallets);
+    }
+    if (dump.interestRules && dump.interestRules.length > 0) {
+      await db.interestRules.bulkPut(dump.interestRules);
     }
     if (dump.profile) {
       await db.profiles.put(dump.profile);
@@ -233,11 +247,11 @@ export async function exportSyncDump(
   }
   await migrateAttachmentsToWebp(db);
 
-  const [transactions, subscriptions, invoices, invoiceItems, categories, attachments, files, storedMeta, wallets, profile] = await db.transaction("r", [
-    db.transactions, db.subscriptions, db.invoices, db.invoiceItems, db.categories, db.attachments, db.attachmentFiles, db.appMeta, db.wallets, db.profiles,
+  const [transactions, subscriptions, invoices, invoiceItems, categories, attachments, files, storedMeta, wallets, profile, interestRules] = await db.transaction("r", [
+    db.transactions, db.subscriptions, db.invoices, db.invoiceItems, db.categories, db.attachments, db.attachmentFiles, db.appMeta, db.wallets, db.profiles, db.interestRules,
   ], () => Promise.all([
     db.transactions.toArray(), db.subscriptions.toArray(), db.invoices.toArray(), db.invoiceItems.toArray(), db.categories.toArray(),
-    db.attachments.toArray(), db.attachmentFiles.toArray(), db.appMeta.get("app"), db.wallets.toArray(), db.profiles.get("profile"),
+    db.attachments.toArray(), db.attachmentFiles.toArray(), db.appMeta.get("app"), db.wallets.toArray(), db.profiles.get("profile"), db.interestRules.toArray(),
   ]));
 
   const includeAttachments = options?.includeAttachments ?? false;
@@ -291,6 +305,7 @@ export async function exportSyncDump(
     appMeta: storedMeta ?? { id: "app", currency: "PHP" },
     wallets: wallets ?? [],
     profile: profile ?? undefined,
+    interestRules: interestRules ?? [],
   };
 
   return syncDumpSchema.parse(rawDump) as SyncDumpPayload;
@@ -363,6 +378,12 @@ export function parseSyncPayload(jsonText: string): SyncDumpPayload {
     dump.transactions.some((row) => row.subscriptionId && !subscriptionIds.has(row.subscriptionId))
   ) {
     throw new RangeError("Backup contains dangling ledger references");
+  }
+  if (dump.interestRules && dump.interestRules.length > 0) {
+    const walletIds = new Set((dump.wallets ?? []).map((w) => w.id));
+    if (dump.interestRules.some((r) => !walletIds.has(r.walletId))) {
+      throw new RangeError("Backup contains interest rules referencing missing wallets");
+    }
   }
 
   for (const meta of dump.attachments) {
@@ -466,6 +487,7 @@ export async function restoreSyncPayload(
     db.wallets,
     db.profiles,
     db.notifications,
+    db.interestRules,
   ], async () => {
     if (options.mode === "OVERWRITE") {
       if (includeRecords) {
@@ -492,10 +514,14 @@ export async function restoreSyncPayload(
           db.wallets.clear(),
           db.profiles.clear(),
           db.appMeta.clear(),
+          db.interestRules.clear(),
         ]);
         if (dump.wallets && dump.wallets.length > 0) {
           await db.wallets.bulkPut(dump.wallets);
           summary.walletsCount = dump.wallets.length;
+        }
+        if (dump.interestRules && dump.interestRules.length > 0) {
+          await db.interestRules.bulkPut(dump.interestRules);
         }
         if (dump.profile) {
           await db.profiles.put(dump.profile);
@@ -560,6 +586,15 @@ export async function restoreSyncPayload(
         if (dump.wallets && dump.wallets.length > 0) {
           await db.wallets.bulkPut(dump.wallets);
           summary.walletsCount = dump.wallets.length;
+        }
+        if (dump.interestRules && dump.interestRules.length > 0) {
+          const combinedWalletIds = new Set([
+            ...(await db.wallets.toArray()).map((w) => w.id),
+          ]);
+          const validRules = dump.interestRules.filter((r) => combinedWalletIds.has(r.walletId));
+          if (validRules.length > 0) {
+            await db.interestRules.bulkPut(validRules);
+          }
         }
         if (dump.profile) {
           await db.profiles.put(dump.profile);

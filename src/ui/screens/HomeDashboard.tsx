@@ -30,6 +30,7 @@ import { useUIStore } from "../../state/useUIStore";
 import { useAIStore } from "../../state/useAIStore";
 import { attachmentCache } from "../../adapters/web-dexie/attachmentCache";
 import { CashflowBreakdownGraph } from "../components/CashflowBreakdownGraph";
+import { DeferredInterestBanner } from "../components/DeferredInterestBanner";
 import { StackedWalletDeck } from "../components/StackedWalletDeck";
 import { FrontPageHero } from "../components/FrontPageHero";
 import {
@@ -243,6 +244,7 @@ export function HomeDashboard({
 
   return (
     <div className="space-y-6">
+      <DeferredInterestBanner />
       <FrontPageHero
         userName={profileQuery.data?.name}
         safeToSpendPhp={analyticsInsights.waterfall.trueSafeToSpendPhp}

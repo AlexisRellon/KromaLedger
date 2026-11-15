@@ -1,4 +1,5 @@
-import { formatCurrency, type AppNotification, type Invoice, type Subscription, type Transaction, type Wallet } from "../models";
+import { formatCurrency, type AppNotification, type InterestRule, type Invoice, type Subscription, type Transaction, type Wallet } from "../models";
+import { evaluateInterestRules } from "./interestEngine";
 
 export interface PendingConfirmation {
   id: string;
@@ -14,6 +15,9 @@ export interface ReconcileInput {
   lastReconciledDate?: string;
   currentDate: string;
   wallets?: Wallet[];
+  interestRules?: InterestRule[];
+  existingTransactions?: Transaction[];
+  deferInterest?: boolean;
 }
 
 export interface ReconcileResult {
@@ -23,6 +27,8 @@ export interface ReconcileResult {
   pendingConfirmations: PendingConfirmation[];
   notifications: AppNotification[];
   lastReconciledDate: string;
+  interestRules?: InterestRule[];
+  walletBalanceDeltas?: Record<string, number>;
 }
 
 function asUtcDate(value: string): Date {
@@ -171,6 +177,21 @@ export function reconcile(input: ReconcileInput): ReconcileResult {
       : subscription;
   });
 
+  let updatedInterestRules = input.interestRules;
+  let walletBalanceDeltas: Record<string, number> | undefined;
+
+  if (!input.deferInterest && input.interestRules && input.interestRules.length > 0 && input.wallets) {
+    const interestResult = evaluateInterestRules({
+      rules: input.interestRules,
+      wallets: input.wallets,
+      existingTransactions: input.existingTransactions ?? [],
+      todayManila: input.currentDate,
+    });
+    updatedInterestRules = interestResult.rules;
+    walletBalanceDeltas = interestResult.walletBalanceDeltas;
+    transactions.push(...interestResult.transactions);
+  }
+
   transactions.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
   pendingConfirmations.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
   notifications.sort((a, b) => b.createdAt.localeCompare(a.createdAt) || a.id.localeCompare(b.id));
@@ -190,5 +211,7 @@ export function reconcile(input: ReconcileInput): ReconcileResult {
     pendingConfirmations,
     notifications,
     lastReconciledDate: input.currentDate,
+    ...(updatedInterestRules !== undefined ? { interestRules: updatedInterestRules } : {}),
+    ...(walletBalanceDeltas !== undefined ? { walletBalanceDeltas } : {}),
   };
 }

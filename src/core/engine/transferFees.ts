@@ -1,3 +1,5 @@
+import { PH_DIGITAL_BANK_ALIASES } from "./phBankRegistry";
+
 export type TransferChannel = "INSTAPAY" | "PESONET" | "DIRECT" | "MANUAL";
 
 export interface TransferFeeRule {
@@ -27,20 +29,20 @@ export const BANK_TRANSFER_FEE_RULES: readonly TransferFeeRule[] = [
   { name: "DBP", pattern: /\b(dbp|development\s*bank\s*of\s*the\s*philippines)\b/i, aliases: ["dbp", "development bank of the philippines"], instapayFeeMinor: 0, pesonetFeeMinor: 1000 },
 
   // Digital-First Banks
-  { name: "MariBank", pattern: /\b(maribank|mari\s*bank|seamoney)\b/i, aliases: ["maribank", "mari bank", "seamoney"], instapayFeeMinor: 0, pesonetFeeMinor: 0 },
-  { name: "DiskarTech", pattern: /\b(diskartech)\b/i, aliases: ["diskartech"], instapayFeeMinor: 0, pesonetFeeMinor: 0 },
-  { name: "GoTyme Bank", pattern: /\b(gotyme|gotyme\s*bank)\b/i, aliases: ["gotyme", "gotyme bank"], instapayFeeMinor: 0, pesonetFeeMinor: 0, notes: "Free for first 20 monthly" },
-  { name: "BanKo", pattern: /\b(banko|bpi\s*direct\s*banko)\b/i, aliases: ["banko", "bpi direct banko"], instapayFeeMinor: 0, pesonetFeeMinor: null },
-  { name: "Overseas Filipino Bank", pattern: /\b(ofbank|overseas\s*filipino\s*bank)\b/i, aliases: ["ofbank", "overseas filipino bank"], instapayFeeMinor: 0, pesonetFeeMinor: 0 },
-  { name: "UnionDigital Bank", pattern: /\b(uniondigital|union\s*digital(?:\s*bank)?)\b/i, aliases: ["uniondigital", "union digital"], instapayFeeMinor: 0, pesonetFeeMinor: 0 },
-  { name: "CIMB Bank", pattern: /\b(cimb|cimb\s*bank)\b/i, aliases: ["cimb", "cimb bank"], instapayFeeMinor: 0, pesonetFeeMinor: 0, notes: "Free for first 2 daily" },
-  { name: "OwnBank", pattern: /\b(ownbank|own\s*bank)\b/i, aliases: ["ownbank", "own bank"], instapayFeeMinor: 0, pesonetFeeMinor: 0 },
-  { name: "Maya Bank", pattern: /\b(maya\s*bank|mayabank)\b/i, aliases: ["maya bank", "mayabank"], instapayFeeMinor: 1000, pesonetFeeMinor: 0 },
-  { name: "Salmon Bank", pattern: /\b(salmon|salmon\s*bank)\b/i, aliases: ["salmon", "salmon bank"], instapayFeeMinor: null, pesonetFeeMinor: 0 },
-  { name: "Netbank Mobile", pattern: /\b(netbank|netbank\s*mobile)\b/i, aliases: ["netbank", "netbank mobile"], instapayFeeMinor: 500, pesonetFeeMinor: 0 },
-  { name: "Komo", pattern: /\b(komo|komo\s*by\s*eastwest)\b/i, aliases: ["komo", "komo by eastwest"], instapayFeeMinor: 0, pesonetFeeMinor: 0 },
-  { name: "UNO Digital Bank", pattern: /\b(uno\s*digital(?:\s*bank)?|uno\s*bank|unobank)\b/i, aliases: ["uno digital", "uno bank", "unobank"], instapayFeeMinor: 500, pesonetFeeMinor: null },
-  { name: "Tonik", pattern: /\b(tonik|tonik\s*bank)\b/i, aliases: ["tonik", "tonik bank"], instapayFeeMinor: 800, pesonetFeeMinor: null },
+  { name: "MariBank", pattern: /\b(maribank|mari\s*bank|seamoney)\b/i, aliases: PH_DIGITAL_BANK_ALIASES.MARIBANK, instapayFeeMinor: 0, pesonetFeeMinor: 0 },
+  { name: "DiskarTech", pattern: /\b(diskartech)\b/i, aliases: PH_DIGITAL_BANK_ALIASES.DISKARTECH, instapayFeeMinor: 0, pesonetFeeMinor: 0 },
+  { name: "GoTyme Bank", pattern: /\b(gotyme|gotyme\s*bank)\b/i, aliases: PH_DIGITAL_BANK_ALIASES.GOTYME, instapayFeeMinor: 0, pesonetFeeMinor: 0, notes: "Free for first 20 monthly" },
+  { name: "BanKo", pattern: /\b(banko|bpi\s*direct\s*banko)\b/i, aliases: PH_DIGITAL_BANK_ALIASES.BANKO, instapayFeeMinor: 0, pesonetFeeMinor: null },
+  { name: "Overseas Filipino Bank", pattern: /\b(ofbank|overseas\s*filipino\s*bank)\b/i, aliases: PH_DIGITAL_BANK_ALIASES.OFBANK, instapayFeeMinor: 0, pesonetFeeMinor: 0 },
+  { name: "UnionDigital Bank", pattern: /\b(uniondigital|union\s*digital(?:\s*bank)?)\b/i, aliases: PH_DIGITAL_BANK_ALIASES.UNIONDIGITAL, instapayFeeMinor: 0, pesonetFeeMinor: 0 },
+  { name: "CIMB Bank", pattern: /\b(cimb|cimb\s*bank)\b/i, aliases: PH_DIGITAL_BANK_ALIASES.CIMB, instapayFeeMinor: 0, pesonetFeeMinor: 0, notes: "Free for first 2 daily" },
+  { name: "OwnBank", pattern: /\b(ownbank|own\s*bank)\b/i, aliases: PH_DIGITAL_BANK_ALIASES.OWNBANK, instapayFeeMinor: 0, pesonetFeeMinor: 0 },
+  { name: "Maya Bank", pattern: /\b(maya\s*bank|mayabank)\b/i, aliases: PH_DIGITAL_BANK_ALIASES.MAYA_BANK, instapayFeeMinor: 1000, pesonetFeeMinor: 0 },
+  { name: "Salmon Bank", pattern: /\b(salmon|salmon\s*bank)\b/i, aliases: PH_DIGITAL_BANK_ALIASES.SALMON, instapayFeeMinor: null, pesonetFeeMinor: 0 },
+  { name: "Netbank Mobile", pattern: /\b(netbank|netbank\s*mobile)\b/i, aliases: PH_DIGITAL_BANK_ALIASES.NETBANK, instapayFeeMinor: 500, pesonetFeeMinor: 0 },
+  { name: "Komo", pattern: /\b(komo|komo\s*by\s*eastwest)\b/i, aliases: PH_DIGITAL_BANK_ALIASES.KOMO, instapayFeeMinor: 0, pesonetFeeMinor: 0 },
+  { name: "UNO Digital Bank", pattern: /\b(uno\s*digital(?:\s*bank)?|uno\s*bank|unobank)\b/i, aliases: PH_DIGITAL_BANK_ALIASES.UNO, instapayFeeMinor: 500, pesonetFeeMinor: null },
+  { name: "Tonik", pattern: /\b(tonik|tonik\s*bank)\b/i, aliases: PH_DIGITAL_BANK_ALIASES.TONIK, instapayFeeMinor: 800, pesonetFeeMinor: null },
 
   // E-Wallets
   { name: "VYBE by BPI", pattern: /\b(vybe|vybe\s*by\s*bpi)\b/i, aliases: ["vybe", "vybe by bpi"], instapayFeeMinor: 0, pesonetFeeMinor: null },

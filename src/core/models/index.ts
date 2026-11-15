@@ -8,9 +8,21 @@ const idSchema = z.string().min(1);
 const amountSchema = z.number().int().safe();
 const currencySchema = z.string().length(3).default("PHP");
 
-export const transactionTypeSchema = z.enum(["EXPENSE", "SUBSCRIPTION_PAYMENT", "INCOME", "TRANSFER"]);
+export const transactionTypeSchema = z.enum(["EXPENSE", "SUBSCRIPTION_PAYMENT", "INCOME", "TRANSFER", "INTEREST"]);
 export const transferChannelSchema = z.enum(["INSTAPAY", "PESONET", "DIRECT", "MANUAL"]);
 export type TransferChannel = z.infer<typeof transferChannelSchema>;
+
+export const periodKeySchema = z.string().regex(/^\d{4}-\d{2}(-\d{2})?$/);
+
+export const interestMetaSchema = z.object({
+  ruleId: idSchema,
+  periodKey: periodKeySchema,
+  isEstimated: z.boolean(),
+  locked: z.boolean(),
+  grossMinor: amountSchema.nonnegative(),
+  taxMinor: amountSchema.nonnegative(),
+});
+export type InterestMeta = z.infer<typeof interestMetaSchema>;
 
 export const transactionSchema = z.object({
   id: idSchema, date: dateOnlySchema, title: z.string().min(1), amountMinor: amountSchema,
@@ -19,6 +31,7 @@ export const transactionSchema = z.object({
   toWalletId: idSchema.optional(), feeMinor: amountSchema.nonnegative().optional(), channel: transferChannelSchema.optional(),
   cashIn: z.boolean().optional(), cashInProvider: z.string().optional(), cashInFeeBps: amountSchema.nonnegative().optional(),
   customLabels: z.array(z.string()).optional(),
+  interestMeta: interestMetaSchema.optional(),
 });
 export type Transaction = z.infer<typeof transactionSchema>;
 
@@ -149,6 +162,44 @@ export const appNotificationSchema = z.object({
   actionLink: z.string().optional(),
 });
 export type AppNotification = z.infer<typeof appNotificationSchema>;
+
+export const interestTierSchema = z.object({
+  upToMinor: amountSchema.positive().nullable(),
+  rateBps: amountSchema.nonnegative().max(100000),
+});
+export type InterestTier = z.infer<typeof interestTierSchema>;
+
+export const interestRuleSchema = z.object({
+  id: idSchema,
+  walletId: idSchema,
+  enabled: z.boolean().default(true),
+  presetId: z.string().optional(),
+  presetVersion: z.number().int().positive().optional(),
+  tiers: z.array(interestTierSchema).min(1).refine((tiers) => {
+    for (let i = 0; i < tiers.length; i += 1) {
+      const cap = tiers[i]!.upToMinor;
+      if (cap === null) {
+        if (i !== tiers.length - 1) return false;
+      } else if (i > 0) {
+        const prev = tiers[i - 1]!.upToMinor;
+        if (prev === null || cap <= prev) return false;
+      }
+    }
+    return true;
+  }, "Tiers must have strictly increasing upToMinor values with null allowed only on the final tier"),
+  tierMode: z.enum(["MARGINAL", "WHOLE_BALANCE"]).default("MARGINAL"),
+  promoBoostBps: amountSchema.nonnegative().max(100000).default(0),
+  promoCapMinor: amountSchema.positive().optional(),
+  promoExpiresOn: dateOnlySchema.optional(),
+  withholdingTaxBps: amountSchema.nonnegative().max(10000).default(2000),
+  dayCountBasis: z.union([z.literal(365), z.literal(366), z.literal(360)]).default(365),
+  payoutFrequency: z.enum(["DAILY", "MONTHLY"]),
+  monthlyPayoutDay: z.number().int().min(1).max(31).optional(),
+  rounding: z.enum(["FLOOR", "HALF_UP"]).default("FLOOR"),
+  startDate: dateOnlySchema,
+  lastPostedPeriodKey: periodKeySchema.optional(),
+});
+export type InterestRule = z.infer<typeof interestRuleSchema>;
 
 export * from "./ai";
 

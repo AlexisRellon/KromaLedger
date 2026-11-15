@@ -423,5 +423,45 @@ describe("Dexie local vault", () => {
     const wallet = await repo.getWallet("w-usd");
     expect(wallet?.balanceMinor).toBe(98000);
   });
+
+  it("reconciles interest without double-counting, verifies amount inline, and cascades deleteWallet", async () => {
+    await repo.initialize("2026-11-10");
+    await repo.saveWallet({
+      id: "w-mari",
+      name: "MariBank",
+      institution: "MariBank",
+      type: "BANK",
+      currency: "PHP",
+      balanceMinor: 10_000_000,
+      color: "#FF6B00",
+      isDefault: false,
+    });
+    await repo.saveInterestRule({
+      id: "rule-mari",
+      walletId: "w-mari",
+      enabled: true,
+      tiers: [{ upToMinor: null, rateBps: 325 }],
+      tierMode: "MARGINAL",
+      promoBoostBps: 0,
+      withholdingTaxBps: 2000,
+      dayCountBasis: 365,
+      payoutFrequency: "DAILY",
+      rounding: "FLOOR",
+      startDate: "2026-11-14",
+    });
+
+    const res = await repo.reconcile("2026-11-15");
+    const interestTx = res.transactions.find((t) => t.type === "INTEREST");
+    expect(interestTx).toBeDefined();
+    expect((await repo.getWallet("w-mari"))?.balanceMinor).toBe(10_000_000 + interestTx!.amountMinor);
+
+    const verified = await repo.verifyInterestTransaction(interestTx!.id, interestTx!.amountMinor + 5);
+    expect(verified.interestMeta?.isEstimated).toBe(false);
+    expect(verified.interestMeta?.locked).toBe(true);
+    expect((await repo.getWallet("w-mari"))?.balanceMinor).toBe(10_000_000 + interestTx!.amountMinor + 5);
+
+    await repo.deleteWallet("w-mari");
+    expect(await repo.listInterestRules("w-mari")).toHaveLength(0);
+  });
 });
 

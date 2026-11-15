@@ -441,6 +441,7 @@ export interface PhysicalWalletCardProps {
   onClick?: () => void;
   index?: number;
   weaveVariant?: WeaveVariant;
+  monthlyAccruedEstMinor?: number;
 }
 
 export const PhysicalWalletCard = memo(function PhysicalWalletCard({
@@ -453,6 +454,7 @@ export const PhysicalWalletCard = memo(function PhysicalWalletCard({
   onClick,
   index = 0,
   weaveVariant,
+  monthlyAccruedEstMinor,
 }: PhysicalWalletCardProps) {
   const palette = useMemo(
     () => getWalletPalette(wallet.color, index),
@@ -840,6 +842,11 @@ export const PhysicalWalletCard = memo(function PhysicalWalletCard({
                   <p className={`mt-1 font-mono text-sm sm:text-base font-black tabular-nums leading-tight ${textClass}`}>
                     {formatCurrency(wallet.balanceMinor, wallet.currency)}
                   </p>
+                  {monthlyAccruedEstMinor !== undefined && monthlyAccruedEstMinor > 0 && (
+                    <p className={`mt-0.5 font-mono text-[10px] font-semibold ${mutedClass}`}>
+                      Accrued this month (est.): {formatCurrency(monthlyAccruedEstMinor, wallet.currency)}
+                    </p>
+                  )}
                 </div>
               )}
             </div>

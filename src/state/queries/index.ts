@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import type { AppNotification, Category, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../../core/models";
+import type { AppNotification, Category, InterestRule, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../../core/models";
 import { useStorage } from "../StorageContext";
 import { useUIStore } from "../useUIStore";
 
@@ -15,6 +15,7 @@ export const queryKeys = {
   profile: ["profile"] as const,
   wallets: ["wallets"] as const,
   notifications: ["notifications"] as const,
+  interestRules: ["interestRules"] as const,
 };
 
 export function useTransactions(customMonth?: string) {
@@ -348,12 +349,16 @@ export function useReconcileCommand() {
   const { repo } = useStorage();
   const client = useQueryClient();
   return useMutation({
-    mutationFn: (today: string) => repo.reconcile(today),
+    mutationFn: (input: string | { currentDate: string; deferInterest?: boolean }) =>
+      typeof input === "string"
+        ? repo.reconcile(input)
+        : repo.reconcile(input.currentDate, { deferInterest: input.deferInterest }),
     onSuccess: (result) => {
       const hasTxChanges = result.transactions.length > 0;
       const hasSubChanges = result.subscriptions.length > 0;
       const hasInvChanges = result.invoices.length > 0;
       const hasNotifChanges = result.notifications.length > 0;
+      const hasInterestRuleChanges = (result.interestRules?.length ?? 0) > 0;
       const promises: Promise<unknown>[] = [];
 
       if (hasTxChanges) {
@@ -362,6 +367,9 @@ export function useReconcileCommand() {
           client.invalidateQueries({ queryKey: queryKeys.wallets }),
           client.invalidateQueries({ queryKey: queryKeys.transactionCount })
         );
+      }
+      if (hasInterestRuleChanges) {
+        promises.push(client.invalidateQueries({ queryKey: queryKeys.interestRules }));
       }
       if (hasSubChanges) {
         promises.push(client.invalidateQueries({ queryKey: queryKeys.subscriptions }));
@@ -427,5 +435,45 @@ export function useSaveNotification() {
   return useMutation({
     mutationFn: (value: AppNotification) => repo.saveNotification(value),
     onSuccess: () => client.invalidateQueries({ queryKey: queryKeys.notifications }),
+  });
+}
+
+export function useInterestRules(walletId?: string) {
+  const { repo } = useStorage();
+  return useQuery({
+    queryKey: walletId ? [...queryKeys.interestRules, walletId] : queryKeys.interestRules,
+    queryFn: () => repo.listInterestRules(walletId),
+  });
+}
+
+export function useSaveInterestRule() {
+  const { repo } = useStorage();
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (rule: InterestRule) => repo.saveInterestRule(rule),
+    onSuccess: () => client.invalidateQueries({ queryKey: queryKeys.interestRules }),
+  });
+}
+
+export function useDeleteInterestRule() {
+  const { repo } = useStorage();
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => repo.deleteInterestRule(id),
+    onSuccess: () => client.invalidateQueries({ queryKey: queryKeys.interestRules }),
+  });
+}
+
+export function useVerifyInterestTransaction() {
+  const { repo } = useStorage();
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ txId, actualAmountMinor }: { txId: string; actualAmountMinor: number }) =>
+      repo.verifyInterestTransaction(txId, actualAmountMinor),
+    onSuccess: () => Promise.all([
+      client.invalidateQueries({ queryKey: queryKeys.transactions }),
+      client.invalidateQueries({ queryKey: queryKeys.wallets }),
+      client.invalidateQueries({ queryKey: queryKeys.transactionCount }),
+    ]),
   });
 }

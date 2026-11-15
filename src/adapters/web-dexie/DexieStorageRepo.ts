@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import type { Table } from "dexie";
-import type { AppMeta, AppNotification, AttachmentMeta, Category, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../../core/models";
-import { appMetaSchema, appNotificationSchema, categorySchema, dateOnlySchema, invoiceItemSchema, invoiceSchema, subscriptionSchema, transactionSchema, userProfileSchema, walletSchema } from "../../core/models";
+import type { AppMeta, AppNotification, AttachmentMeta, Category, InterestRule, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../../core/models";
+import { appMetaSchema, appNotificationSchema, categorySchema, dateOnlySchema, interestRuleSchema, invoiceItemSchema, invoiceSchema, subscriptionSchema, transactionSchema, userProfileSchema, walletSchema } from "../../core/models";
 import type { IStorageRepo } from "../../core/ports/IStorageRepo";
 import { createDemoSeed } from "../../core/engine/demoSeed";
 import { reconcile, type ReconcileResult } from "../../core/engine/reconciler";
@@ -342,8 +342,9 @@ export class DexieStorageRepo implements IStorageRepo {
     });
   }
   async deleteWallet(id: string): Promise<void> {
-    await this.db.transaction("rw", this.db.wallets, this.db.transactions, this.db.subscriptions, this.db.invoices, async () => {
+    await this.db.transaction("rw", [this.db.wallets, this.db.transactions, this.db.subscriptions, this.db.invoices, this.db.interestRules], async () => {
       await this.db.wallets.delete(id);
+      await this.db.interestRules.where("walletId").equals(id).delete();
       const affectedTransactions = await this.db.transactions
         .filter((tx) => tx.walletId === id || tx.toWalletId === id)
         .toArray();
@@ -371,6 +372,7 @@ export class DexieStorageRepo implements IStorageRepo {
       this.db.profiles,
       this.db.appMeta,
       this.db.notifications,
+      this.db.interestRules,
     ], async () => {
       await Promise.all([
         this.db.transactions.clear(),
@@ -384,6 +386,7 @@ export class DexieStorageRepo implements IStorageRepo {
         this.db.profiles.clear(),
         this.db.appMeta.clear(),
         this.db.notifications.clear(),
+        this.db.interestRules.clear(),
       ]);
       await this.db.appMeta.put({ id: "app", currency: "PHP", seedVersion: 999 });
       await this.db.profiles.put({
@@ -412,6 +415,7 @@ export class DexieStorageRepo implements IStorageRepo {
       this.db.profiles,
       this.db.appMeta,
       this.db.notifications,
+      this.db.interestRules,
     ], async () => {
       await Promise.all([
         this.db.transactions.clear(),
@@ -425,6 +429,7 @@ export class DexieStorageRepo implements IStorageRepo {
         this.db.profiles.clear(),
         this.db.appMeta.clear(),
         this.db.notifications.clear(),
+        this.db.interestRules.clear(),
       ]);
       const seed = createDemoSeed(today);
       await this.db.categories.bulkAdd(seed.categories);
@@ -442,7 +447,56 @@ export class DexieStorageRepo implements IStorageRepo {
     });
   }
 
-  async reconcile(currentDate: string): Promise<ReconcileResult> {
+  async listInterestRules(walletId?: string): Promise<InterestRule[]> {
+    if (walletId) {
+      return this.db.interestRules.where("walletId").equals(walletId).toArray();
+    }
+    return this.db.interestRules.toArray();
+  }
+
+  async saveInterestRule(rule: InterestRule): Promise<void> {
+    await this.db.interestRules.put(interestRuleSchema.parse(rule));
+  }
+
+  async deleteInterestRule(id: string): Promise<void> {
+    await this.db.interestRules.delete(id);
+  }
+
+  async verifyInterestTransaction(txId: string, actualAmountMinor: number): Promise<Transaction> {
+    if (!Number.isSafeInteger(actualAmountMinor) || actualAmountMinor < 0) {
+      throw new RangeError("Verified interest amount must be a non-negative integer in minor units");
+    }
+    return this.db.transaction("rw", this.db.transactions, this.db.wallets, async () => {
+      const tx = await this.db.transactions.get(txId);
+      if (!tx) throw new RangeError(`Transaction not found: ${txId}`);
+      if (tx.type !== "INTEREST" || !tx.interestMeta) {
+        throw new RangeError(`Transaction ${txId} is not an INTEREST entry`);
+      }
+      const delta = actualAmountMinor - tx.amountMinor;
+      const updated: Transaction = {
+        ...tx,
+        amountMinor: actualAmountMinor,
+        interestMeta: {
+          ...tx.interestMeta,
+          isEstimated: false,
+          locked: true,
+        },
+      };
+      await this.db.transactions.put(updated);
+      if (delta !== 0 && tx.walletId) {
+        const wallet = await this.db.wallets.get(tx.walletId);
+        if (wallet) {
+          await this.db.wallets.put({
+            ...wallet,
+            balanceMinor: wallet.balanceMinor + delta,
+          });
+        }
+      }
+      return updated;
+    });
+  }
+
+  async reconcile(currentDate: string, options?: { deferInterest?: boolean }): Promise<ReconcileResult> {
     return this.db.transaction("rw", [
       this.db.transactions,
       this.db.subscriptions,
@@ -450,23 +504,42 @@ export class DexieStorageRepo implements IStorageRepo {
       this.db.appMeta,
       this.db.wallets,
       this.db.notifications,
+      this.db.interestRules,
     ], async () => {
       const meta = await this.getAppMeta();
       const wallets = await this.db.wallets.toArray();
+      const interestRules = await this.db.interestRules.toArray();
+      const existingInterestTxs = await this.db.transactions.where("type").equals("INTEREST").toArray();
       const result = reconcile({
         subscriptions: await this.db.subscriptions.toArray(),
         invoices: await this.db.invoices.toArray(),
         lastReconciledDate: meta.lastReconciledDate,
         currentDate,
         wallets,
+        interestRules,
+        existingTransactions: existingInterestTxs,
+        deferInterest: options?.deferInterest,
       });
       for (const t of result.transactions) {
+        if (t.type === "INTEREST") continue;
         if (t.walletId) {
           const wallet = await this.db.wallets.get(t.walletId);
           if (wallet) {
             await this.db.wallets.put({
               ...wallet,
               balanceMinor: wallet.balanceMinor + t.amountMinor,
+            });
+          }
+        }
+      }
+      if (result.walletBalanceDeltas) {
+        for (const [walletId, delta] of Object.entries(result.walletBalanceDeltas)) {
+          if (delta === 0) continue;
+          const wallet = await this.db.wallets.get(walletId);
+          if (wallet) {
+            await this.db.wallets.put({
+              ...wallet,
+              balanceMinor: wallet.balanceMinor + delta,
             });
           }
         }
@@ -480,6 +553,9 @@ export class DexieStorageRepo implements IStorageRepo {
       await this.db.transactions.bulkPut(result.transactions);
       await this.db.subscriptions.bulkPut(result.subscriptions);
       await this.db.invoices.bulkPut(result.invoices);
+      if (result.interestRules && result.interestRules.length > 0) {
+        await this.db.interestRules.bulkPut(result.interestRules);
+      }
       await this.db.appMeta.put({ ...meta, lastReconciledDate: result.lastReconciledDate });
       return result;
     });

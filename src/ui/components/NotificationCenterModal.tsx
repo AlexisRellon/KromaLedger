@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { format, parseISO } from "date-fns";
 import type { AppNotification } from "../../core/models";
+import { APP_UPDATE_NOTIF_PREFIX, LATEST_RELEASE } from "../../core/engine/appChangelog";
 import {
   useClearNotifications,
   useDeleteNotification,
   useMarkNotificationRead,
   useNotifications,
 } from "../../state/queries";
-import { useUIStore } from "../../state/useUIStore";
+import { type NavTab, useUIStore } from "../../state/useUIStore";
 import {
   getBrowserNotificationPermission,
   requestBrowserNotificationPermission,
@@ -38,12 +39,23 @@ export function NotificationCenterModal({ onClose }: { onClose: () => void }) {
     setPermission(res);
   };
 
+  const resolveNotificationTab = (notif: AppNotification): NavTab | null => {
+    if (notif.actionLink === "HOME" || notif.actionLink === "WALLETS" || notif.actionLink === "PENDING" || notif.actionLink === "SETTINGS") {
+      return notif.actionLink;
+    }
+    if (notif.entityType === "SUBSCRIPTION" || notif.entityType === "INVOICE") {
+      return "PENDING";
+    }
+    return null;
+  };
+
   const handleNotificationClick = async (notif: AppNotification) => {
     if (!notif.read) {
       await markReadMutation.mutateAsync(notif.id);
     }
-    if (notif.actionLink === "PENDING" || notif.entityType === "SUBSCRIPTION" || notif.entityType === "INVOICE") {
-      setTab("PENDING");
+    const targetTab = resolveNotificationTab(notif);
+    if (targetTab) {
+      setTab(targetTab);
       onClose();
     }
   };
@@ -124,6 +136,8 @@ export function NotificationCenterModal({ onClose }: { onClose: () => void }) {
               const isWarning = notif.type === "WARNING";
               const isAlert = notif.type === "ALERT";
               const isSuccess = notif.type === "SUCCESS";
+              const navTarget = resolveNotificationTab(notif);
+              const isChangelogNotif = notif.id.startsWith(APP_UPDATE_NOTIF_PREFIX);
 
               let formattedDate = notif.createdAt;
               try {
@@ -180,13 +194,28 @@ export function NotificationCenterModal({ onClose }: { onClose: () => void }) {
                       )}
                     </div>
                     <p className="mt-1 text-xs text-[var(--text-tertiary)] leading-relaxed break-words">{notif.message}</p>
-                    <div className="mt-2 flex items-center gap-2 text-[10px] text-[var(--text-muted)] font-mono">
-                      <span>{formattedDate}</span>
-                      {notif.actionLink && (
-                        <>
-                          <span>•</span>
-                          <span className="text-[var(--theme-accent-text)] font-bold hover:underline">Tap to view</span>
-                        </>
+                    <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[10px] text-[var(--text-muted)] font-mono">
+                      <div className="flex items-center gap-2">
+                        <span>{formattedDate}</span>
+                        {navTarget && !isChangelogNotif && (
+                          <>
+                            <span>•</span>
+                            <span className="text-[var(--theme-accent-text)] font-bold hover:underline">Tap to view</span>
+                          </>
+                        )}
+                      </div>
+                      {navTarget && isChangelogNotif && (
+                        <Button
+                          type="button"
+                          variant="primary"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            void handleNotificationClick(notif);
+                          }}
+                        >
+                          {LATEST_RELEASE.ctaLabel}
+                        </Button>
                       )}
                     </div>
                   </div>

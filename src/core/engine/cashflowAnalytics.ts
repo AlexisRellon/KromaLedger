@@ -19,6 +19,7 @@ export interface CashflowInput {
 
 export interface CashflowAnalytics {
   netOutflowMinor: number;
+  interestEarnedMinor: number;
   fixedBurnPercent: number;
   categories: Array<{ categoryId: string; amountMinor: number }>;
   partialInvoices: Array<{
@@ -49,7 +50,11 @@ export function calculateCashflow(input: CashflowInput): CashflowAnalytics {
   const totalOutflowMinor = totalRegularOutflow + totalTransferFees;
 
   const totalInflowMinor = monthlyTransactions
-    .filter((t) => !isTransferOrCashIn(t) && t.amountMinor > 0)
+    .filter((t) => !isTransferOrCashIn(t) && t.type !== "INTEREST" && t.amountMinor > 0)
+    .reduce((sum, t) => sum + t.amountMinor, 0);
+
+  const interestEarnedMinor = monthlyTransactions
+    .filter((t) => t.type === "INTEREST" && t.amountMinor > 0)
     .reduce((sum, t) => sum + t.amountMinor, 0);
 
   const netOutflowMinor = totalOutflowMinor - totalInflowMinor;
@@ -90,6 +95,7 @@ export function calculateCashflow(input: CashflowInput): CashflowAnalytics {
 
   return {
     netOutflowMinor,
+    interestEarnedMinor,
     fixedBurnPercent:
       totalOutflowMinor === 0
         ? 0
@@ -141,7 +147,7 @@ export function calculateCashForecast(input: CashForecastInput): CashForecast {
   const monthlyTx = input.transactions.filter((t) => t.date.startsWith(monthPrefix));
 
   const inflowsMinor = monthlyTx
-    .filter((t) => !isTransferOrCashIn(t) && t.amountMinor > 0)
+    .filter((t) => !isTransferOrCashIn(t) && t.type !== "INTEREST" && t.amountMinor > 0)
     .reduce((sum, t) => sum + t.amountMinor, 0);
 
   const outflowsMinor = monthlyTx.reduce((sum, t) => {

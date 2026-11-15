@@ -1,5 +1,5 @@
 import Dexie, { type Table } from "dexie";
-import type { AppMeta, AppNotification, AttachmentMeta, Category, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../../core/models";
+import type { AppMeta, AppNotification, AttachmentMeta, Category, InterestRule, Invoice, InvoiceItem, Subscription, Transaction, UserProfile, Wallet } from "../../core/models";
 
 export interface AttachmentFileRecord {
   id: string;
@@ -20,6 +20,7 @@ export class KabanDB extends Dexie {
   wallets!: Table<Wallet, string>;
   profiles!: Table<UserProfile, string>;
   notifications!: Table<AppNotification, string>;
+  interestRules!: Table<InterestRule, string>;
 
   constructor() {
     // Preserve "KromaLedgerDB" as the on-device IndexedDB database identifier for zero-loss backwards compatibility
@@ -44,6 +45,9 @@ export class KabanDB extends Dexie {
     });
     this.version(5).stores({
       notifications: "&id,createdAt,read,type,entityId",
+    });
+    this.version(6).stores({
+      interestRules: "&id,walletId,enabled",
     });
   }
 }

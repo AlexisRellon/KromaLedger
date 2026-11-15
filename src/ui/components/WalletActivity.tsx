@@ -9,15 +9,18 @@ import { useActivityCollapse } from "./useActivityCollapse";
 
 const PAGE_SIZE = 8;
 
-export function WalletActivity({ activeWallet, walletTransactions, onQuickAdd, onEdit, onDelete }: {
+export function WalletActivity({ activeWallet, walletTransactions, onQuickAdd, onEdit, onDelete, onVerifyInterest }: {
   activeWallet: Wallet | null;
   walletTransactions: Transaction[];
   onQuickAdd: () => void;
   onEdit: (transaction: Transaction) => void;
   onDelete: (transaction: Transaction) => void;
+  onVerifyInterest?: (txId: string, actualAmountMinor: number) => void;
 }) {
   const [filters, setFilters] = useState(EMPTY_ACTIVITY_FILTERS);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [inlineEditId, setInlineEditId] = useState<string | null>(null);
+  const [inlineAmountPhp, setInlineAmountPhp] = useState("");
   const { collapsing, collapse, cancelCollapse, onCollapseAnimationEnd } = useActivityCollapse();
   const invalidRange = Boolean(filters.startDate && filters.endDate && filters.startDate > filters.endDate);
   const filteredTransactions = useMemo(
@@ -74,8 +77,19 @@ export function WalletActivity({ activeWallet, walletTransactions, onQuickAdd, o
                   className="group flex cursor-pointer items-center justify-between py-3 px-2 -mx-2 rounded-xl hover:bg-[#FAF8F5] transition"
                 >
                   <div>
-                    <h4 className="text-sm font-bold text-neutral-900 group-hover:text-[#4A154B] transition-colors">
-                      {tx.title}
+                    <h4 className="flex flex-wrap items-center gap-1.5 text-sm font-bold text-neutral-900 group-hover:text-[#4A154B] transition-colors">
+                      <span>{tx.title}</span>
+                      {tx.type === "INTEREST" && tx.interestMeta && (
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                            tx.interestMeta.isEstimated
+                              ? "bg-amber-100 text-amber-800"
+                              : "bg-emerald-100 text-emerald-800"
+                          }`}
+                        >
+                          {tx.interestMeta.isEstimated ? "~ Estimated" : "Verified"}
+                        </span>
+                      )}
                       {tx.type === "TRANSFER" && tx.feeMinor && tx.feeMinor > 0 && isOutgoingTransfer && (
                         <span className="ml-1.5 font-mono text-xs text-[#0369A1] font-semibold">
                           (incl. {formatCurrency(tx.feeMinor, tx.currency)} fee)
@@ -86,16 +100,55 @@ export function WalletActivity({ activeWallet, walletTransactions, onQuickAdd, o
                   </div>
 
                   <div className="flex items-center gap-2.5">
-                    <div className="text-right">
-                      <span
-                        className={`font-mono text-sm font-extrabold tabular-nums ${
-                          incoming ? "text-[#047857]" : "text-neutral-900"
-                        }`}
+                    {tx.type === "INTEREST" && inlineEditId === tx.id ? (
+                      <form
+                        className="flex items-center gap-1.5"
+                        onClick={(e) => e.stopPropagation()}
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          const minor = Math.round((Number(inlineAmountPhp) || 0) * 100);
+                          if (minor >= 0) {
+                            onVerifyInterest?.(tx.id, minor);
+                          }
+                          setInlineEditId(null);
+                        }}
                       >
-                        {incoming ? "+" : "−"}
-                        {formatCurrency(displayAmount, tx.currency)}
-                      </span>
-                    </div>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={inlineAmountPhp}
+                          onChange={(e) => setInlineAmountPhp(e.target.value)}
+                          className="w-24 rounded-lg border border-neutral-300 bg-white px-2 py-1 font-mono text-xs text-neutral-900"
+                          autoFocus
+                        />
+                        <button
+                          type="submit"
+                          className="rounded-lg bg-neutral-900 px-2 py-1 text-[11px] font-bold text-white"
+                        >
+                          Verify
+                        </button>
+                      </form>
+                    ) : (
+                      <div className="text-right">
+                        <span
+                          onClick={(e) => {
+                            if (tx.type === "INTEREST") {
+                              e.stopPropagation();
+                              setInlineEditId(tx.id);
+                              setInlineAmountPhp((tx.amountMinor / 100).toFixed(2));
+                            }
+                          }}
+                          className={`font-mono text-sm font-extrabold tabular-nums ${
+                            incoming ? "text-[#047857]" : "text-neutral-900"
+                          }`}
+                        >
+                          {tx.type === "INTEREST" && tx.interestMeta?.isEstimated ? "~" : ""}
+                          {incoming ? "+" : "−"}
+                          {formatCurrency(displayAmount, tx.currency)}
+                        </span>
+                      </div>
+                    )}
 
                     <div className="flex items-center gap-1 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
