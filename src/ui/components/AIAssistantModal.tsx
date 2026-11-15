@@ -7,6 +7,7 @@ import {
 } from "../../adapters/ai/chatHistoryStorage";
 import { NetlifyGemmaAdapter } from "../../adapters/ai/NetlifyGemmaAdapter";
 import { buildWeeklyBudgetSnapshot } from "../../core/engine/aiBudgetSnapshot";
+import { getTodayManila } from "../../core/engine/manilaDate";
 import {
   useAllTransactions,
   useCategories,
@@ -77,6 +78,9 @@ export function AIAssistantModal({ onClose }: { onClose: () => void }) {
   const adapter = useMemo(() => new NetlifyGemmaAdapter(), []);
 
   useLayoutEffect(() => {
+    if (typeof CSS !== "undefined" && typeof CSS.supports === "function" && CSS.supports("field-sizing", "content")) {
+      return;
+    }
     const resize = () => {
       const input = inputRef.current;
       if (!input) return;
@@ -152,7 +156,7 @@ export function AIAssistantModal({ onClose }: { onClose: () => void }) {
     const prompt = (textToSend ?? inputText).trim();
     if (!prompt || isLoading) return;
 
-    const today = new Date().toISOString().slice(0, 10);
+    const today = getTodayManila();
     const snapshot = buildWeeklyBudgetSnapshot({
       today,
       currency: profileQuery.data?.defaultCurrency ?? "PHP",
@@ -235,6 +239,7 @@ export function AIAssistantModal({ onClose }: { onClose: () => void }) {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.nativeEvent.isComposing || e.keyCode === 229) return;
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       void handleSend();
@@ -263,7 +268,7 @@ export function AIAssistantModal({ onClose }: { onClose: () => void }) {
       onClick={(e) => {
         if (e.target === e.currentTarget && !isLoading) onClose();
       }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-neutral-900/60 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-neutral-900/60 backdrop-blur-xs overscroll-contain animate-in fade-in duration-150"
     >
       <div
         role="dialog"
@@ -320,6 +325,7 @@ export function AIAssistantModal({ onClose }: { onClose: () => void }) {
             <div className="relative">
               <Input
                 type="text"
+                aria-label="Search advisories"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search advisories..."
@@ -611,7 +617,11 @@ export function AIAssistantModal({ onClose }: { onClose: () => void }) {
               className="flex items-end gap-2.5"
             >
               <div className="relative flex-1 rounded-2xl border-2 border-neutral-900 bg-white shadow-[2px_2px_0px_#18181B] focus-within:ring-2 focus-within:ring-[#4A154B] transition">
+                <label htmlFor="ai-chat-prompt-input" className="sr-only">
+                  Ask Kaban Intelligence
+                </label>
                 <textarea
+                  id="ai-chat-prompt-input"
                   ref={inputRef}
                   value={inputText}
                   rows={1}
@@ -619,7 +629,7 @@ export function AIAssistantModal({ onClose }: { onClose: () => void }) {
                   onKeyDown={handleKeyDown}
                   placeholder="Inquire about safe spend, commitments, or burn trajectory..."
                   disabled={isLoading}
-                  className="block w-full resize-none overflow-y-auto bg-transparent px-4 py-3 text-sm font-medium text-neutral-900 placeholder:text-neutral-600 focus:outline-none max-h-32 min-h-[44px]"
+                  className="block w-full [field-sizing:content] resize-none overflow-y-auto bg-transparent px-4 py-3 text-sm font-medium text-neutral-900 placeholder:text-neutral-600 focus:outline-none max-h-32 min-h-[44px]"
                 />
               </div>
 
@@ -667,11 +677,18 @@ export function AIAssistantModal({ onClose }: { onClose: () => void }) {
           <input
             ref={renameInputRef}
             type="text"
+            aria-label="Thread title"
             value={editingTitle}
             onChange={(e) => setEditingTitle(e.target.value)}
             onKeyDown={(e) => {
+              if (e.nativeEvent.isComposing || e.keyCode === 229) return;
               if (e.key === "Enter") handleSaveRename(thread.id);
-              if (e.key === "Escape") setEditingThreadId(null);
+              if (e.key === "Escape") {
+                e.preventDefault();
+                e.stopPropagation();
+                setEditingThreadId(null);
+                setEditingTitle("");
+              }
             }}
             className="w-full text-sm font-medium bg-[#F4F1EA] px-2.5 py-1.5 rounded-lg text-neutral-900 border border-neutral-900 focus:outline-none placeholder:text-neutral-600"
           />

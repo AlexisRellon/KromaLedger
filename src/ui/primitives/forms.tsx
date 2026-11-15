@@ -48,7 +48,8 @@ export function Field({
 
   const childDescribedBy = isValidElement(children) ? (children.props as FieldControlProps)["aria-describedby"] : undefined;
   const describedBy = [childDescribedBy, helpId, errorId].filter(Boolean).join(" ") || undefined;
-  const isInvalid = fieldError ? true : isValidElement(children) ? (children.props as FieldControlProps)["aria-invalid"] : undefined;
+  const childAriaInvalid = isValidElement(children) ? (children.props as FieldControlProps)["aria-invalid"] : undefined;
+  const isInvalid = fieldError ? true : (childAriaInvalid ?? false);
 
   return (
     <div {...props} onInvalidCapture={(event) => {
@@ -61,12 +62,12 @@ export function Field({
       const control = event.target as HTMLInputElement;
       if (control.validity?.valid) {
         setValidationError("");
-        control.removeAttribute("aria-invalid");
+        if (!error) control.setAttribute("aria-invalid", "false");
         const descriptions = (control.getAttribute("aria-describedby") || "").split(/\s+/).filter((value) => value && value !== `${id}-error`);
         if (descriptions.length) control.setAttribute("aria-describedby", descriptions.join(" "));
         else control.removeAttribute("aria-describedby");
       }
-    }} className={`flex flex-col gap-1.5 ${validationError ? "[&_input:invalid]:!border-red-700 [&_select:invalid]:!border-red-700 [&_textarea:invalid]:!border-red-700" : ""} ${className}`}>
+    }} className={`flex flex-col gap-1.5 [&_input:user-invalid]:!border-red-700 [&_select:user-invalid]:!border-red-700 [&_textarea:user-invalid]:!border-red-700 [&_input[aria-invalid=true]]:!border-red-700 [&_select[aria-invalid=true]]:!border-red-700 [&_textarea[aria-invalid=true]]:!border-red-700 ${className}`.trim()}>
       <div className="flex items-center justify-between">
         <label htmlFor={id} className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
           {label} {required && <span className="text-[var(--status-danger-text)]">*</span>}

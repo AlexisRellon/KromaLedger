@@ -1,5 +1,6 @@
 import { formatCurrency, type AppNotification, type InterestRule, type Invoice, type Subscription, type Transaction, type Wallet } from "../models";
 import { evaluateInterestRules } from "./interestEngine";
+import { addDaysManila, daysBetweenManila, formatUtcDate, parseUtcDate } from "./manilaDate";
 
 export interface PendingConfirmation {
   id: string;
@@ -31,24 +32,6 @@ export interface ReconcileResult {
   walletBalanceDeltas?: Record<string, number>;
 }
 
-function asUtcDate(value: string): Date {
-  const date = new Date(`${value}T00:00:00.000Z`);
-  if (!Number.isFinite(date.getTime()) || date.toISOString().slice(0, 10) !== value) throw new RangeError(`Invalid calendar date: ${value}`);
-  return date;
-}
-
-function addDaysUtc(value: string, days: number): string {
-  const date = asUtcDate(value);
-  date.setUTCDate(date.getUTCDate() + days);
-  return date.toISOString().slice(0, 10);
-}
-
-function daysBetweenUtc(fromDate: string, toDate: string): number {
-  const a = asUtcDate(fromDate);
-  const b = asUtcDate(toDate);
-  return Math.round((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
-}
-
 export function cycleDate(start: Date, cycle: Subscription["billingCycle"], count: number): string {
   const year = start.getUTCFullYear();
   const month = start.getUTCMonth();
@@ -63,12 +46,12 @@ export function cycleDate(start: Date, cycle: Subscription["billingCycle"], coun
     const lastDay = new Date(Date.UTC(targetYear, targetMonth + 1, 0)).getUTCDate();
     result = new Date(Date.UTC(targetYear, targetMonth, Math.min(day, lastDay)));
   }
-  return result.toISOString().slice(0, 10);
+  return formatUtcDate(result);
 }
 
 export function reconcile(input: ReconcileInput): ReconcileResult {
-  const now = asUtcDate(input.currentDate);
-  if (input.lastReconciledDate && now < asUtcDate(input.lastReconciledDate)) throw new RangeError("Reconciliation date cannot move backwards");
+  const now = parseUtcDate(input.currentDate);
+  if (input.lastReconciledDate && now < parseUtcDate(input.lastReconciledDate)) throw new RangeError("Reconciliation date cannot move backwards");
   const transactions: Transaction[] = [];
   const pendingConfirmations: PendingConfirmation[] = [];
   const notifications: AppNotification[] = [];
@@ -79,7 +62,7 @@ export function reconcile(input: ReconcileInput): ReconcileResult {
     if (!subscription.active) return subscription;
 
     // Upcoming reminders (3 days ahead or due today)
-    const daysUntilDue = daysBetweenUtc(input.currentDate, subscription.nextBillingDate);
+    const daysUntilDue = daysBetweenManila(input.currentDate, subscription.nextBillingDate);
     if (daysUntilDue === 3) {
       notifications.push({
         id: `notif:sub-upcoming:${subscription.id}:${subscription.nextBillingDate}:3`,
@@ -106,7 +89,7 @@ export function reconcile(input: ReconcileInput): ReconcileResult {
       });
     }
 
-    const anchor = asUtcDate(subscription.billingAnchorDate ?? subscription.nextBillingDate);
+    const anchor = parseUtcDate(subscription.billingAnchorDate ?? subscription.nextBillingDate);
     let count = 0;
     let dueDate = cycleDate(anchor, subscription.billingCycle, count);
     while (dueDate < subscription.nextBillingDate) {
@@ -124,7 +107,7 @@ export function reconcile(input: ReconcileInput): ReconcileResult {
         if (walletMap) {
           const wallet = subscription.walletId ? walletMap.get(subscription.walletId) : undefined;
           if (!wallet || wallet.balanceMinor < subscription.amountMinor) {
-            const tomorrow = addDaysUtc(input.currentDate, 1);
+            const tomorrow = addDaysManila(input.currentDate, 1);
             notifications.push({
               id: `notif:sub-insufficient:${subscription.id}:${dueDate}`,
               title: `Insufficient Balance: ${subscription.title}`,

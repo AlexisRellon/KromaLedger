@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { formatCurrency, formatWalletLabel, type Category, type Transaction, type Wallet, type TransferChannel } from "../../core/models";
 import { detectTransferFee } from "../../core/engine/transferFees";
 import { convenienceFeeMinor } from "../../core/engine/convenienceFee";
@@ -46,14 +46,6 @@ export function EditEntryModal({
   const [cashInProvider, setCashInProvider] = useState(transaction.cashInProvider ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !busy) onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, busy]);
 
   const parsedAmountMinor = useMemo(() => {
     try {
