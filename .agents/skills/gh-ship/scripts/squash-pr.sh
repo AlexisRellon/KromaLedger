@@ -19,5 +19,17 @@ if [[ "$WATCH" == "true" ]]; then
 fi
 
 echo "==> Squash-merging PR #${PR_NUM}..."
-gh pr merge "$PR_NUM" --squash --delete-branch
+GIT_DIR="$(git rev-parse --git-dir)"
+GIT_COMMON_DIR="$(git rev-parse --git-common-dir)"
+
+if [[ "$GIT_DIR" != "$GIT_COMMON_DIR" ]]; then
+  # In a linked worktree, `gh pr merge --delete-branch` fails trying to checkout `main` locally.
+  HEAD_BRANCH="$(gh pr view "$PR_NUM" --json headRefName -q .headRefName)"
+  gh pr merge "$PR_NUM" --squash
+  if [[ -n "$HEAD_BRANCH" ]]; then
+    git push origin --delete "$HEAD_BRANCH" 2>/dev/null || true
+  fi
+else
+  gh pr merge "$PR_NUM" --squash --delete-branch
+fi
 echo "==> PR #${PR_NUM} squash-merged."
