@@ -222,4 +222,20 @@ describe("evaluateInterestRules", () => {
     expect(febEnd.transactions[0]?.date).toBe("2026-02-28");
     expect(febEnd.transactions[0]?.interestMeta?.periodKey).toBe("2026-02");
   });
+
+  it("skips interest evaluation and monthly preview for CASH wallets", () => {
+    const cashWallet = makeWallet({ id: "w_cash", type: "CASH", name: "Physical Cash", balanceMinor: 10_000_000 });
+    const rule = makeMariRule({ walletId: "w_cash", payoutFrequency: "MONTHLY", startDate: "2026-11-01" });
+
+    expect(estimateMonthlyAccruedMinor(rule, cashWallet, [], "2026-11-15")).toBe(0);
+
+    const res = evaluateInterestRules({
+      rules: [rule],
+      wallets: [cashWallet],
+      existingTransactions: [],
+      todayManila: "2026-11-15",
+    });
+    expect(res.transactions).toHaveLength(0);
+    expect(res.walletBalanceDeltas).toEqual({});
+  });
 });

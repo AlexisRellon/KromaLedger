@@ -5,6 +5,15 @@ All notable changes to KromaLedger (Kaban) will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-11-15
+
+### Fixed
+- Disallow automated savings interest rules and accrued previews on `CASH` (Cash on hand) wallets in UI and `interestEngine`.
+- Fixed low-contrast label text on the `"Enable automated interest posting"` checkbox in `WalletInterestSettings` and `BaulitoMissedDaysModal` using theme foreground variables.
+
+### Added
+- App version (`v1.1.1`) and author copyright footer at the bottom of `SettingsScreen`.
+
 ## [1.1.0] - 2026-11-15
 
 ### Added

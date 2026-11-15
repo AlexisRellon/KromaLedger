@@ -17,6 +17,7 @@ import {
 } from "../../state/queries";
 import { useUIStore } from "../../state/useUIStore";
 import { APP_THEMES, type ThemeMode } from "../../state/theme";
+import { APP_VERSION } from "../../core/engine/appChangelog";
 import { formatCurrency, type Wallet } from "../../core/models";
 import { SettingsSkeleton } from "../components/skeletons";
 
@@ -749,6 +750,11 @@ export function SettingsScreen({
           </div>
         </ModalShell>
       )}
+
+      <footer className="pt-2 pb-4 text-center font-mono text-xs text-[var(--text-muted)]">
+        <p className="font-bold text-[var(--text-secondary)]">Kaban (KromaLedger) · v{APP_VERSION}</p>
+        <p className="mt-1">© {new Date().getFullYear()} Alexis John Rellon. All rights reserved.</p>
+      </footer>
     </div>
   );
 }

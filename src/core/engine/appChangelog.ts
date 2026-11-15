@@ -11,7 +11,7 @@ export interface AppReleaseNote {
   targetTab: AppUpdateTargetTab;
 }
 
-export const APP_VERSION = "1.1.0";
+export const APP_VERSION = "1.1.1";
 export const APP_UPDATE_SEEN_KEY = "kaban_last_seen_version";
 export const APP_UPDATE_NOTIF_PREFIX = "app-update-";
 
