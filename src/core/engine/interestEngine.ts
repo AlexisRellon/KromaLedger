@@ -129,7 +129,7 @@ export function evaluateInterestRules(input: EvaluateInterestInput): EvaluateInt
   const updatedRules = input.rules.map((rule) => {
     if (!rule.enabled) return rule;
     const wallet = walletMap.get(rule.walletId);
-    if (!wallet) return rule;
+    if (!wallet || wallet.type === "CASH") return rule;
 
     let runningBalance = wallet.balanceMinor;
     let delta = 0;
@@ -313,7 +313,7 @@ export function estimateMonthlyAccruedMinor(
   transactions: Transaction[],
   todayManila: string
 ): number {
-  if (!rule.enabled || rule.payoutFrequency !== "MONTHLY" || wallet.balanceMinor <= 0) {
+  if (!rule.enabled || wallet.type === "CASH" || rule.payoutFrequency !== "MONTHLY" || wallet.balanceMinor <= 0) {
     return 0;
   }
   const currentMonthKey = getManilaMonthKey(todayManila);

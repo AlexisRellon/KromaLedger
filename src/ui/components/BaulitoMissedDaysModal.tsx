@@ -36,7 +36,7 @@ export function BaulitoMissedDaysModal() {
     >
       <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
         <KabanMascot pose="alert-peek" className="h-20 w-20 shrink-0" />
-        <p className="text-sm text-neutral-300">
+        <p className="text-sm text-[var(--text-secondary)]">
           Log any missed deposits, transfers, or withdrawals before automated interest runs so your
           estimated daily interest reflects your updated wallet balances.
         </p>

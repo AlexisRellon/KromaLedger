@@ -99,6 +99,8 @@ export function WalletInterestSettings({ wallet, isOpen, onClose }: WalletIntere
     onClose();
   };
 
+  if (wallet.type === "CASH") return null;
+
   return (
     <ModalShell
       isOpen={isOpen}
@@ -108,7 +110,7 @@ export function WalletInterestSettings({ wallet, isOpen, onClose }: WalletIntere
       maxWidth="lg"
     >
       <div className="space-y-4">
-        <label className="flex items-center gap-2 text-sm font-semibold text-neutral-200">
+        <label className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)] cursor-pointer">
           <input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} />
           Enable automated interest posting
         </label>

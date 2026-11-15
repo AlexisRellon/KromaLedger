@@ -261,6 +261,7 @@ export function WalletsScreen({
                 <PhysicalWalletCard
                   wallet={activeWallet}
                   monthlyAccruedEstMinor={(() => {
+                    if (activeWallet.type === "CASH") return undefined;
                     const rule = (interestRulesQuery.data ?? []).find((r) => r.walletId === activeWallet.id);
                     return rule ? estimateMonthlyAccruedMinor(rule, activeWallet, allTx, getTodayManila()) : undefined;
                   })()}
@@ -289,23 +290,27 @@ export function WalletsScreen({
                 </div>
               </div>
 
-              {/* Interest Rules Button */}
-              <div className="mt-4 flex items-center justify-between border-t border-neutral-200 pt-3">
-                <span className="text-xs font-medium text-neutral-600">Automated PH bank interest</span>
-                <button
-                  type="button"
-                  onClick={() => setInterestSettingsOpen(true)}
-                  className="rounded-xl border-2 border-neutral-900 bg-white px-3.5 py-1.5 text-xs font-bold text-neutral-900 shadow-[2px_2px_0px_#18181B] hover:bg-neutral-100 transition"
-                >
-                  Interest Rules
-                </button>
-              </div>
-              {interestSettingsOpen && (
-                <WalletInterestSettings
-                  wallet={activeWallet}
-                  isOpen={interestSettingsOpen}
-                  onClose={() => setInterestSettingsOpen(false)}
-                />
+              {/* Interest Rules Button (hidden for Cash on hand) */}
+              {activeWallet.type !== "CASH" && (
+                <>
+                  <div className="mt-4 flex items-center justify-between border-t border-neutral-200 pt-3">
+                    <span className="text-xs font-medium text-neutral-600">Automated PH bank interest</span>
+                    <button
+                      type="button"
+                      onClick={() => setInterestSettingsOpen(true)}
+                      className="rounded-xl border-2 border-neutral-900 bg-white px-3.5 py-1.5 text-xs font-bold text-neutral-900 shadow-[2px_2px_0px_#18181B] hover:bg-neutral-100 transition"
+                    >
+                      Interest Rules
+                    </button>
+                  </div>
+                  {interestSettingsOpen && (
+                    <WalletInterestSettings
+                      wallet={activeWallet}
+                      isOpen={interestSettingsOpen}
+                      onClose={() => setInterestSettingsOpen(false)}
+                    />
+                  )}
+                </>
               )}
 
               {/* Set Primary Button */}
